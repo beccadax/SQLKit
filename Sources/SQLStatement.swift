@@ -206,7 +206,7 @@ extension Collection where Iterator.Element: SQLStatementConvertible, SubSequenc
     func joined(separator: SQLStatementConvertible) -> SQLStatement {
         let sep = SQLStatement(separator)
         guard let first = self.first else {
-            return ""
+            return SQLStatement()
         }
         let rest = dropFirst()
         return rest.reduce(SQLStatement(first)) { left, right in left + sep + right }
