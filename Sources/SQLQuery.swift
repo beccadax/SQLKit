@@ -58,6 +58,7 @@ extension _SQLQuery where Self: Sequence {
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 extension _SQLQuery where Self: Collection, Client.RowStateSequence: Collection, Client.RowStateSequence.Iterator.Element == Client.RowState {
     public typealias Index = Client.RowStateSequence.Index
     
@@ -78,18 +79,21 @@ extension _SQLQuery where Self: Collection, Client.RowStateSequence: Collection,
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 extension _SQLQuery where Self: BidirectionalCollection, Client.RowStateSequence: BidirectionalCollection, Client.RowStateSequence.Iterator.Element == Client.RowState {
     public func index(before i: Client.RowStateSequence.Index) -> Client.RowStateSequence.Index {
         return rowStates.index(before: i)
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 extension _SQLQuery where Self: RandomAccessCollection, Client.RowStateSequence: RandomAccessCollection, Client.RowStateSequence.Iterator.Element == Client.RowState {
     public func index(_ i: Client.RowStateSequence.Index, offsetBy n: Client.RowStateSequence.IndexDistance) -> Client.RowStateSequence.Index {
         return rowStates.index(i, offsetBy: n)
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAccessCollection where C.RowStateSequence: RandomAccessCollection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
@@ -104,6 +108,7 @@ public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAcc
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, BidirectionalCollection where C.RowStateSequence: BidirectionalCollection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
@@ -118,6 +123,7 @@ public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, Bidirect
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLQueryCollection<C: SQLClient>: _SQLQuery, Collection where C.RowStateSequence: Collection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
@@ -132,6 +138,7 @@ public struct SQLQueryCollection<C: SQLClient>: _SQLQuery, Collection where C.Ro
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLRowIterator<Client: SQLClient>: IteratorProtocol where Client.RowStateSequence.Iterator.Element == Client.RowState {
     fileprivate var statement: SQLStatement
     fileprivate var rowStateIterator: Client.RowStateSequence.Iterator
@@ -141,6 +148,7 @@ public struct SQLRowIterator<Client: SQLClient>: IteratorProtocol where Client.R
     }
 }
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLQuerySequence<C: SQLClient>: _SQLQuery, Sequence where C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     

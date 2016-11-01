@@ -8,6 +8,7 @@
 
 import Foundation
 
+// WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Iterator.Element == Client.RowState {
     public static func supports(_ url: URL) -> Bool {
         return Client.supports(url)

@@ -12,6 +12,7 @@ public protocol SQLClient: _SQLClient {
     associatedtype DatabaseState
     associatedtype ConnectionState
     associatedtype QueryState
+    // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
     associatedtype RowStateSequence: Sequence /* where Iterator.Element == RowState */
     associatedtype RowState
     
