@@ -9,6 +9,7 @@
 import Foundation
 
 // WORKAROUND: #3 Swift doesn't support conditional conformance
+// WORKAROUND: #4 Swift won't allow protocol extension methods to be more public than the protocol
 public protocol _SQLQuery: Sequence {
     associatedtype Client: SQLClient
     
