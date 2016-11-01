@@ -31,6 +31,8 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
     public var state: Client.DatabaseState
     
     /// Creates a new instance which represents the database at the indicated URL.
+    /// 
+    /// - Parameter url: The URL at which the database can be accessed.
     ///
     /// - Precondition: `url` is valid for this database's SQL client. If you're not 
     ///                  sure a URL will be supported, use the `supports(_:)` class 

@@ -24,15 +24,25 @@ public protocol _SQLQuery: Sequence {
 extension _SQLQuery {
     /// Returns a key for a column with the given name and type.
     /// 
+    /// - Parameter name: The name of the column. This may be case-sensitive.
+    /// - Parameter valueType: The type of the column's value. Must conform to  
+    ///               `SQLValue` or be an `Optional` of a type conforming to 
+    ///               `SQLValue`.
+    /// 
     /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
-    /// - Note: If `valueType` is not an Optional type, then accessing the column's 
+    /// - Note: If `valueType` is not an `Optional` type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
         return try Client.columnKey(forName: name, as: valueType, for: state, statement: statement)
     }
     
     /// Returns a key for a column at the given index and with the given type.
+    /// 
+    /// - Parameter index: The zero-based index of the column in the row.
+    /// - Parameter valueType: The type of the column's value. Must conform to  
+    ///               `SQLValue` or be an `Optional` of a type conforming to 
+    ///               `SQLValue`.
     /// 
     /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
@@ -56,6 +66,11 @@ extension _SQLQuery {
 extension _SQLQuery {
     /// Returns a key for a column with the given name and type.
     /// 
+    /// - Parameter name: The name of the column. This may be case-sensitive.
+    /// - Parameter valueType: The type of the column's value. Must conform to  
+    ///               `SQLValue` or be an `Optional` of a type conforming to 
+    ///               `SQLValue`.
+    /// 
     /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
     /// - Note: If `valueType` is not an Optional type, then accessing the column's 
@@ -66,6 +81,11 @@ extension _SQLQuery {
     }
     
     /// Returns a key for a column at the given index and with the given type.
+    /// 
+    /// - Parameter index: The zero-based index of the column in the row.
+    /// - Parameter valueType: The type of the column's value. Must conform to  
+    ///               `SQLValue` or be an `Optional` of a type conforming to 
+    ///               `SQLValue`.
     /// 
     /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
