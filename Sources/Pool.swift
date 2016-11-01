@@ -64,6 +64,7 @@ public final class Pool<Resource: AnyObject> {
     }
 }
 
+// WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 private protocol _ByIdentityProtocol: Hashable {
     associatedtype Object: AnyObject
     init(_ object: Object)
@@ -76,6 +77,7 @@ private struct ByIdentity<Object: AnyObject> {
     }
 }
 
+// WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 extension ByIdentity: Hashable, _ByIdentityProtocol {
     static func == (lhs: ByIdentity, rhs: ByIdentity) -> Bool {
         return ObjectIdentifier(lhs.object) == ObjectIdentifier(rhs.object)
@@ -86,6 +88,7 @@ extension ByIdentity: Hashable, _ByIdentityProtocol {
     }
 }
 
+// WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 extension Dictionary where Key: _ByIdentityProtocol {
     subscript(key: Key.Object) -> Value? {
         get {

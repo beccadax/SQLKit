@@ -47,6 +47,7 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
     }
 }
 
+// WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 extension Pool where Resource: _SQLConnection, Resource.Client.RowStateSequence.Iterator.Element == Resource.Client.RowState {
     /// Creates a pool of connections to the given database.
     /// 

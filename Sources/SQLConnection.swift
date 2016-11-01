@@ -8,11 +8,14 @@
 
 import Foundation
 
+/// Implementation detail used to detect SQLConnections in generics. Do not use.
+// WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 public protocol _SQLConnection {
     associatedtype Client: SQLClient
 }
 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
+// WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     public var state: Client.ConnectionState
