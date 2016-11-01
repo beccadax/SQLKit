@@ -32,7 +32,7 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
     
     /// Creates a new instance which represents the database at the indicated URL.
     ///
-    /// -Precondition: `url` is valid for this database's SQL client. If you're not 
+    /// - Precondition: `url` is valid for this database's SQL client. If you're not 
     ///                  sure a URL will be supported, use the `supports(_:)` class 
     ///                  method to check before using this initializer. 
     public init(url: URL) {
@@ -41,7 +41,7 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
     
     /// Create a connection to this database.
     /// 
-    /// -SeeAlso: `Pool`, which can be used to make connection pools.
+    /// - SeeAlso: `Pool`, which can be used to make connection pools.
     public func makeConnection() throws -> SQLConnection<Client> {
         return SQLConnection(state: try Client.makeConnectionState(for: state))
     }
@@ -51,10 +51,10 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
 extension Pool where Resource: _SQLConnection, Resource.Client.RowStateSequence.Iterator.Element == Resource.Client.RowState {
     /// Creates a pool of connections to the given database.
     /// 
-    /// -Parameter database: The database to connect to.
-    /// -Parameter maximum: The maximum number of database connections to use.
+    /// - Parameter database: The database to connect to.
+    /// - Parameter maximum: The maximum number of database connections to use.
     ///                          Default: 10.
-    /// -Parameter timeout: The maximum amount of time to wait for a connection 
+    /// - Parameter timeout: The maximum amount of time to wait for a connection 
     ///                         to be returned to the pool. Default: 10 seconds.
     public convenience init(database: SQLDatabase<Resource.Client>, maximum: Int = 10, timeout: DispatchTimeInterval = .seconds(10)) {
         self.init(maximum: maximum, timeout: timeout) {

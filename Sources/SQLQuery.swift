@@ -24,9 +24,9 @@ public protocol _SQLQuery: Sequence {
 extension _SQLQuery {
     /// Returns a key for a column with the given name and type.
     /// 
-    /// -Throws: If the column doesn't exist or possibly if it's the wrong type.
+    /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
-    /// -Note: If `valueType` is not an Optional type, then accessing the column's 
+    /// - Note: If `valueType` is not an Optional type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
         return try Client.columnKey(forName: name, as: valueType, for: state, statement: statement)
@@ -34,9 +34,9 @@ extension _SQLQuery {
     
     /// Returns a key for a column at the given index and with the given type.
     /// 
-    /// -Throws: If the column doesn't exist or possibly if it's the wrong type.
+    /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
-    /// -Note: If `valueType` is not an Optional type, then accessing the column's 
+    /// - Note: If `valueType` is not an Optional type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
         return try Client.columnKey(at: index, as: valueType, for: state, statement: statement)
@@ -44,7 +44,7 @@ extension _SQLQuery {
     
     /// The number of rows returned by the query.
     /// 
-    /// -Note: Although normally using `count` consumes a `Sequence`, it does not 
+    /// - Note: Although normally using `count` consumes a `Sequence`, it does not 
     ///          do so for a `SQLQuery`, so it's safe to call `count` even if the 
     ///          client otherwise doesn't support iterating over a query's rows more 
     ///          than once.
@@ -56,9 +56,9 @@ extension _SQLQuery {
 extension _SQLQuery {
     /// Returns a key for a column with the given name and type.
     /// 
-    /// -Throws: If the column doesn't exist or possibly if it's the wrong type.
+    /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
-    /// -Note: If `valueType` is not an Optional type, then accessing the column's 
+    /// - Note: If `valueType` is not an Optional type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value?.Type) throws -> SQLNullableColumnKey<Value> {
         let nonnull = try columnKey(forName: name, as: Value.self)
@@ -67,9 +67,9 @@ extension _SQLQuery {
     
     /// Returns a key for a column at the given index and with the given type.
     /// 
-    /// -Throws: If the column doesn't exist or possibly if it's the wrong type.
+    /// - Throws: If the column doesn't exist or possibly if it's the wrong type.
     /// 
-    /// -Note: If `valueType` is not an Optional type, then accessing the column's 
+    /// - Note: If `valueType` is not an Optional type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(at index: Int, as valueType: Value?.Type) throws -> SQLNullableColumnKey<Value> {
         let nonnull = try columnKey(at: index, as: Value.self)
@@ -141,7 +141,7 @@ extension _SQLQuery where Self: RandomAccessCollection, Client.RowStateSequence:
 /// `Collection`, `BidirectionalCollection`, or `RandomAccessCollection`; if they 
 /// do, `SQLQuery` will support those additional protocols.
 /// 
-/// -Note: Due to language limitations, `Collection`s are handled by variant types, 
+/// - Note: Due to language limitations, `Collection`s are handled by variant types, 
 ///          such as `SQLQueryCollection`. These present identical interfaces to 
 ///          `SQLQuery`, but add additional conformances.
 // 
@@ -178,7 +178,7 @@ public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAcc
 /// `Collection`, `BidirectionalCollection`, or `RandomAccessCollection`; if they 
 /// do, `SQLQuery` will support those additional protocols.
 /// 
-/// -Note: Due to language limitations, `Collection`s are handled by variant types, 
+/// - Note: Due to language limitations, `Collection`s are handled by variant types, 
 ///          such as `SQLQueryCollection`. These present identical interfaces to 
 ///          `SQLQuery`, but add additional conformances.
 // 
@@ -215,7 +215,7 @@ public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, Bidirect
 /// `Collection`, `BidirectionalCollection`, or `RandomAccessCollection`; if they 
 /// do, `SQLQuery` will support those additional protocols.
 /// 
-/// -Note: Due to language limitations, `Collection`s are handled by variant types, 
+/// - Note: Due to language limitations, `Collection`s are handled by variant types, 
 ///          such as `SQLQueryCollection`. These present identical interfaces to 
 ///          `SQLQuery`, but add additional conformances.
 // 
@@ -262,7 +262,7 @@ public struct SQLRowIterator<Client: SQLClient>: IteratorProtocol where Client.R
 /// `Collection`, `BidirectionalCollection`, or `RandomAccessCollection`; if they 
 /// do, `SQLQuery` will support those additional protocols.
 /// 
-/// -Note: Due to language limitations, `Collection`s are handled by variant types, 
+/// - Note: Due to language limitations, `Collection`s are handled by variant types, 
 ///          such as `SQLQueryCollection`. These present identical interfaces to 
 ///          `SQLQuery`, but add additional conformances.
 // 

@@ -40,7 +40,7 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
     
     /// Executes the indicated statement, returning nothing.
     /// 
-    /// -SeeAlso: `execute(_:returningIDs:as:)`
+    /// - SeeAlso: `execute(_:returningIDs:as:)`
     public func execute(_ statement: SQLStatement) throws {
         try Client.execute(statement, for: state)
     }
@@ -68,7 +68,7 @@ extension SQLConnection where C.RowStateSequence: RandomAccessCollection {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
     /// 
-    /// -Note: Depending on the interface provided by the client, a `SQLQuery` may 
+    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
     ///          actually be a `Collection`, `BidirectionalCollection`, or 
     ///          `RandomAccessCollection`. Unless you know your client supports 
     ///          `Collection` or greater, a `SQLQuery` should be treated as though 
@@ -83,7 +83,7 @@ extension SQLConnection where C.RowStateSequence: BidirectionalCollection {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
     /// 
-    /// -Note: Depending on the interface provided by the client, a `SQLQuery` may 
+    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
     ///          actually be a `Collection`, `BidirectionalCollection`, or 
     ///          `RandomAccessCollection`. Unless you know your client supports 
     ///          `Collection` or greater, a `SQLQuery` should be treated as though 
@@ -98,7 +98,7 @@ extension SQLConnection where C.RowStateSequence: Collection {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
     /// 
-    /// -Note: Depending on the interface provided by the client, a `SQLQuery` may 
+    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
     ///          actually be a `Collection`, `BidirectionalCollection`, or 
     ///          `RandomAccessCollection`. Unless you know your client supports 
     ///          `Collection` or greater, a `SQLQuery` should be treated as though 
@@ -113,7 +113,7 @@ extension SQLConnection where C.RowStateSequence: Sequence {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
     /// 
-    /// -Note: Depending on the interface provided by the client, a `SQLQuery` may 
+    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
     ///          actually be a `Collection`, `BidirectionalCollection`, or 
     ///          `RandomAccessCollection`. Unless you know your client supports 
     ///          `Collection` or greater, a `SQLQuery` should be treated as though 
