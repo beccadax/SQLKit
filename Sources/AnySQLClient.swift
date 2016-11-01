@@ -83,9 +83,7 @@ public extension _SQLClient where Self: SQLClient {
     }
 }
 
-public protocol _AnySQLClient {}
-
-public enum AnySQLClient: _AnySQLClient {
+public enum AnySQLClient {
     private static var registeredClients: [_SQLClient.Type] = []
     
     public static func register(_ client: _SQLClient.Type) {
