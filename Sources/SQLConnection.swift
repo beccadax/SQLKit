@@ -59,6 +59,7 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
     }
 }
 
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 extension SQLConnection where C.RowStateSequence: RandomAccessCollection {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
@@ -73,6 +74,7 @@ extension SQLConnection where C.RowStateSequence: RandomAccessCollection {
     }
 }
 
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 extension SQLConnection where C.RowStateSequence: BidirectionalCollection {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
@@ -87,6 +89,7 @@ extension SQLConnection where C.RowStateSequence: BidirectionalCollection {
     }
 }
 
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 extension SQLConnection where C.RowStateSequence: Collection {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
@@ -101,6 +104,7 @@ extension SQLConnection where C.RowStateSequence: Collection {
     }
 }
 
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 extension SQLConnection where C.RowStateSequence: Sequence {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.

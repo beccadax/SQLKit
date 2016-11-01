@@ -8,6 +8,7 @@
 
 import Foundation
 
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 public protocol _SQLQuery: Sequence {
     associatedtype Client: SQLClient
     
@@ -42,6 +43,7 @@ extension _SQLQuery {
     }
 }
 
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 extension _SQLQuery where Self: Sequence {
     /// Returns the only row in the result set. Throws if there are no rows or more 
     /// than one row.
@@ -59,6 +61,7 @@ extension _SQLQuery where Self: Sequence {
 }
 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 extension _SQLQuery where Self: Collection, Client.RowStateSequence: Collection, Client.RowStateSequence.Iterator.Element == Client.RowState {
     public typealias Index = Client.RowStateSequence.Index
     
@@ -94,6 +97,7 @@ extension _SQLQuery where Self: RandomAccessCollection, Client.RowStateSequence:
 }
 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAccessCollection where C.RowStateSequence: RandomAccessCollection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
@@ -109,6 +113,7 @@ public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAcc
 }
 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, BidirectionalCollection where C.RowStateSequence: BidirectionalCollection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
@@ -124,6 +129,7 @@ public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, Bidirect
 }
 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
+// WORKAROUND: #3 Swift doesn't support conditional conformance
 public struct SQLQueryCollection<C: SQLClient>: _SQLQuery, Collection where C.RowStateSequence: Collection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
