@@ -13,7 +13,7 @@ public protocol _SQLQuery: Sequence {
     
     var statement: SQLStatement { get }
     var state: Client.QueryState { get }
-    var rowStates: Client.QueryRowSequence { get }
+    var rowStates: Client.RowStateSequence { get }
 }
 
 extension _SQLQuery {
@@ -58,100 +58,100 @@ extension _SQLQuery where Self: Sequence {
     }
 }
 
-extension _SQLQuery where Self: Collection, Client.QueryRowSequence: Collection, Client.QueryRowSequence.Iterator.Element == Client.RowState {
-    public typealias Index = Client.QueryRowSequence.Index
+extension _SQLQuery where Self: Collection, Client.RowStateSequence: Collection, Client.RowStateSequence.Iterator.Element == Client.RowState {
+    public typealias Index = Client.RowStateSequence.Index
     
-    public var startIndex: Client.QueryRowSequence.Index {
+    public var startIndex: Client.RowStateSequence.Index {
         return rowStates.startIndex
     }
     
-    public var endIndex: Client.QueryRowSequence.Index {
+    public var endIndex: Client.RowStateSequence.Index {
         return rowStates.endIndex
     }
     
-    public func index(after i: Client.QueryRowSequence.Index) -> Client.QueryRowSequence.Index {
+    public func index(after i: Client.RowStateSequence.Index) -> Client.RowStateSequence.Index {
         return rowStates.index(after: i)
     }
     
-    public subscript(i: Client.QueryRowSequence.Index) -> SQLRow<Client> {
+    public subscript(i: Client.RowStateSequence.Index) -> SQLRow<Client> {
         return SQLRow(statement: statement, state: rowStates[i])
     }
 }
 
-extension _SQLQuery where Self: BidirectionalCollection, Client.QueryRowSequence: BidirectionalCollection, Client.QueryRowSequence.Iterator.Element == Client.RowState {
-    public func index(before i: Client.QueryRowSequence.Index) -> Client.QueryRowSequence.Index {
+extension _SQLQuery where Self: BidirectionalCollection, Client.RowStateSequence: BidirectionalCollection, Client.RowStateSequence.Iterator.Element == Client.RowState {
+    public func index(before i: Client.RowStateSequence.Index) -> Client.RowStateSequence.Index {
         return rowStates.index(before: i)
     }
 }
 
-extension _SQLQuery where Self: RandomAccessCollection, Client.QueryRowSequence: RandomAccessCollection, Client.QueryRowSequence.Iterator.Element == Client.RowState {
-    public func index(_ i: Client.QueryRowSequence.Index, offsetBy n: Client.QueryRowSequence.IndexDistance) -> Client.QueryRowSequence.Index {
+extension _SQLQuery where Self: RandomAccessCollection, Client.RowStateSequence: RandomAccessCollection, Client.RowStateSequence.Iterator.Element == Client.RowState {
+    public func index(_ i: Client.RowStateSequence.Index, offsetBy n: Client.RowStateSequence.IndexDistance) -> Client.RowStateSequence.Index {
         return rowStates.index(i, offsetBy: n)
     }
 }
 
-public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAccessCollection where C.QueryRowSequence: RandomAccessCollection, C.QueryRowSequence.Iterator.Element == C.RowState {
+public struct SQLQueryRandomAccessCollection<C: SQLClient>: _SQLQuery, RandomAccessCollection where C.RowStateSequence: RandomAccessCollection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
     public let statement: SQLStatement
     public var state: Client.QueryState
-    public var rowStates: Client.QueryRowSequence
+    public var rowStates: Client.RowStateSequence
     
     init(statement: SQLStatement, state: Client.QueryState) {
         self.statement = statement
         self.state = state
-        self.rowStates = Client.makeRowSequence(for: state)
+        self.rowStates = Client.makeRowStateSequence(for: state)
     }
 }
 
-public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, BidirectionalCollection where C.QueryRowSequence: BidirectionalCollection, C.QueryRowSequence.Iterator.Element == C.RowState {
+public struct SQLQueryBidirectionalCollection<C: SQLClient>: _SQLQuery, BidirectionalCollection where C.RowStateSequence: BidirectionalCollection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
     public let statement: SQLStatement
     public var state: Client.QueryState
-    public var rowStates: Client.QueryRowSequence
+    public var rowStates: Client.RowStateSequence
     
     init(statement: SQLStatement, state: Client.QueryState) {
         self.statement = statement
         self.state = state
-        self.rowStates = Client.makeRowSequence(for: state)
+        self.rowStates = Client.makeRowStateSequence(for: state)
     }
 }
 
-public struct SQLQueryCollection<C: SQLClient>: _SQLQuery, Collection where C.QueryRowSequence: Collection, C.QueryRowSequence.Iterator.Element == C.RowState {
+public struct SQLQueryCollection<C: SQLClient>: _SQLQuery, Collection where C.RowStateSequence: Collection, C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
     public let statement: SQLStatement
     public var state: Client.QueryState
-    public var rowStates: Client.QueryRowSequence
+    public var rowStates: Client.RowStateSequence
     
     init(statement: SQLStatement, state: Client.QueryState) {
         self.statement = statement
         self.state = state
-        self.rowStates = Client.makeRowSequence(for: state)
+        self.rowStates = Client.makeRowStateSequence(for: state)
     }
 }
 
-public struct SQLRowIterator<Client: SQLClient>: IteratorProtocol where Client.QueryRowSequence.Iterator.Element == Client.RowState {
+public struct SQLRowIterator<Client: SQLClient>: IteratorProtocol where Client.RowStateSequence.Iterator.Element == Client.RowState {
     fileprivate var statement: SQLStatement
-    fileprivate var rowStateIterator: Client.QueryRowSequence.Iterator
+    fileprivate var rowStateIterator: Client.RowStateSequence.Iterator
     
     public mutating func next() -> SQLRow<Client>? {
         return rowStateIterator.next().map { SQLRow(statement: statement, state: $0) }
     }
 }
 
-public struct SQLQuerySequence<C: SQLClient>: _SQLQuery, Sequence where C.QueryRowSequence.Iterator.Element == C.RowState {
+public struct SQLQuerySequence<C: SQLClient>: _SQLQuery, Sequence where C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
     public let statement: SQLStatement
     public var state: Client.QueryState
-    public var rowStates: Client.QueryRowSequence
+    public var rowStates: Client.RowStateSequence
     
     init(statement: SQLStatement, state: Client.QueryState) {
         self.statement = statement
         self.state = state
-        self.rowStates = Client.makeRowSequence(for: state)
+        self.rowStates = Client.makeRowStateSequence(for: state)
     }
     
     public func makeIterator() -> SQLRowIterator<Client> {

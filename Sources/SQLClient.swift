@@ -12,7 +12,7 @@ public protocol SQLClient: _SQLClient {
     associatedtype DatabaseState
     associatedtype ConnectionState
     associatedtype QueryState
-    associatedtype QueryRowSequence: Sequence /* where Iterator.Element == RowState */
+    associatedtype RowStateSequence: Sequence /* where Iterator.Element == RowState */
     associatedtype RowState
     
     static func supports(_ scheme: URL) -> Bool
@@ -28,7 +28,7 @@ public protocol SQLClient: _SQLClient {
     static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
     static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
     static func count(for queryState: QueryState) -> Int
-    static func makeRowSequence(for queryState: QueryState) -> QueryRowSequence
+    static func makeRowStateSequence(for queryState: QueryState) -> RowStateSequence
     
     static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value
 }

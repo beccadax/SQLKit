@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SQLDatabase<Client: SQLClient> where Client.QueryRowSequence.Iterator.Element == Client.RowState {
+public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Iterator.Element == Client.RowState {
     public static func supports(_ url: URL) -> Bool {
         return Client.supports(url)
     }
@@ -23,7 +23,7 @@ public struct SQLDatabase<Client: SQLClient> where Client.QueryRowSequence.Itera
     }
 }
 
-extension Pool where Resource: _SQLConnection, Resource.Client.QueryRowSequence.Iterator.Element == Resource.Client.RowState {
+extension Pool where Resource: _SQLConnection, Resource.Client.RowStateSequence.Iterator.Element == Resource.Client.RowState {
     public convenience init(database: SQLDatabase<Resource.Client>, maximum: Int = 10, timeout: DispatchTimeInterval = .seconds(10)) {
         self.init(maximum: maximum, timeout: timeout) {
             return try database.makeConnection() as! Resource

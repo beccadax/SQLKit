@@ -12,7 +12,7 @@ public protocol _SQLConnection {
     associatedtype Client: SQLClient
 }
 
-public final class SQLConnection<C: SQLClient>: _SQLConnection where C.QueryRowSequence.Iterator.Element == C.RowState {
+public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     public var state: Client.ConnectionState
     
@@ -34,25 +34,25 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.QueryRowS
     }
 }
 
-extension SQLConnection where C.QueryRowSequence: RandomAccessCollection {
+extension SQLConnection where C.RowStateSequence: RandomAccessCollection {
     public func query(_ statement: SQLStatement) throws -> SQLQueryRandomAccessCollection<Client> {
         return .init(statement: statement, state: try makeQueryState(statement))
     }
 }
 
-extension SQLConnection where C.QueryRowSequence: BidirectionalCollection {
+extension SQLConnection where C.RowStateSequence: BidirectionalCollection {
     public func query(_ statement: SQLStatement) throws -> SQLQueryBidirectionalCollection<Client> {
         return .init(statement: statement, state: try makeQueryState(statement))
     }
 }
 
-extension SQLConnection where C.QueryRowSequence: Collection {
+extension SQLConnection where C.RowStateSequence: Collection {
     public func query(_ statement: SQLStatement) throws -> SQLQueryCollection<Client> {
         return .init(statement: statement, state: try makeQueryState(statement))
     }
 }
 
-extension SQLConnection where C.QueryRowSequence: Sequence {
+extension SQLConnection where C.RowStateSequence: Sequence {
     public func query(_ statement: SQLStatement) throws -> SQLQuerySequence<Client> {
         return .init(statement: statement, state: try makeQueryState(statement))
     }

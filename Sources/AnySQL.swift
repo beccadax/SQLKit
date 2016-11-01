@@ -21,7 +21,7 @@ public protocol _SQLClient {
     static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
     static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
     static func count(for queryState: AnySQL.State) -> Int
-    static func makeRowSequence(for queryState: AnySQL.State) -> AnySQL.QueryRowSequence
+    static func makeRowStateSequence(for queryState: AnySQL.State) -> AnySQL.RowStateSequence
     
     static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State, statement: SQLStatement) throws -> Value
 }
@@ -69,12 +69,12 @@ public extension _SQLClient where Self: SQLClient {
         return count(for: realQueryState)
     }
     
-    static func makeRowSequence(for queryState: AnySQL.State) -> AnySQL.QueryRowSequence {
+    static func makeRowStateSequence(for queryState: AnySQL.State) -> AnySQL.RowStateSequence {
         let realQueryState = queryState.base as! QueryState
-        let sequence = makeRowSequence(for: realQueryState)
+        let sequence = makeRowStateSequence(for: realQueryState)
         let anySequence = AnySequence<Any>(sequence.lazy.map { $0 as Any })
         
-        return AnySQL.QueryRowSequence(client: self, base: anySequence)
+        return AnySQL.RowStateSequence(client: self, base: anySequence)
     }
     
     static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State, statement: SQLStatement) throws -> Value {
@@ -111,7 +111,7 @@ extension AnySQL: SQLClient {
         public var base: Any
     }
     
-    public struct QueryRowSequence: Sequence {
+    public struct RowStateSequence: Sequence {
         fileprivate var client: _SQLClient.Type
         public var base: AnySequence<Any>
         
@@ -162,8 +162,8 @@ extension AnySQL: SQLClient {
         return queryState.client.count(for: queryState)
     }
     
-    public static func makeRowSequence(for queryState: State) -> QueryRowSequence {
-        return queryState.client.makeRowSequence(for: queryState)
+    public static func makeRowStateSequence(for queryState: State) -> RowStateSequence {
+        return queryState.client.makeRowStateSequence(for: queryState)
     }
     
     public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: State, statement: SQLStatement) throws -> Value {

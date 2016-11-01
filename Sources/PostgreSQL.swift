@@ -17,10 +17,10 @@ public enum PostgreSQL: SQLClient {
     public typealias ConnectionState = PGConnection
     public typealias QueryState = PGResult
     
-    public struct QueryRowSequence: RandomAccessCollection {
+    public struct RowStateSequence: RandomAccessCollection {
         let queryState: QueryState
         
-        public typealias Indices = DefaultRandomAccessIndices<QueryRowSequence>
+        public typealias Indices = DefaultRandomAccessIndices<RowStateSequence>
         
         public var startIndex: Int {
             return 0
@@ -85,7 +85,7 @@ public enum PostgreSQL: SQLClient {
         let result = try makeQueryState(statementWithReturning, for: connectionState)
         
         let idKey = try columnKey(forName: idColumnName, as: idType, for: result, statement: statementWithReturning)
-        return AnySequence(try QueryRowSequence(queryState: result).map { try value(for: idKey, for: $0, statement: statementWithReturning) }) 
+        return AnySequence(try RowStateSequence(queryState: result).map { try value(for: idKey, for: $0, statement: statementWithReturning) }) 
     }
     
     public static func makeQueryState(_ statement: SQLStatement, for connectionState: ConnectionState) throws -> QueryState {
@@ -118,8 +118,8 @@ public enum PostgreSQL: SQLClient {
         return queryState.numTuples()
     }
     
-    public static func makeRowSequence(for queryState: QueryState) -> QueryRowSequence {
-        return QueryRowSequence(queryState: queryState)
+    public static func makeRowStateSequence(for queryState: QueryState) -> RowStateSequence {
+        return RowStateSequence(queryState: queryState)
     }
     
     public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value {
