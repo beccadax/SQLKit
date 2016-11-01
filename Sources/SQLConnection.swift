@@ -110,7 +110,7 @@ extension SQLConnection where C.RowStateSequence: Sequence {
     ///          `RandomAccessCollection`. Unless you know your client supports 
     ///          `Collection` or greater, a `SQLQuery` should be treated as though 
     ///          it can only be iterated once.
-    public func query(_ statement: SQLStatement) throws -> SQLQuerySequence<Client> {
+    public func query(_ statement: SQLStatement) throws -> SQLQuery<Client> {
         return .init(statement: statement, state: try makeQueryState(statement))
     }
 }

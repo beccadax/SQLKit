@@ -149,7 +149,7 @@ public struct SQLRowIterator<Client: SQLClient>: IteratorProtocol where Client.R
 }
 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
-public struct SQLQuerySequence<C: SQLClient>: _SQLQuery, Sequence where C.RowStateSequence.Iterator.Element == C.RowState {
+public struct SQLQuery<C: SQLClient>: _SQLQuery, Sequence where C.RowStateSequence.Iterator.Element == C.RowState {
     public typealias Client = C
     
     public let statement: SQLStatement
