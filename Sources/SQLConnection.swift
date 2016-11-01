@@ -48,12 +48,17 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
     /// Executes the indicated statement, returning the IDs of the rows created by 
     /// it.
     /// 
-    /// -Note: To receive the IDs, pass the ID column's name in the `idColumnName`
-    ///          parameter and its type in the `idType` parameter. There is no 
-    ///          standard SQL mechanism to retrieve values from newly inserted rows, 
-    ///          so the client will use database-specific features to do so. These 
-    ///          features might not actually use the `idColumnName`, and they might 
-    ///          only work on AUTOINCREMENT (or similar) columns.
+    /// Because there are no features in the SQL standard to perform this task, 
+    /// `execute(_:returningIDs:as:)` is implemented using database-specific 
+    /// features. It should only be used with `AUTOINCREMENT` or similar columns; 
+    /// it is not guaranteed to work with anything else.
+    /// 
+    /// - Parameter statement: The statement to execute.
+    /// 
+    /// - Parameter idColumnName: The name of the column from which to extract 
+    ///                the ID. Some clients may ignore this name.
+    /// 
+    /// - Parameter idType: The type of the ID column.
     public func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type) throws -> AnySequence<Value> {
         return try Client.execute(statement, returningIDs: idColumnName, as: idType, for: state)
     }
