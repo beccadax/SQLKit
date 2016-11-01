@@ -141,10 +141,10 @@ extension SQLStatement: ExpressibleByStringInterpolation {
     
     public init<T>(stringInterpolationSegment expr: T) {
         switch expr as Any? {
-        case let substatement as SQLStatementConvertible:
-            self.init(substatement)
         case let value as SQLValue?:
             self.init(parameter: value)
+        case let substatement as SQLStatementConvertible:
+            self.init(substatement)
         default:
             self.init(parameter: String(describing: expr))
         }
