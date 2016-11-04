@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 /// Conforming types can be implicitly converted into `SQLStatement`s, and 
 /// interpolating them will cause them to be concatenated with the surrounding 
 /// statement, rather than passed as a parameter.

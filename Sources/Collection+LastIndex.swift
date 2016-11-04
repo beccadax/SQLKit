@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 extension Collection {
     func lastIndex(where predicate: (Iterator.Element) throws -> Bool) rethrows -> Index? {
         var lastIndex: Index? = nil

@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 /// Represents the results of a query.
 /// 
 /// A `SQLQuery` has two purposes. One is to access the instances representing 

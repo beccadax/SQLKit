@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 /// Represents a column in a `SQLQuery`; can be used to access that column in a 
 /// `SQLRow`.
 /// 

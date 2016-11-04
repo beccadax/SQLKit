@@ -6,7 +6,6 @@
 //
 //
 
-import Foundation
 import Dispatch
 
 public enum PoolError: Error {

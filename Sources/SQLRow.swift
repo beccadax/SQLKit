@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 /// Represents a row of data within a `SQLQuery`.
 /// 
 /// A `SQLRow` contains one or more encapsulated values, which you can retrieve by 

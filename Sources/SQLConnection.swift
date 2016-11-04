@@ -6,8 +6,6 @@
 //
 //
 
-import Foundation
-
 /// Implementation detail used to detect SQLConnections in generics. Do not use.
 // WORKAROUND: #2 Swift doesn't support same-type requirements on generics
 public protocol _SQLConnection {
