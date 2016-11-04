@@ -65,70 +65,6 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
         return try Client.execute(statement, returningIDs: idColumnName, as: idType, for: state)
     }
     
-    fileprivate func makeQueryState(_ statement: SQLStatement) throws -> Client.QueryState {
-        return try Client.makeQueryState(statement, for: state)
-    }
-}
-
-// WORKAROUND: #3 Swift doesn't support conditional conformance
-extension SQLConnection where C.RowStateSequence: RandomAccessCollection {
-    /// Executes the indicated statement, returning a `Sequence` of rows returned by  
-    /// the query. See `SQLQuery` for details on the return value.
-    /// 
-    /// - Parameter statement: The statement to execute.
-    /// 
-    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
-    ///          actually be a `Collection`, `BidirectionalCollection`, or 
-    ///          `RandomAccessCollection`. Unless you know your client supports 
-    ///          `Collection` or greater, a `SQLQuery` should be treated as though 
-    ///          it can only be iterated once.
-    /// 
-    /// - SeeAlso: `execute(_:)`
-    public func query(_ statement: SQLStatement) throws -> SQLQueryRandomAccessCollection<Client> {
-        return .init(statement: statement, state: try makeQueryState(statement))
-    }
-}
-
-// WORKAROUND: #3 Swift doesn't support conditional conformance
-extension SQLConnection where C.RowStateSequence: BidirectionalCollection {
-    /// Executes the indicated statement, returning a `Sequence` of rows returned by  
-    /// the query. See `SQLQuery` for details on the return value.
-    /// 
-    /// - Parameter statement: The statement to execute.
-    /// 
-    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
-    ///          actually be a `Collection`, `BidirectionalCollection`, or 
-    ///          `RandomAccessCollection`. Unless you know your client supports 
-    ///          `Collection` or greater, a `SQLQuery` should be treated as though 
-    ///          it can only be iterated once.
-    /// 
-    /// - SeeAlso: `execute(_:)`
-    public func query(_ statement: SQLStatement) throws -> SQLQueryBidirectionalCollection<Client> {
-        return .init(statement: statement, state: try makeQueryState(statement))
-    }
-}
-
-// WORKAROUND: #3 Swift doesn't support conditional conformance
-extension SQLConnection where C.RowStateSequence: Collection {
-    /// Executes the indicated statement, returning a `Sequence` of rows returned by  
-    /// the query. See `SQLQuery` for details on the return value.
-    /// 
-    /// - Parameter statement: The statement to execute.
-    /// 
-    /// - Note: Depending on the interface provided by the client, a `SQLQuery` may 
-    ///          actually be a `Collection`, `BidirectionalCollection`, or 
-    ///          `RandomAccessCollection`. Unless you know your client supports 
-    ///          `Collection` or greater, a `SQLQuery` should be treated as though 
-    ///          it can only be iterated once.
-    /// 
-    /// - SeeAlso: `execute(_:)`
-    public func query(_ statement: SQLStatement) throws -> SQLQueryCollection<Client> {
-        return .init(statement: statement, state: try makeQueryState(statement))
-    }
-}
-
-// WORKAROUND: #3 Swift doesn't support conditional conformance
-extension SQLConnection where C.RowStateSequence: Sequence {
     /// Executes the indicated statement, returning a `Sequence` of rows returned by  
     /// the query. See `SQLQuery` for details on the return value.
     /// 
@@ -142,6 +78,6 @@ extension SQLConnection where C.RowStateSequence: Sequence {
     /// 
     /// - SeeAlso: `execute(_:)`
     public func query(_ statement: SQLStatement) throws -> SQLQuery<Client> {
-        return .init(statement: statement, state: try makeQueryState(statement))
+        return .init(statement: statement, state: try Client.makeQueryState(statement, for: state))
     }
 }
