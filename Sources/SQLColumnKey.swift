@@ -25,6 +25,8 @@ import Foundation
 /// `AnySQLColumnKey` is a protocol which both types conform to.
 /// 
 /// - Warning: Don't conform your own types to `AnySQLColumnKey`.
+// 
+// WORKAROUND: #5 Swift won't allow existentials to be made Equatable
 public protocol AnySQLColumnKey {
     /// The index of the column.
     var index: Int { get }
@@ -130,6 +132,7 @@ public struct SQLNullableColumnKey<Value: SQLValue>: AnySQLColumnKey, Hashable {
     }
 }
 
+// WORKAROUND: #5 Swift won't allow existentials to be made Equatable
 extension AnyHashable {
     /// Converts an `AnySQLColumnKey` into an `AnyHashable` value. All 
     /// `AnySQLColumnKey`s are `Hashable`, but this fact isn't expressed in the 
@@ -139,10 +142,12 @@ extension AnyHashable {
     }
 }
 
+// WORKAROUND: #5 Swift won't allow existentials to be made Equatable
 public func == (lhs: AnySQLColumnKey, rhs: AnySQLColumnKey) -> Bool {
     return AnyHashable(lhs) == AnyHashable(rhs)
 }
 
+// WORKAROUND: #5 Swift won't allow existentials to be made Equatable
 public func != (lhs: AnySQLColumnKey, rhs: AnySQLColumnKey) -> Bool {
     return AnyHashable(lhs) != AnyHashable(rhs)
 }
