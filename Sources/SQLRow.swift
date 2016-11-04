@@ -54,7 +54,7 @@ extension SQLRow {
         do {
             return try value(for: nonnullKey)
         }
-        catch SQLError.columnNull(AnySQLColumnKey(nonnullKey), statement: statement) {
+        catch SQLError.columnNull(nonnullKey, statement: statement) {
             return nil
         }
     }

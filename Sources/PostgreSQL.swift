@@ -124,7 +124,7 @@ public enum PostgreSQL: SQLClient {
     
     public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value {
         if rowState.result.fieldIsNull(tupleIndex: rowState.rowIndex, fieldIndex: key.index) {
-            throw SQLError.columnNull(AnySQLColumnKey(key), statement: statement)
+            throw SQLError.columnNull(key, statement: statement)
         }
         
         guard let string = rowState.result.getFieldString(tupleIndex: rowState.rowIndex, fieldIndex: key.index) else {
@@ -132,7 +132,7 @@ public enum PostgreSQL: SQLClient {
         }
         
         guard let value = Value(sqlLiteral: string) else {
-            throw SQLError.columnNotConvertible(AnySQLColumnKey(key), sqlLiteral: string, statement: statement)
+            throw SQLError.columnNotConvertible(key, sqlLiteral: string, statement: statement)
         }
         
         return value
