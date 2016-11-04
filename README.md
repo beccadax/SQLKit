@@ -51,8 +51,8 @@ let users = try db.query("SELECT * FROM users \(whereClause)")
 let idKey = try users.columnKey(forName: "id", as: Int.self)
 let nameKey = try users.columnKey(forName: "name", as: String?.self)
 
-// 2. Use it as a Sequence to access the rows:
-for user in users {
+// 2. Access the rows through its iterator:
+for user in users.rowIterator {
   let id = try user.value(for: idKey)
   let name = try user.value(for: nameKey) ?? "[no name]"
   print("\(id)\t\(name)")
