@@ -102,14 +102,14 @@ public enum PostgreSQL: SQLClient {
     
     public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         guard let index = queryState.columnIndex(for: name) else {
-            throw SQLError.columnMissing(AnySQLColumnKey(index: nil, name: name, valueType: nil, nullable: false), statement: statement)
+            throw SQLError.columnMissing(.name(name), statement: statement)
         }
         return SQLColumnKey(index: index, name: name)
     }
     
     public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         guard let name = queryState.fieldName(index: index) else {
-            throw SQLError.columnMissing(AnySQLColumnKey(index: index, name: nil, valueType: nil, nullable: false), statement: statement)
+            throw SQLError.columnMissing(.index(index), statement: statement)
         }
         return SQLColumnKey(index: index, name: name)
     }
@@ -128,7 +128,7 @@ public enum PostgreSQL: SQLClient {
         }
         
         guard let string = rowState.result.getFieldString(tupleIndex: rowState.rowIndex, fieldIndex: key.index) else {
-            throw SQLError.columnMissing(AnySQLColumnKey(key), statement: statement)
+            throw SQLError.columnMissing(.name(key.name), statement: statement)
         }
         
         guard let value = Value(sqlLiteral: string) else {
