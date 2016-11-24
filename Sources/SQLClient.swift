@@ -58,7 +58,17 @@ public protocol SQLClient: _SQLClient {
     /// The state backing a `SQLRow` instance.
     associatedtype RowState
     
-    /// Returns true if this `SQLClient` can access `url`.
+    /// Returns true if this `SQLClient` is the appropriate one to handle `url`.
+    /// 
+    /// `supports(_:)` may return `true` even if connecting to the URL will fail.
+    /// The primary goal of a `supports(_:)` implementation is to be reasonably 
+    /// certain that this `SQLClient`, as opposed to others which might be in use, 
+    /// is the one intended for the URL in question. Depending on the database 
+    /// engine, this may be handled purely by examining the URL itself, looking for 
+    /// (for instance) a unique `scheme`. On the other hand, if the URL uses a 
+    /// common scheme like `file` or `https` and has no other distinguishing 
+    /// features, `supports(_:)` may need to actually examine the resource 
+    /// represented by the URL to ensure it's supported.
     /// 
     /// - SeeAlso: `SQLDatabase.Type.supports(_:)`
     static func supports(_ url: URL) -> Bool

@@ -20,7 +20,15 @@ import Foundation
 // 
 // WORKAROUND: #1 Swift doesn't support `where` clauses on associated types
 public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Iterator.Element == Client.RowState {
-    /// Returns `true` if this type of database can connect to the indicated URL.
+    /// Returns `true` if this type of database is designed to connect to `url`.
+    /// 
+    /// `supports(_:)` may return `true` even if the database cannot be reached, 
+    /// doesn't exist, or `url` is ill-formed. What this method indicates is that, 
+    /// *if* `url` is to work with any type, it ought to work with this type. 
+    /// If a connection error occurs, it will be indicated by `makeConnection()` 
+    /// throwing an error.
+    /// 
+    /// - SeeAlso: `SQLDatabase.init(url:)`, `SQLDatabase.makeConnection()`
     public static func supports(_ url: URL) -> Bool {
         return Client.supports(url)
     }
