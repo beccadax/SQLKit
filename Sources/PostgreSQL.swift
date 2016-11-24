@@ -9,14 +9,36 @@
 import Foundation
 import PostgreSQL
 
+/// A client for Postgres databases. Like all `SQLClient`s, you do not use this 
+/// type directly, but rather you create a `SQLDatabase<PostgreSQL>` and derive 
+/// other instances from it.
+/// 
+/// `PostgreSQL` supports connecting to a database using the `postgres` or 
+/// `postgresql` schemes and [the format accepted by `libpq`'s 
+/// `PQconnectdb(_:)`](https://www.postgresql.org/docs/9.4/static/libpq-connect.html#AEN41287).
+/// 
+/// `PostgreSQL.ConnectionState` and `PostgreSQL.QueryState` expose types from 
+/// the library this client wraps, so you can use them to perform operations not 
+/// directly supported by `SQL`.
 public enum PostgreSQL: SQLClient {
+    /// The type of `SQLDatabase<PostgreSQL>.state`.
     public struct DatabaseState {
         let url: URL
     }
     
+    /// The type of `SQLConnection<PostgreSQL>.state`. This is a `PGConnection` 
+    /// instance, which you can use directly if you need low-level access to the 
+    /// database.
     public typealias ConnectionState = PGConnection
+    
+    /// The type of `SQLQuery<PostgreSQL>.state`. This is a `PGResult` instance, 
+    /// which you can use directly if you need low-level access to the query results.
     public typealias QueryState = PGResult
     
+    /// The type backing a `SQLRowIterator<PostgreSQL>` or 
+    /// `SQLRowCollection<PostgreSQL>`. Because this type conforms to 
+    /// `RandomAccessCollection`, you can access the rows returned by a query in 
+    /// any order and as many times as you wish.
     public struct RowStateSequence: RandomAccessCollection {
         let queryState: QueryState
         
@@ -47,6 +69,7 @@ public enum PostgreSQL: SQLClient {
         }
     }
     
+    /// The type of `SQLRow<PostgreSQL>.state`.
     public struct RowState {
         let result: PGResult
         let rowIndex: Int
