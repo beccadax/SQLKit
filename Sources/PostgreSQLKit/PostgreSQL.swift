@@ -7,6 +7,7 @@
 //
 
 import Foundation
+@_exported import SQLKit
 import PostgreSQL
 
 /// A client for Postgres databases. Like all `SQLClient`s, you do not use this 
