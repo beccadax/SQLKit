@@ -19,7 +19,7 @@ import PostgreSQL
 /// 
 /// `PostgreSQL.ConnectionState` and `PostgreSQL.QueryState` expose types from 
 /// the library this client wraps, so you can use them to perform operations not 
-/// directly supported by `SQL`.
+/// directly supported by `SQLKit`.
 public enum PostgreSQL: SQLClient {
     /// The type of `SQLDatabase<PostgreSQL>.state`.
     public struct DatabaseState {

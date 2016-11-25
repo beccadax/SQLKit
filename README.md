@@ -1,6 +1,6 @@
-# SQL for Swift
+# SQLKit for Swift
 
-`SQL` is a SQL client abstraction layer for Swift. It's designed to permit access to any 
+`SQLKit` is a SQL client abstraction layer for Swift. It's designed to permit access to any 
 SQL engine through the same uniform, convenient interface.
 
 `SQL` 0.0.1 is a very preliminary proof-of-concept release. It includes no tests or 
@@ -12,7 +12,7 @@ and it includes some very useful features.
 
 ```swift
 import Foundation
-import SQL
+import SQLKit
 
 // Information we'll need later.
 let (dbURL, userIDs): (URL, [Int]) = getParameters()
