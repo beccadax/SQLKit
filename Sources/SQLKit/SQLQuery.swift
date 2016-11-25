@@ -123,7 +123,7 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value?.Type) throws -> SQLNullableColumnKey<Value> {
         let nonnull = try columnKey(forName: name, as: Value.self)
-        return SQLNullableColumnKey(index: nonnull.index, name: nonnull.name)
+        return SQLNullableColumnKey(nonnull)
     }
     
     /// Returns a key for a column at the given index and with the given type.
@@ -139,7 +139,7 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(at index: Int, as valueType: Value?.Type) throws -> SQLNullableColumnKey<Value> {
         let nonnull = try columnKey(at: index, as: Value.self)
-        return SQLNullableColumnKey(index: nonnull.index, name: nonnull.name)
+        return SQLNullableColumnKey(nonnull)
     }
 }
 

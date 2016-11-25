@@ -107,21 +107,22 @@ public struct SQLColumnKey<Value: SQLValue>: AnySQLColumnKey, Hashable {
 /// which are represented with `Optional` types, are represented by 
 /// `SQLNullableColumnKey`.
 public struct SQLNullableColumnKey<Value: SQLValue>: AnySQLColumnKey, Hashable {
+    public let nonnullColumnKey: SQLColumnKey<Value>
+    
     /// The index of the column.
-    public let index: Int
+    public var index: Int { return nonnullColumnKey.index }
     
     /// The name of the column.
-    public let name: String
+    public var name: String { return nonnullColumnKey.name }
     
     /// Creates a column key with the indicated name and index.
-    public init(index: Int, name: String) {
-        self.index = index
-        self.name = name
+    public init(_ key: SQLColumnKey<Value>) {
+        self.nonnullColumnKey = key
     }
     
     /// The type of the column.
     public var valueType: Any.Type {
-        return Value.self
+        return nonnullColumnKey.valueType
     }
     
     /// Whether the column's value is permitted to be `NULL`.

@@ -48,12 +48,14 @@ extension SQLRow {
     ///                     are created by calling the `columnKey(forName:as:)` or 
     ///                     `columnKey(at:as:)` methods on the query.
     public func value<Value: SQLValue>(for key: SQLNullableColumnKey<Value>) throws -> Value? {
-        let nonnullKey = SQLColumnKey<Value>(index: key.index, name: key.name)
         do {
-            return try value(for: nonnullKey)
+            return try value(for: key.nonnullColumnKey)
         }
-        catch SQLError.columnNull(nonnullKey, statement: statement) {
+        catch SQLError.columnNull(key.nonnullColumnKey, statement: statement) {
             return nil
+        }
+        catch SQLError.columnNotConvertible(key.nonnullColumnKey, let sqlLiteral, let statement) {
+            throw SQLError.columnNotConvertible(key, sqlLiteral: sqlLiteral, statement: statement)
         }
     }
 }
