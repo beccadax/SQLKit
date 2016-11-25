@@ -3,10 +3,10 @@
 `SQLKit` is a SQL client abstraction layer for Swift. It's designed to permit access to any 
 SQL engine through the same uniform, convenient interface.
 
-`SQL` 0.0.1 is a very preliminary proof-of-concept release. It includes no tests or 
-documentation, and the only included SQL client, PostgreSQL, builds within the `SQL` module. 
-Important work still needs to be done, particularly on handling of values. But it does work, 
-and it includes some very useful features.
+`SQLKit` 0.0.2 is a preliminary proof-of-concept release. It includes no tests, and the only 
+included SQL client, PostgreSQL, builds within the `SQL` module. Important work still needs 
+to be done, particularly on handling of values. But it does work, and it includes some very 
+useful features.
 
 # Synopsis
 
@@ -15,7 +15,7 @@ import Foundation
 import SQLKit
 
 // Information we'll need later.
-let (dbURL, userIDs): (URL, [Int]) = getParameters()
+let (dbURL, userIDs): (URL, [Int]) = ...
 
 // A SQLDatabase represents connection settings to talk to a database.
 // (Currently just the client and URL.)
@@ -71,3 +71,13 @@ asshat.
 # Copyright
 
 (C) 2016 Groundbreaking Software. Distributed under the MIT License.
+
+# Version history
+
+* SQLKit 0.0.2 (newly renamed) adds documentation to most public types and members, 
+  redesigns the way you access the rows in a `SQLQuery`, and nips and tucks the APIs 
+  in various ways. Although this is a point release, it includes breaking changes.
+  0.0 releases are like that.
+
+* SQL 0.0.1 is a very preliminary proof-of-concept release. It includes no tests or 
+  documentation, and the only included SQL client, PostgreSQL, builds within the `SQL` module.
