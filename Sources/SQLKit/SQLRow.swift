@@ -32,6 +32,8 @@ public struct SQLRow<Client: SQLClient> {
     /// - Parameter key: The key for the column whose value you want to read. Keys 
     ///                     are created by calling the `columnKey(forName:as:)` or 
     ///                     `columnKey(at:as:)` methods on the query.
+    /// 
+    /// - Precondition: `key` must have come from the same `SQLQuery` as `self`.
     public func value<Value: SQLValue>(for key: SQLColumnKey<Value>) throws -> Value {
         return try Client.value(for: key, for: state, statement: statement)
     }
@@ -47,6 +49,8 @@ extension SQLRow {
     /// - Parameter key: The key for the column whose value you want to read. Keys 
     ///                     are created by calling the `columnKey(forName:as:)` or 
     ///                     `columnKey(at:as:)` methods on the query.
+    /// 
+    /// - Precondition: `key` must have come from the same `SQLQuery` as `self`.
     public func value<Value: SQLValue>(for key: SQLNullableColumnKey<Value>) throws -> Value? {
         do {
             return try value(for: key.nonnullColumnKey)

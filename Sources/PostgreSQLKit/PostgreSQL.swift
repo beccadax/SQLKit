@@ -152,7 +152,7 @@ public enum PostgreSQL: SQLClient {
         }
         
         guard let string = rowState.result.getFieldString(tupleIndex: rowState.rowIndex, fieldIndex: key.index) else {
-            throw SQLError.columnMissing(.name(key.name), statement: statement)
+            preconditionFailure("The column \(key) is not in the statement '\(statement)'")
         }
         
         guard let value = Value(sqlLiteral: string) else {
