@@ -72,3 +72,35 @@ public enum SQLError: Error {
     /// or potentially by `SQLQuery.columnKey`.
     case columnNotConvertible(AnySQLColumnKey, sqlLiteral: String, statement: SQLStatement, underlying: Error?)
 }
+
+extension SQLError {
+    public var statement: SQLStatement? {
+        switch self {
+        case .executionFailed(_, let statement, _), .noRecordsFound(let statement), .extraRecordsFound(let statement), .columnMissing(_, let statement), .columnNull(_, let statement), .columnNotConvertible(_, _, let statement, _):
+            return statement
+            
+        default:
+            return nil
+        }
+    }
+    
+    public var columnKey: AnySQLColumnKey? {
+        switch self {
+        case .columnNull(let key, _), .columnNotConvertible(let key, _, _, _):
+            return key
+            
+        default:
+            return nil
+        }
+    }
+    
+    public var underlying: Error? {
+        switch self {
+        case .connectionFailed(_, let underlying), .executionFailed(_, let underlying), .columnNotConvertible(_, _, _, let underlying):
+            return underlying
+            
+        default:
+            return nil
+        }
+    }
+}
