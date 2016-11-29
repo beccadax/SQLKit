@@ -22,6 +22,9 @@ import Foundation
 ///     AnySQL.register(SQLite.self)
 ///     
 ///     let db = SQLDatabase<AnySQL>(url: url)
+/// 
+/// The most recently registered clients take priority, so you can always 
+/// re-register a client to move it up the list.
 public enum AnySQL {
     private static var registeredClients: [_SQLClient.Type] = []
     
