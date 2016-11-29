@@ -110,7 +110,7 @@ public protocol SQLClient: _SQLClient {
     /// - Throws: If a column with that name does not exist or is of the wrong type.
     /// 
     /// - Warning: This method should *not* throw if the column is nullable but the 
-    ///              provided type is non-otpional. The `SQLNullableColumnKey` calls 
+    ///              provided type is non-optional. The `SQLNullableColumnKey` calls 
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(forName:as:)`
@@ -174,5 +174,5 @@ public protocol SQLClient: _SQLClient {
     ///          `nil`.
     /// 
     /// - SeeAlso: `SQLRow.value(for:)`
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value?
 }

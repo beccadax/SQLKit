@@ -74,7 +74,7 @@ extension PostgreSQL: SQLClient {
         let result = try makeQueryState(statementWithReturning, for: connectionState)
         
         let idKey = try columnKey(forName: idColumnName, as: idType, for: result, statement: statementWithReturning)
-        return AnySequence(try result.tuples.map { try value(for: idKey, for: $0, statement: statementWithReturning) }) 
+        return AnySequence(try result.tuples.flatMap { try value(for: idKey, for: $0, statement: statementWithReturning) }) 
     }
     
     public static func makeQueryState(_ statement: SQLStatement, for connectionState: ConnectionState) throws -> QueryState {
@@ -111,9 +111,9 @@ extension PostgreSQL: SQLClient {
         return queryState.tuples
     }
     
-    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value {
+    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value? {
         guard let string = rowState[key.index] else {
-            throw SQLError.columnNull(key, statement: statement)
+            return nil
         }
         
         guard let value = Value(sqlLiteral: string) else {
