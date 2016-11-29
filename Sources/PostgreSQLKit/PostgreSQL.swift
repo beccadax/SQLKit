@@ -117,7 +117,7 @@ extension PostgreSQL: SQLClient {
         }
         
         guard let value = Value(sqlLiteral: string) else {
-            throw SQLError.columnNotConvertible(key, sqlLiteral: string, statement: statement, underlying: nil)
+            throw SQLValueError.valueNotConvertible(sqlLiteral: string, underlying: nil) 
         }
         
         return value

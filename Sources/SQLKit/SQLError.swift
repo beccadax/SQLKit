@@ -69,20 +69,32 @@ public enum SQLError: Error {
     /// The specified column was not found. Thrown by `SQLQuery.columnKey`.
     case columnMissing(ColumnSpecifier, statement: SQLStatement)
     
-    /// The column was null, but the column key doesn't allow that. Thrown by 
-    /// `SQLRow.value(for:)`.
-    case columnNull(AnySQLColumnKey, statement: SQLStatement)
+    /// The value in the column did not match the type required by the key. The 
+    /// `underlying` error, which may or may not be a `SQLValueError`, explains 
+    /// the reason.
+    /// 
+    /// May be thrown by `SQLRow.value(for:)` or the `SQLQuery.columnKey` methods.
+    case valueInvalid(underlying: Error, key: AnySQLColumnKey, statement: SQLStatement)
+}
+
+/// Errors which describe common reasons a `SQLError.columnInvalid` may be thrown.
+/// 
+/// `valueNotConvertible` is often thrown by `SQLClient.value(for:for:)` 
+/// implementations, and in fact is the only `SQLKit` error which should be directly 
+/// thrown by a `SQLClient`.
+public enum SQLValueError: Error {
+    /// The value was `NULL`, but it was accessed using a non-nullable `SQLColumnKey`.
+    case valueNull
     
-    /// The column was of a type that didn't match the column key, or attempting 
-    /// to convert the specific value failed. May be thrown by `SQLRow.value(for:)` 
-    /// or potentially by `SQLQuery.columnKey`.
-    case columnNotConvertible(AnySQLColumnKey, sqlLiteral: String, statement: SQLStatement, underlying: Error?)
+    /// The value could not be converted to the type the column key indicates it 
+    /// ought to be.
+    case valueNotConvertible(sqlLiteral: String?, underlying: Error?)
 }
 
 extension SQLError {
     public var statement: SQLStatement? {
         switch self {
-        case .executionFailed(_, let statement), .noRecordsFound(let statement), .extraRecordsFound(let statement), .columnMissing(_, let statement), .columnNull(_, let statement), .columnNotConvertible(_, _, let statement, _):
+        case .executionFailed(_, let statement), .noRecordsFound(let statement), .extraRecordsFound(let statement), .columnMissing(_, let statement), .valueInvalid(_, _, let statement):
             return statement
             
         default:
@@ -92,7 +104,7 @@ extension SQLError {
     
     public var columnKey: AnySQLColumnKey? {
         switch self {
-        case .columnNull(let key, _), .columnNotConvertible(let key, _, _, _):
+        case .valueInvalid(_, let key, _):
             return key
             
         default:
@@ -102,7 +114,7 @@ extension SQLError {
     
     public var underlying: Error? {
         switch self {
-        case .connectionFailed(let underlying), .executionFailed(let underlying, _), .columnNotConvertible(_, _, _, let underlying?):
+        case .connectionFailed(let underlying), .executionFailed(let underlying, _), .valueInvalid(let underlying, _, _):
             return underlying
             
         default:
