@@ -25,7 +25,7 @@
 /// - Warning: Don't conform your own types to `AnySQLColumnKey`.
 // 
 // WORKAROUND: #5 Swift won't allow existentials to be made Equatable
-public protocol AnySQLColumnKey {
+public protocol AnySQLColumnKey: CustomStringConvertible {
     /// The index of the column.
     var index: Int { get }
     
@@ -37,6 +37,12 @@ public protocol AnySQLColumnKey {
     
     /// Whether the column's value is permitted to be `NULL`.
     var nullable: Bool { get }
+}
+
+extension AnySQLColumnKey {
+    public var description: String {
+        return "\"\(name)\" (\(index))"
+    }
 }
 
 extension AnySQLColumnKey where Self: Equatable {
