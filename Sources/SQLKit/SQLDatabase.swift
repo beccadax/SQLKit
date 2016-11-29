@@ -8,6 +8,20 @@
 
 import Foundation
 
+func withErrorsPackaged<R>(in makeError: (Error) -> Error, do body: () throws -> R) rethrows -> R {
+    do {
+        return try body()
+    }
+    catch let error as SQLError {
+        // Permit SQLError through unmolested
+        throw error
+    }
+    catch {
+        /// Repackage everything else
+        throw makeError(error)
+    }
+}
+
 /// An abstract representation of a potential source of SQL data. A SQLDatabase 
 /// instance contains the information needed to connect to a SQL database. Use its 
 /// `makeConnection()` method to actually connect.
@@ -53,7 +67,10 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
     /// 
     /// - SeeAlso: `Pool`, which can be used to make connection pools.
     public func makeConnection() throws -> SQLConnection<Client> {
-        return SQLConnection(state: try Client.makeConnectionState(for: state))
+        let connectonState = try withErrorsPackaged(in: SQLError.connectionFailed) {
+            try Client.makeConnectionState(for: state)
+        }
+        return SQLConnection(state: connectonState)
     }
 }
 
