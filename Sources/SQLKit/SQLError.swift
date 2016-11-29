@@ -148,3 +148,17 @@ extension SQLError: CustomNSError {
         return userInfo
     }
 }
+
+func withErrorsPackaged<R>(in makeError: (Error) -> Error, do body: () throws -> R) rethrows -> R {
+    do {
+        return try body()
+    }
+    catch let error as SQLError {
+        // Permit SQLError through unmolested
+        throw error
+    }
+    catch {
+        /// Repackage everything else
+        throw makeError(error)
+    }
+}

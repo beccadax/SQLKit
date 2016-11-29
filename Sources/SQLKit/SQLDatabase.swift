@@ -8,20 +8,6 @@
 
 import Foundation
 
-func withErrorsPackaged<R>(in makeError: (Error) -> Error, do body: () throws -> R) rethrows -> R {
-    do {
-        return try body()
-    }
-    catch let error as SQLError {
-        // Permit SQLError through unmolested
-        throw error
-    }
-    catch {
-        /// Repackage everything else
-        throw makeError(error)
-    }
-}
-
 /// An abstract representation of a potential source of SQL data. A SQLDatabase 
 /// instance contains the information needed to connect to a SQL database. Use its 
 /// `makeConnection()` method to actually connect.
