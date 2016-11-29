@@ -32,7 +32,7 @@ public enum AnySQL {
     /// were registered; that is, it considers the most recently registered client 
     /// first. It selects the first registered client which says it supports the 
     /// indicated URL.
-    public static func register(_ client: _SQLClient.Type) {
+    public static func register<Client: SQLClient>(_ client: Client.Type) {
         registeredClients.append(client)
     }
     
