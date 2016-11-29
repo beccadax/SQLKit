@@ -14,6 +14,10 @@ public enum SQLError: Error {
         return { .executionFailed(underlying: $0, statement: statement) }
     }
     
+    static func makeValueInvalid(with statement: SQLStatement, for key: AnySQLColumnKey) -> (Error) -> SQLError {
+        return { .valueInvalid(underlying: $0, key: key, statement: statement) }
+    }
+    
     /// The name or index of a column that did not actually exist.
     public enum ColumnSpecifier: Hashable, CustomStringConvertible {
         case name(String)
