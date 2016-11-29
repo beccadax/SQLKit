@@ -58,8 +58,8 @@ extension SQLRow {
         catch SQLError.columnNull(key.nonnullColumnKey, statement: statement) {
             return nil
         }
-        catch SQLError.columnNotConvertible(key.nonnullColumnKey, let sqlLiteral, let statement) {
-            throw SQLError.columnNotConvertible(key, sqlLiteral: sqlLiteral, statement: statement)
+        catch SQLError.columnNotConvertible(key.nonnullColumnKey, let sqlLiteral, let statement, let underlying) {
+            throw SQLError.columnNotConvertible(key, sqlLiteral: sqlLiteral, statement: statement, underlying: underlying)
         }
     }
 }

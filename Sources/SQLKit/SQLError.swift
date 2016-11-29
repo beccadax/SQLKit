@@ -46,11 +46,11 @@ public enum SQLError: Error {
     
     /// The attempt to connect to the server failed. Thrown by 
     /// `SQLDatabase.makeConnection()`.
-    case connectionFailed(message: String)
+    case connectionFailed(message: String, underlying: Error?)
     
     /// Executing or querying a statement failed. Thrown by `SQLConnection.execute`
     /// and `SQLConnection.query`.
-    case executionFailed(message: String, statement: SQLStatement)
+    case executionFailed(message: String, statement: SQLStatement, underlying: Error?)
     
     /// The query succeeded, but did not find any records. Thrown by 
     /// `SQLQuery.only()`.
@@ -70,5 +70,5 @@ public enum SQLError: Error {
     /// The column was of a type that didn't match the column key, or attempting 
     /// to convert the specific value failed. May be thrown by `SQLRow.value(for:)` 
     /// or potentially by `SQLQuery.columnKey`.
-    case columnNotConvertible(AnySQLColumnKey, sqlLiteral: String, statement: SQLStatement)
+    case columnNotConvertible(AnySQLColumnKey, sqlLiteral: String, statement: SQLStatement, underlying: Error?)
 }
