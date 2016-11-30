@@ -89,14 +89,14 @@ extension PostgreSQL: SQLClient {
     
     public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         guard let index = queryState.fields.index(of: name) else {
-            throw SQLError.columnMissing(.name(name), statement: statement)
+            throw SQLColumnError.columnMissing
         }
         return SQLColumnKey(index: index, name: name)
     }
     
     public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         guard queryState.fields.indices.contains(index) else {
-            throw SQLError.columnMissing(.index(index), statement: statement)
+            throw SQLColumnError.columnMissing
         }
         
         let name = queryState.fields[index].name

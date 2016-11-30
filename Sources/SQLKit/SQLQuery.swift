@@ -82,7 +82,9 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     /// - Note: If `valueType` is not an `Optional` type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
-        return try Client.columnKey(forName: name, as: valueType, with: state, statement: statement)
+        return try withErrorsPackaged(in: SQLError.makeColumnInvalid(with: statement, for: .name(name))) {
+            try Client.columnKey(forName: name, as: valueType, with: state, statement: statement)
+        }
     }
     
     /// Returns a key for a column at the given index and with the given type.
@@ -97,7 +99,9 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     /// - Note: If `valueType` is not an Optional type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
-        return try Client.columnKey(at: index, as: valueType, with: state, statement: statement)
+        return try withErrorsPackaged(in: SQLError.makeColumnInvalid(with: statement, for: .index(index))) {
+            try Client.columnKey(at: index, as: valueType, with: state, statement: statement)
+        }
     }
     
     /// The number of rows returned by the query.

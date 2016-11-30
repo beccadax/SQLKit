@@ -14,6 +14,10 @@ public enum SQLError: Error {
         return { .executionFailed(underlying: $0, statement: statement) }
     }
     
+    static func makeColumnInvalid(with statement: SQLStatement, for key: ColumnSpecifier) -> (Error) -> SQLError {
+        return { .columnInvalid(underlying: $0, key: key, statement: statement) }
+    }
+    
     static func makeValueInvalid(with statement: SQLStatement, for key: AnySQLColumnKey) -> (Error) -> SQLError {
         return { .valueInvalid(underlying: $0, key: key, statement: statement) }
     }
@@ -71,7 +75,7 @@ public enum SQLError: Error {
     case extraRecordsFound(statement: SQLStatement)
     
     /// The specified column was not found. Thrown by `SQLQuery.columnKey`.
-    case columnMissing(ColumnSpecifier, statement: SQLStatement)
+    case columnInvalid(underlying: Error, key: ColumnSpecifier, statement: SQLStatement)
     
     /// The value in the column did not match the type required by the key. The 
     /// `underlying` error, which may or may not be a `SQLValueError`, explains 
@@ -82,6 +86,16 @@ public enum SQLError: Error {
 }
 
 /// Errors which describe common reasons a `SQLError.columnInvalid` may be thrown.
+public enum SQLColumnError: Error {
+    /// No column by that name or at that index was selected into the result.
+    case columnMissing
+    
+    /// The column's values, which belong to the `from` type, cannot be converted 
+    /// to the `to` type.
+    case columnNotConvertible(to: SQLValue.Type, from: String?)
+}
+
+/// Errors which describe common reasons a `SQLError.valueInvalid` may be thrown.
 /// 
 /// `valueNotConvertible` is often thrown by `SQLClient.value(for:with:)` 
 /// implementations, and in fact is the only `SQLKit` error which should be directly 
@@ -98,7 +112,7 @@ public enum SQLValueError: Error {
 extension SQLError {
     public var statement: SQLStatement? {
         switch self {
-        case .executionFailed(_, let statement), .noRecordsFound(let statement), .extraRecordsFound(let statement), .columnMissing(_, let statement), .valueInvalid(_, _, let statement):
+        case .executionFailed(_, let statement), .noRecordsFound(let statement), .extraRecordsFound(let statement), .columnInvalid(_, _, let statement), .valueInvalid(_, _, let statement):
             return statement
             
         default:
@@ -118,7 +132,7 @@ extension SQLError {
     
     public var underlying: Error? {
         switch self {
-        case .connectionFailed(let underlying), .executionFailed(let underlying, _), .valueInvalid(let underlying, _, _):
+        case .connectionFailed(let underlying), .executionFailed(let underlying, _), .columnInvalid(let underlying, _, _), .valueInvalid(let underlying, _, _):
             return underlying
             
         default:
@@ -141,7 +155,7 @@ extension SQLError: CustomNSError {
         if let columnKey = self.columnKey {
             userInfo[SQLError.columnKey] = String(describing: columnKey)
         }
-        else if case let .columnMissing(spec, _) = self {
+        else if case let .columnInvalid(underlying: _, key: spec, statement: _) = self {
             userInfo[SQLError.columnKey] = String(describing: spec)
         }
         
