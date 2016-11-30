@@ -102,11 +102,11 @@ extension AnySQL: SQLClient {
         return try connectionState.client.makeQueryState(statement, with: connectionState)
     }
     
-    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: State) throws -> SQLColumnKey<Value> {
         return try queryState.client.columnKey(forName: name, as: valueType, with: queryState)
     }
     
-    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: State) throws -> SQLColumnKey<Value> {
         return try queryState.client.columnKey(at: index, as: valueType, with: queryState)
     }
     
