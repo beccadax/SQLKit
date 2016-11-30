@@ -73,7 +73,9 @@ extension PostgreSQL: SQLClient {
         let statementWithReturning = statement + SQLStatement(" RETURNING \(SQLStatement(raw: idColumnName))")
         let result = try makeQueryState(statementWithReturning, with: connectionState)
         
-        let idKey = try columnKey(forName: idColumnName, as: idType, with: result)
+        guard let idKey = try columnKey(forName: idColumnName, as: idType, with: result) else {
+            throw SQLColumnError.columnMissing
+        }
         return AnySequence(try result.tuples.flatMap { try value(for: idKey, with: $0) }) 
     }
     
@@ -87,16 +89,16 @@ extension PostgreSQL: SQLClient {
         return try connectionState.execute(sql, with: parameters.map { Parameter(value: $0) })
     }
     
-    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value> {
+    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>? {
         guard let index = queryState.fields.index(of: name) else {
-            throw SQLColumnError.columnMissing
+            return nil
         }
         return SQLColumnKey(index: index, name: name)
     }
     
-    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value> {
+    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>? {
         guard queryState.fields.indices.contains(index) else {
-            throw SQLColumnError.columnMissing
+            return nil
         }
         
         let name = queryState.fields[index].name
