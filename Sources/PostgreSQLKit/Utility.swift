@@ -22,6 +22,7 @@ func withUnsafePointers<R>(to array: [Data?], do body: ([UnsafePointer<Int8>?]) 
     }
     
     return try buffer.withUnsafeBytes { (base: UnsafePointer<Int8>) in
-        try body(offsets.map { $0.map { base + $0 } })
+        let pointers = offsets.map { $0.map { base + $0 } }
+        return try body(pointers)
     }
 }
