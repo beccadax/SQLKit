@@ -83,10 +83,10 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
         return try withErrorsPackaged(in: SQLError.makeColumnInvalid(with: statement, for: .name(name))) {
-            guard let key = try Client.columnKey(forName: name, as: valueType, with: state) else {
+            guard let index = try Client.columnIndex(forName: name, as: valueType, with: state) else {
                 throw SQLColumnError.columnMissing
             }
-            return key
+            return SQLColumnKey(index: index, name: name)
         }
     }
     
@@ -103,10 +103,10 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
         return try withErrorsPackaged(in: SQLError.makeColumnInvalid(with: statement, for: .index(index))) {
-            guard let key = try Client.columnKey(at: index, as: valueType, with: state) else {
+            guard let name = try Client.columnName(at: index, as: valueType, with: state) else {
                 throw SQLColumnError.columnMissing
             }
-            return key
+            return SQLColumnKey(index: index, name: name)
         }
     }
     

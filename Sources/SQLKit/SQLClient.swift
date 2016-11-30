@@ -116,8 +116,10 @@ public protocol SQLClient: _SQLClient {
     /// - SeeAlso: `SQLConnection.query(_:)`
     static func makeQueryState(_ statement: SQLStatement, with connectionState: ConnectionState) throws -> QueryState
     
-    /// Retrieves a `SQLColumnKey` for the column named `name`, of the type 
+    /// Retrieves the index of the column named `name`, of the type 
     /// `valueType`, from the query represented by `queryState`.
+    /// 
+    /// - Returns: The index of the column, or `nil` if the column does not exist.
     /// 
     /// - Throws: If a column with that name is of the wrong type.
     ///             Errors will be wrapped in a `SQLError.columnInvalid` error.
@@ -127,10 +129,12 @@ public protocol SQLClient: _SQLClient {
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(forName:as:)`
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>?
+    static func columnIndex<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> Int?
     
-    /// Retrieves a `SQLColumnKey` for the column at zero-based index `index`, 
+    /// Retrieves the name of the column at zero-based index `index`, 
     /// of type `valueType`, from the query represented by `queryState`.
+    /// 
+    /// - Returns: The name of the column, or `nil` if the column does not exist.
     /// 
     /// - Throws: If a column at that index is of the wrong type.
     ///             Errors will be wrapped in a `SQLError.columnInvalid` error.
@@ -145,7 +149,7 @@ public protocol SQLClient: _SQLClient {
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(at:as:)`
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>?
+    static func columnName<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> String?
     
     /// Returns the number of rows in the result set for the query represented by 
     /// `queryState`.

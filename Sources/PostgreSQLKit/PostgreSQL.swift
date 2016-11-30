@@ -73,10 +73,12 @@ extension PostgreSQL: SQLClient {
         let statementWithReturning = statement + SQLStatement(" RETURNING \(SQLStatement(raw: idColumnName))")
         let result = try makeQueryState(statementWithReturning, with: connectionState)
         
-        guard let idKey = try columnKey(forName: idColumnName, as: idType, with: result) else {
+        guard let index = try columnIndex(forName: idColumnName, as: idType, with: result) else {
             throw SQLColumnError.columnMissing
         }
-        return AnySequence(try result.tuples.flatMap { try value(for: idKey, with: $0) }) 
+        
+        let seq = try result.tuples.map { try value(at: index, as: idType, in: $0)! }
+        return AnySequence(seq)
     }
     
     public static func makeQueryState(_ statement: SQLStatement, with connectionState: ConnectionState) throws -> QueryState {
@@ -89,20 +91,20 @@ extension PostgreSQL: SQLClient {
         return try connectionState.execute(sql, with: parameters.map { Parameter(value: $0) })
     }
     
-    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>? {
+    public static func columnIndex<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> Int? {
         guard let index = queryState.fields.index(of: name) else {
             return nil
         }
-        return SQLColumnKey(index: index, name: name)
+        return index
     }
     
-    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>? {
+    public static func columnName<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> String? {
         guard queryState.fields.indices.contains(index) else {
             return nil
         }
         
         let name = queryState.fields[index].name
-        return SQLColumnKey(index: index, name: name)
+        return name
     }
     
     public static func count(with queryState: QueryState) -> Int {
@@ -113,8 +115,8 @@ extension PostgreSQL: SQLClient {
         return queryState.tuples
     }
     
-    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: RowState) throws -> Value? {
-        guard let string = rowState[key.index] else {
+    private static func value<Value: SQLValue>(at index: Int, as _: Value.Type, in tuple: PostgreSQL.Result.Tuple) throws -> Value? {
+        guard let string = tuple[index] else {
             return nil
         }
         
@@ -123,5 +125,9 @@ extension PostgreSQL: SQLClient {
         }
         
         return value
+    }
+    
+    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: RowState) throws -> Value? {
+        return try value(at: key.index, as: Value.self, in: rowState)
     }
 }
