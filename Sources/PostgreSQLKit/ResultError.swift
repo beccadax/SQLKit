@@ -97,17 +97,7 @@ extension PostgreSQL.Result {
     }
 }
 
-extension PostgreSQL.Result.Error: LocalizedError, CustomNSError {
-    public var errorDomain: String { return "PostgreSQL.Result.Error" }
-    
-    public var errorCode: Int {
-        return Int(sqlState)!
-    }
-    
-    public var userInfo: [String: Any] {
-        return ["PostgreSQL.Result.Error.fields": fields]
-    }
-    
+extension PostgreSQL.Result.Error: LocalizedError {
     public var errorDescription: String {
         return self[.localizedPrimaryMessage]!
     }
