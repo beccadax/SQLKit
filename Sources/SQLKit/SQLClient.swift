@@ -81,11 +81,17 @@ public protocol SQLClient: _SQLClient {
     /// Creates a `ConnectionState` for a connection to the database represented by 
     /// `databaseState`.
     /// 
+    /// - Throws: If the connection cannot be made. Errors will be wrapped in a 
+    ///             `SQLError.connectionFailed` error.
+    /// 
     /// - SeeAlso: `SQLDatabase.makeConnection()`
     static func makeConnectionState(with databaseState: DatabaseState) throws -> ConnectionState
     
     /// Executes `statement` using the connection represented by `connectionState`, 
     /// returning no value.
+    /// 
+    /// - Throws: If the statement cannot be executed. Errors will be wrapped in a 
+    ///             `SQLError.executionFailed` error.
     /// 
     /// - SeeAlso: `SQLConnection.execute(_:)`
     static func execute(_ statement: SQLStatement, with connectionState: ConnectionState) throws
@@ -94,6 +100,9 @@ public protocol SQLClient: _SQLClient {
     /// returning a sequence of auto-created values of `idColumnName`, a column of 
     /// type `idType`, of newly-inserted rows. 
     /// 
+    /// - Throws: If the statement cannot be executed. Errors will be wrapped in a 
+    ///             `SQLError.executionFailed` error.
+    /// 
     /// - SeeAlso: `SQLConnection.execute(_:returningIDs:as:)`
     static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, with connectionState: ConnectionState) throws -> AnySequence<Value>
     
@@ -101,13 +110,18 @@ public protocol SQLClient: _SQLClient {
     /// by `connectionState`, returning a `QueryState` which will be wrapped into a 
     /// `SQLQuery` object.
     /// 
+    /// - Throws: If the statement cannot be executed. Errors will be wrapped in a 
+    ///             `SQLError.executionFailed` error.
+    /// 
     /// - SeeAlso: `SQLConnection.query(_:)`
     static func makeQueryState(_ statement: SQLStatement, with connectionState: ConnectionState) throws -> QueryState
     
     /// Retrieves a `SQLColumnKey` for the column named `name`, of the type 
     /// `valueType`, from the query represented by `queryState`.
     /// 
-    /// - Throws: If a column with that name does not exist or is of the wrong type.
+    /// - Throws: If a column with that name does not exist or, optionally, is of 
+    ///             the wrong type.
+    ///             Errors will be wrapped in a `SQLError.columnInvalid` error.
     /// 
     /// - Warning: This method should *not* throw if the column is nullable but the 
     ///              provided type is non-optional. The `SQLNullableColumnKey` calls 
@@ -121,6 +135,7 @@ public protocol SQLClient: _SQLClient {
     /// 
     /// - Throws: If a column at that index does not exist or, optionally, is of the 
     ///             wrong type.
+    ///             Errors will be wrapped in a `SQLError.columnInvalid` error.
     /// 
     /// - Note: `SQLClient`s may choose to check types either when creating a 
     ///          column key or when accessing a value using a column key. In either 
@@ -160,6 +175,7 @@ public protocol SQLClient: _SQLClient {
     ///               `rowState`. Used in error reporting.
     /// 
     /// - Throws: If the value for `key` is `NULL` or of the wrong type.
+    ///             Errors will be wrapped in a `SQLError.valueInvalid` error.
     /// 
     /// - Precondition: `key` must have come from the same query state as 
     ///                  `rowState`.
