@@ -174,5 +174,5 @@ public protocol SQLClient: _SQLClient {
     ///          `nil`.
     /// 
     /// - SeeAlso: `SQLRow.value(for:)`
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState, statement: SQLStatement) throws -> Value?
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState) throws -> Value?
 }

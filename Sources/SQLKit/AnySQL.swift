@@ -118,8 +118,8 @@ extension AnySQL: SQLClient {
         return queryState.client.makeRowStateSequence(for: queryState)
     }
     
-    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: State, statement: SQLStatement) throws -> Value? {
-        return try rowState.client.value(for: key, for: rowState, statement: statement)
+    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: State) throws -> Value? {
+        return try rowState.client.value(for: key, for: rowState)
     }
 }
 
@@ -150,7 +150,7 @@ public protocol _SQLClient {
     static func makeRowStateSequence(for queryState: AnySQL.State) -> AnySQL.RowStateSequence
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State, statement: SQLStatement) throws -> Value?
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State) throws -> Value?
 }
 
 public extension _SQLClient where Self: SQLClient {
@@ -214,8 +214,8 @@ public extension _SQLClient where Self: SQLClient {
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State, statement: SQLStatement) throws -> Value? {
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State) throws -> Value? {
         let realRowState = rowState.base as! RowState
-        return try value(for: key, for: realRowState, statement: statement)
+        return try value(for: key, for: realRowState)
     }
 }
