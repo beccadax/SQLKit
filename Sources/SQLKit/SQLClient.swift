@@ -128,7 +128,7 @@ public protocol SQLClient: _SQLClient {
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(forName:as:)`
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>
     
     /// Retrieves a `SQLColumnKey` for the column at zero-based index `index`, 
     /// of type `valueType`, from the query represented by `queryState`.
@@ -147,7 +147,7 @@ public protocol SQLClient: _SQLClient {
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(at:as:)`
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> SQLColumnKey<Value>
     
     /// Returns the number of rows in the result set for the query represented by 
     /// `queryState`.

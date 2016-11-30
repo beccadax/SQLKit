@@ -103,11 +103,11 @@ extension AnySQL: SQLClient {
     }
     
     public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
-        return try queryState.client.columnKey(forName: name, as: valueType, with: queryState, statement: statement)
+        return try queryState.client.columnKey(forName: name, as: valueType, with: queryState)
     }
     
     public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
-        return try queryState.client.columnKey(at: index, as: valueType, with: queryState, statement: statement)
+        return try queryState.client.columnKey(at: index, as: valueType, with: queryState)
     }
     
     public static func count(with queryState: State) -> Int {
@@ -141,9 +141,9 @@ public protocol _SQLClient {
     static func makeQueryState(_ statement: SQLStatement, with connectionState: AnySQL.State) throws -> AnySQL.State
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: AnySQL.State) throws -> SQLColumnKey<Value>
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: AnySQL.State) throws -> SQLColumnKey<Value>
     /// Implementation detail used to implement `AnySQL`. Do not use.
     static func count(with queryState: AnySQL.State) -> Int
     /// Implementation detail used to implement `AnySQL`. Do not use.
@@ -187,15 +187,15 @@ public extension _SQLClient where Self: SQLClient {
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: AnySQL.State) throws -> SQLColumnKey<Value> {
         let realQueryState = queryState.base as! QueryState
-        return try columnKey(forName: name, as: valueType, with: realQueryState, statement: statement)
+        return try columnKey(forName: name, as: valueType, with: realQueryState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: AnySQL.State) throws -> SQLColumnKey<Value> {
         let realQueryState = queryState.base as! QueryState
-        return try columnKey(at: index, as: valueType, with: realQueryState, statement: statement)
+        return try columnKey(at: index, as: valueType, with: realQueryState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
