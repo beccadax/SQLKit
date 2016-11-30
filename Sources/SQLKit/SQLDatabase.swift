@@ -54,7 +54,7 @@ public struct SQLDatabase<Client: SQLClient> where Client.RowStateSequence.Itera
     /// - SeeAlso: `Pool`, which can be used to make connection pools.
     public func makeConnection() throws -> SQLConnection<Client> {
         let connectonState = try withErrorsPackaged(in: SQLError.connectionFailed) {
-            try Client.makeConnectionState(for: state)
+            try Client.makeConnectionState(with: state)
         }
         return SQLConnection(state: connectonState)
     }

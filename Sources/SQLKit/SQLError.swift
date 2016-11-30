@@ -83,7 +83,7 @@ public enum SQLError: Error {
 
 /// Errors which describe common reasons a `SQLError.columnInvalid` may be thrown.
 /// 
-/// `valueNotConvertible` is often thrown by `SQLClient.value(for:for:)` 
+/// `valueNotConvertible` is often thrown by `SQLClient.value(for:with:)` 
 /// implementations, and in fact is the only `SQLKit` error which should be directly 
 /// thrown by a `SQLClient`.
 public enum SQLValueError: Error {

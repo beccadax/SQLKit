@@ -45,7 +45,7 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
     /// - SeeAlso: `execute(_:returningIDs:as:)`, `query(_:)`
     public func execute(_ statement: SQLStatement) throws {
         try withErrorsPackaged(in: SQLError.makeExecutionFailed(with: statement)) {
-            try Client.execute(statement, for: state)
+            try Client.execute(statement, with: state)
         }
     }
     
@@ -63,7 +63,7 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
     /// - Parameter idType: The type of the ID column.
     public func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type) throws -> AnySequence<Value> {
         return try withErrorsPackaged(in: SQLError.makeExecutionFailed(with: statement)) {
-            try Client.execute(statement, returningIDs: idColumnName, as: idType, for: state)
+            try Client.execute(statement, returningIDs: idColumnName, as: idType, with: state)
         }
     }
     
@@ -81,7 +81,7 @@ public final class SQLConnection<C: SQLClient>: _SQLConnection where C.RowStateS
     /// - SeeAlso: `execute(_:)`
     public func query(_ statement: SQLStatement) throws -> SQLQuery<Client> {
         let queryState = try withErrorsPackaged(in: SQLError.makeExecutionFailed(with: statement)) {
-            try Client.makeQueryState(statement, for: state)
+            try Client.makeQueryState(statement, with: state)
         }
         return .init(statement: statement, state: queryState)
     }

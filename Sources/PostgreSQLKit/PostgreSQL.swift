@@ -55,29 +55,29 @@ extension PostgreSQL: SQLClient {
         return DatabaseState(url: url)
     }
     
-    public static func makeConnectionState(for databaseState: DatabaseState) throws -> ConnectionState {
+    public static func makeConnectionState(with databaseState: DatabaseState) throws -> ConnectionState {
         let conn = try Connection(connectingToURL: databaseState.url)
         
-        try execute("SET DateStyle = 'ISO'", for: conn)
-        try execute("SET TimeZone = 'UTC'", for: conn)
-        try execute("SET client_encoding = 'Unicode'", for: conn)
+        try execute("SET DateStyle = 'ISO'", with: conn)
+        try execute("SET TimeZone = 'UTC'", with: conn)
+        try execute("SET client_encoding = 'Unicode'", with: conn)
         
         return conn
     }
     
-    public static func execute(_ statement: SQLStatement, for connectionState: ConnectionState) throws {
-        _ = try makeQueryState(statement, for: connectionState)
+    public static func execute(_ statement: SQLStatement, with connectionState: ConnectionState) throws {
+        _ = try makeQueryState(statement, with: connectionState)
     }
     
-    public static func execute<Value : SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, for connectionState: ConnectionState) throws -> AnySequence<Value> {
+    public static func execute<Value : SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, with connectionState: ConnectionState) throws -> AnySequence<Value> {
         let statementWithReturning = statement + SQLStatement(" RETURNING \(SQLStatement(raw: idColumnName))")
-        let result = try makeQueryState(statementWithReturning, for: connectionState)
+        let result = try makeQueryState(statementWithReturning, with: connectionState)
         
-        let idKey = try columnKey(forName: idColumnName, as: idType, for: result, statement: statementWithReturning)
-        return AnySequence(try result.tuples.flatMap { try value(for: idKey, for: $0) }) 
+        let idKey = try columnKey(forName: idColumnName, as: idType, with: result, statement: statementWithReturning)
+        return AnySequence(try result.tuples.flatMap { try value(for: idKey, with: $0) }) 
     }
     
-    public static func makeQueryState(_ statement: SQLStatement, for connectionState: ConnectionState) throws -> QueryState {
+    public static func makeQueryState(_ statement: SQLStatement, with connectionState: ConnectionState) throws -> QueryState {
         var parameters: [String?] = []
         let sql = statement.rawSQLByReplacingParameters { value in
             parameters.append(value?.sqlLiteral)
@@ -87,14 +87,14 @@ extension PostgreSQL: SQLClient {
         return try connectionState.execute(sql, with: parameters.map { Parameter(value: $0) })
     }
     
-    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         guard let index = queryState.fields.index(of: name) else {
             throw SQLError.columnMissing(.name(name), statement: statement)
         }
         return SQLColumnKey(index: index, name: name)
     }
     
-    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         guard queryState.fields.indices.contains(index) else {
             throw SQLError.columnMissing(.index(index), statement: statement)
         }
@@ -103,15 +103,15 @@ extension PostgreSQL: SQLClient {
         return SQLColumnKey(index: index, name: name)
     }
     
-    public static func count(for queryState: QueryState) -> Int {
+    public static func count(with queryState: QueryState) -> Int {
         return queryState.tuples.count
     }
     
-    public static func makeRowStateSequence(for queryState: QueryState) -> RowStateSequence {
+    public static func makeRowStateSequence(with queryState: QueryState) -> RowStateSequence {
         return queryState.tuples
     }
     
-    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState) throws -> Value? {
+    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: RowState) throws -> Value? {
         guard let string = rowState[key.index] else {
             return nil
         }

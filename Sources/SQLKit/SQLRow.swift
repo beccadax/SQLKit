@@ -36,7 +36,7 @@ public struct SQLRow<Client: SQLClient> {
     /// - Precondition: `key` must have come from the same `SQLQuery` as `self`.
     public func value<Value: SQLValue>(for key: SQLColumnKey<Value>) throws -> Value {
         return try withErrorsPackaged(in: SQLError.makeValueInvalid(with: statement, for: key)) {
-            guard let value = try Client.value(for: key, for: state) else { 
+            guard let value = try Client.value(for: key, with: state) else { 
                 throw SQLValueError.valueNull
             }
             return value
@@ -56,7 +56,7 @@ public struct SQLRow<Client: SQLClient> {
     /// - Precondition: `key` must have come from the same `SQLQuery` as `self`.
     public func value<Value: SQLValue>(for key: SQLNullableColumnKey<Value>) throws -> Value? {
         return try withErrorsPackaged(in: SQLError.makeValueInvalid(with: statement, for: key)) {
-            try Client.value(for: key.nonnullColumnKey, for: state)
+            try Client.value(for: key.nonnullColumnKey, with: state)
         }
     }
 }

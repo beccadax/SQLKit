@@ -66,7 +66,7 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     init(statement: SQLStatement, state: Client.QueryState) {
         self.statement = statement
         self.state = state
-        self.rowStates = Client.makeRowStateSequence(for: state)
+        self.rowStates = Client.makeRowStateSequence(with: state)
         self.rowIterator = SQLRowIterator(statement: statement, rowStateIterator: rowStates.makeIterator())
     }
     
@@ -82,7 +82,7 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     /// - Note: If `valueType` is not an `Optional` type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
-        return try Client.columnKey(forName: name, as: valueType, for: state, statement: statement)
+        return try Client.columnKey(forName: name, as: valueType, with: state, statement: statement)
     }
     
     /// Returns a key for a column at the given index and with the given type.
@@ -97,7 +97,7 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     /// - Note: If `valueType` is not an Optional type, then accessing the column's 
     ///          value will throw an error.
     public func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type) throws -> SQLColumnKey<Value> {
-        return try Client.columnKey(at: index, as: valueType, for: state, statement: statement)
+        return try Client.columnKey(at: index, as: valueType, with: state, statement: statement)
     }
     
     /// The number of rows returned by the query.
@@ -107,7 +107,7 @@ public struct SQLQuery<Client: SQLClient> where Client.RowStateSequence.Iterator
     ///          client otherwise doesn't support iterating over a query's rows more 
     ///          than once.
     public var count: Int {
-        return Client.count(for: state)
+        return Client.count(with: state)
     }
     
     /// Returns a key for a column with the given name and type.

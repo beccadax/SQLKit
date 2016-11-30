@@ -86,40 +86,40 @@ extension AnySQL: SQLClient {
     public typealias QueryState = State
     public typealias RowState = State
     
-    public static func makeConnectionState(for databaseState: DatabaseState) throws -> ConnectionState {
-        return try databaseState.client.makeConnectionState(for: databaseState)
+    public static func makeConnectionState(with databaseState: DatabaseState) throws -> ConnectionState {
+        return try databaseState.client.makeConnectionState(with: databaseState)
     }
     
-    public static func execute(_ statement: SQLStatement, for connectionState: ConnectionState) throws {
-        try connectionState.client.execute(statement, for: connectionState)
+    public static func execute(_ statement: SQLStatement, with connectionState: ConnectionState) throws {
+        try connectionState.client.execute(statement, with: connectionState)
     }
     
-    public static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, for connectionState: State) throws -> AnySequence<Value> {
-        return try connectionState.client.execute(statement, returningIDs: idColumnName, as: idType, for: connectionState)
+    public static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, with connectionState: State) throws -> AnySequence<Value> {
+        return try connectionState.client.execute(statement, returningIDs: idColumnName, as: idType, with: connectionState)
     }
     
-    public static func makeQueryState(_ statement: SQLStatement, for connectionState: State) throws -> QueryState {
-        return try connectionState.client.makeQueryState(statement, for: connectionState)
+    public static func makeQueryState(_ statement: SQLStatement, with connectionState: State) throws -> QueryState {
+        return try connectionState.client.makeQueryState(statement, with: connectionState)
     }
     
-    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
-        return try queryState.client.columnKey(forName: name, as: valueType, for: queryState, statement: statement)
+    public static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+        return try queryState.client.columnKey(forName: name, as: valueType, with: queryState, statement: statement)
     }
     
-    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
-        return try queryState.client.columnKey(at: index, as: valueType, for: queryState, statement: statement)
+    public static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+        return try queryState.client.columnKey(at: index, as: valueType, with: queryState, statement: statement)
     }
     
-    public static func count(for queryState: State) -> Int {
-        return queryState.client.count(for: queryState)
+    public static func count(with queryState: State) -> Int {
+        return queryState.client.count(with: queryState)
     }
     
-    public static func makeRowStateSequence(for queryState: State) -> RowStateSequence {
-        return queryState.client.makeRowStateSequence(for: queryState)
+    public static func makeRowStateSequence(with queryState: State) -> RowStateSequence {
+        return queryState.client.makeRowStateSequence(with: queryState)
     }
     
-    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: State) throws -> Value? {
-        return try rowState.client.value(for: key, for: rowState)
+    public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: State) throws -> Value? {
+        return try rowState.client.value(for: key, with: rowState)
     }
 }
 
@@ -131,26 +131,26 @@ public protocol _SQLClient {
     static func makeDatabaseState(url: URL) -> AnySQL.State
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func makeConnectionState(for databaseState: AnySQL.State) throws -> AnySQL.State
+    static func makeConnectionState(with databaseState: AnySQL.State) throws -> AnySQL.State
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func execute(_ statement: SQLStatement, for connectionState: AnySQL.State) throws
+    static func execute(_ statement: SQLStatement, with connectionState: AnySQL.State) throws
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, for connectionState: AnySQL.State) throws -> AnySequence<Value>
+    static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, with connectionState: AnySQL.State) throws -> AnySequence<Value>
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func makeQueryState(_ statement: SQLStatement, for connectionState: AnySQL.State) throws -> AnySQL.State
+    static func makeQueryState(_ statement: SQLStatement, with connectionState: AnySQL.State) throws -> AnySQL.State
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value>
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func count(for queryState: AnySQL.State) -> Int
+    static func count(with queryState: AnySQL.State) -> Int
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func makeRowStateSequence(for queryState: AnySQL.State) -> AnySQL.RowStateSequence
+    static func makeRowStateSequence(with queryState: AnySQL.State) -> AnySQL.RowStateSequence
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State) throws -> Value?
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: AnySQL.State) throws -> Value?
 }
 
 public extension _SQLClient where Self: SQLClient {
@@ -161,61 +161,61 @@ public extension _SQLClient where Self: SQLClient {
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func makeConnectionState(for databaseState: AnySQL.State) throws -> AnySQL.State {
+    static func makeConnectionState(with databaseState: AnySQL.State) throws -> AnySQL.State {
         let realDatabaseState = databaseState.base as! DatabaseState
-        let connectionState = try makeConnectionState(for: realDatabaseState)
+        let connectionState = try makeConnectionState(with: realDatabaseState)
         return AnySQL.State(client: self, base: connectionState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func execute(_ statement: SQLStatement, for connectionState: AnySQL.State) throws {
+    static func execute(_ statement: SQLStatement, with connectionState: AnySQL.State) throws {
         let realConnectionState = connectionState.base as! ConnectionState
-        try execute(statement, for: realConnectionState)
+        try execute(statement, with: realConnectionState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, for connectionState: AnySQL.State) throws -> AnySequence<Value> {
+    static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, with connectionState: AnySQL.State) throws -> AnySequence<Value> {
         let realConnectionState = connectionState.base as! ConnectionState
-        return try execute(statement, returningIDs: idColumnName, as: idType, for: realConnectionState)
+        return try execute(statement, returningIDs: idColumnName, as: idType, with: realConnectionState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func makeQueryState(_ statement: SQLStatement, for connectionState: AnySQL.State) throws -> AnySQL.State {
+    static func makeQueryState(_ statement: SQLStatement, with connectionState: AnySQL.State) throws -> AnySQL.State {
         let realConnectionState = connectionState.base as! ConnectionState
-        let queryState = try makeQueryState(statement, for: realConnectionState)
+        let queryState = try makeQueryState(statement, with: realConnectionState)
         return AnySQL.State(client: self, base: queryState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         let realQueryState = queryState.base as! QueryState
-        return try columnKey(forName: name, as: valueType, for: realQueryState, statement: statement)
+        return try columnKey(forName: name, as: valueType, with: realQueryState, statement: statement)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
+    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: AnySQL.State, statement: SQLStatement) throws -> SQLColumnKey<Value> {
         let realQueryState = queryState.base as! QueryState
-        return try columnKey(at: index, as: valueType, for: realQueryState, statement: statement)
+        return try columnKey(at: index, as: valueType, with: realQueryState, statement: statement)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func count(for queryState: AnySQL.State) -> Int {
+    static func count(with queryState: AnySQL.State) -> Int {
         let realQueryState = queryState.base as! QueryState
-        return count(for: realQueryState)
+        return count(with: realQueryState)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func makeRowStateSequence(for queryState: AnySQL.State) -> AnySQL.RowStateSequence {
+    static func makeRowStateSequence(with queryState: AnySQL.State) -> AnySQL.RowStateSequence {
         let realQueryState = queryState.base as! QueryState
-        let sequence = makeRowStateSequence(for: realQueryState)
+        let sequence = makeRowStateSequence(with: realQueryState)
         let anySequence = AnySequence<Any>(sequence.lazy.map { $0 as Any })
         
         return AnySQL.RowStateSequence(client: self, base: anySequence)
     }
     
     /// Implementation detail used to implement `AnySQL`. Do not use.
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: AnySQL.State) throws -> Value? {
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: AnySQL.State) throws -> Value? {
         let realRowState = rowState.base as! RowState
-        return try value(for: key, for: realRowState)
+        return try value(for: key, with: realRowState)
     }
 }

@@ -82,27 +82,27 @@ public protocol SQLClient: _SQLClient {
     /// `databaseState`.
     /// 
     /// - SeeAlso: `SQLDatabase.makeConnection()`
-    static func makeConnectionState(for databaseState: DatabaseState) throws -> ConnectionState
+    static func makeConnectionState(with databaseState: DatabaseState) throws -> ConnectionState
     
     /// Executes `statement` using the connection represented by `connectionState`, 
     /// returning no value.
     /// 
     /// - SeeAlso: `SQLConnection.execute(_:)`
-    static func execute(_ statement: SQLStatement, for connectionState: ConnectionState) throws
+    static func execute(_ statement: SQLStatement, with connectionState: ConnectionState) throws
     
     /// Executes `statement` using the connection represented by `connectionState`, 
     /// returning a sequence of auto-created values of `idColumnName`, a column of 
     /// type `idType`, of newly-inserted rows. 
     /// 
     /// - SeeAlso: `SQLConnection.execute(_:returningIDs:as:)`
-    static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, for connectionState: ConnectionState) throws -> AnySequence<Value>
+    static func execute<Value: SQLValue>(_ statement: SQLStatement, returningIDs idColumnName: String, as idType: Value.Type, with connectionState: ConnectionState) throws -> AnySequence<Value>
     
     /// Queries the database with `statement` using the connection reprepresented 
     /// by `connectionState`, returning a `QueryState` which will be wrapped into a 
     /// `SQLQuery` object.
     /// 
     /// - SeeAlso: `SQLConnection.query(_:)`
-    static func makeQueryState(_ statement: SQLStatement, for connectionState: ConnectionState) throws -> QueryState
+    static func makeQueryState(_ statement: SQLStatement, with connectionState: ConnectionState) throws -> QueryState
     
     /// Retrieves a `SQLColumnKey` for the column named `name`, of the type 
     /// `valueType`, from the query represented by `queryState`.
@@ -114,10 +114,10 @@ public protocol SQLClient: _SQLClient {
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(forName:as:)`
-    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
     
     /// Retrieves a `SQLColumnKey` for the column at zero-based index `index`, 
-    /// of type `valueType`, from the query represetned by `queryState`.
+    /// of type `valueType`, from the query represented by `queryState`.
     /// 
     /// - Throws: If a column at that index does not exist or, optionally, is of the 
     ///             wrong type.
@@ -132,7 +132,7 @@ public protocol SQLClient: _SQLClient {
     ///              use this method to construct their keys.
     /// 
     /// - SeeAlso: `SQLQuery.columnKey(at:as:)`
-    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, for queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
+    static func columnKey<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState, statement: SQLStatement) throws -> SQLColumnKey<Value>
     
     /// Returns the number of rows in the result set for the query represented by 
     /// `queryState`.
@@ -140,7 +140,7 @@ public protocol SQLClient: _SQLClient {
     /// - Note: This should *not* destructively iterate over the rows.
     /// 
     /// - SeeAlso: `SQLQuery.count`
-    static func count(for queryState: QueryState) -> Int
+    static func count(with queryState: QueryState) -> Int
     
     /// Creates a `RowStateSequence` for the rows returned by the given 
     /// `queryState`.
@@ -149,7 +149,7 @@ public protocol SQLClient: _SQLClient {
     ///                   method may only be called once for a given `queryState`.
     /// 
     /// - SeeAlso: `SQLQuery.rowIterator`, `SQLQuery.rows`, `SQLQuery.onlyRow()`
-    static func makeRowStateSequence(for queryState: QueryState) -> RowStateSequence
+    static func makeRowStateSequence(with queryState: QueryState) -> RowStateSequence
     
     /// Returns the value of the column with the given `key` for the given `rowState`, 
     /// as retrieved by the given `statement`.
@@ -174,5 +174,5 @@ public protocol SQLClient: _SQLClient {
     ///          `nil`.
     /// 
     /// - SeeAlso: `SQLRow.value(for:)`
-    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, for rowState: RowState) throws -> Value?
+    static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: RowState) throws -> Value?
 }
