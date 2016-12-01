@@ -60,7 +60,6 @@ extension PostgreSQL: SQLClient {
         
         try execute("SET DateStyle = 'ISO'", with: conn)
         try execute("SET TimeZone = 'UTC'", with: conn)
-        try execute("SET client_encoding = 'Unicode'", with: conn)
         
         return conn
     }
