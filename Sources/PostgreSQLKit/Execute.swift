@@ -11,17 +11,17 @@ import libpq
 
 extension PostgreSQL {
     public enum RawValue {
-        case string(String)
-        case data(Data)
+        case textual(String)
+        case binary(Data)
         
         fileprivate func deconstruct() -> (data: Data?, length: Int32, format: Int32) {
             switch self {
-            case .string(let string):
+            case .textual(let string):
                 var data = string.data(using: .utf8)!
                 data.append(0)
                 return (data, 0, 0)
                 
-            case .data(let data):
+            case .binary(let data):
                 return (data, Int32(data.count), 1)
             }
         }

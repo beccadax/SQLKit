@@ -25,7 +25,7 @@ extension PostgreSQL {
                 return
             }
             
-            _ = try connection.execute("DEALLOCATE $1", with: [.string(name)])
+            _ = try connection.execute("DEALLOCATE $1", with: [.textual(name)])
             self.name = nil
         }
         

@@ -87,7 +87,7 @@ extension PostgreSQL: SQLClient {
             return "$\(parameters.count)"
         }
         
-        return try connectionState.execute(sql, with: parameters.map { $0.map(PostgreSQL.RawValue.string) })
+        return try connectionState.execute(sql, with: parameters.map { $0.map(PostgreSQL.RawValue.textual) })
     }
     
     public static func columnIndex<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> Int? {
