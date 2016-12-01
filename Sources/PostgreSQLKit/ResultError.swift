@@ -9,7 +9,7 @@
 import Foundation
 import libpq
 
-extension PostgreSQL.Result {
+extension PGResult {
     /// - RecommendedOver: `PQresultStatus`, `PQresultErrorField`
     public var error: Error {
         return Error(self)
@@ -19,7 +19,7 @@ extension PostgreSQL.Result {
         public let status: ExecStatusType
         fileprivate let fields: [FieldCode: String]
         
-        init(_ result: PostgreSQL.Result) {
+        init(_ result: PGResult) {
             self.status = PQresultStatus(result.pointer)
             
             var dict: [FieldCode: String] = [:]
@@ -97,7 +97,7 @@ extension PostgreSQL.Result {
     }
 }
 
-extension PostgreSQL.Result.Error: LocalizedError {
+extension PGResult.Error: LocalizedError {
     public var errorDescription: String {
         return self[.localizedPrimaryMessage]!
     }

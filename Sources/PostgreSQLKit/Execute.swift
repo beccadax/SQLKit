@@ -9,36 +9,36 @@
 import Foundation
 import libpq
 
-extension PostgreSQL.Connection {
+extension PGConn {
     /// - RecommendedOver: `PQexec`
-    public func execute(_ sql: String) throws -> PostgreSQL.Result {
+    public func execute(_ sql: String) throws -> PGResult {
         let resultPointer = PQexec(pointer, sql)!
-        return try PostgreSQL.Result(pointer: resultPointer)
+        return try PGResult(pointer: resultPointer)
     }
     
     /// - RecommendedOver: `PQexecParams`
-    public func execute(_ sql: String, with parameterValues: [PostgreSQL.RawValue?], ofTypes parameterTypes: [Oid?] = [], resultingIn resultFormat: PostgreSQL.RawValue.Format = .textual) throws -> PostgreSQL.Result {
+    public func execute(_ sql: String, with parameterValues: [PGRawValue?], ofTypes parameterTypes: [Oid?] = [], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
         let resultPointer = withDeconstructed(parameterValues) { valueBuffers, lengths, formats in
             PQexecParams(pointer, sql, Int32(valueBuffers.count), parameterTypes.map { $0 ?? 0 }, valueBuffers, lengths, formats, resultFormat.rawValue)!
         }
         
-        return try PostgreSQL.Result(pointer: resultPointer)
+        return try PGResult(pointer: resultPointer)
     }
     
     /// - RecommendedOver: `PQprepare`
-    public func prepare(_ sql: String, withTypes types: [Oid?] = [], name: String? = nil) throws -> PostgreSQL.PreparedStatement {
+    public func prepare(_ sql: String, withTypes types: [Oid?] = [], name: String? = nil) throws -> PGPreparedStatement {
         let name = name ?? ProcessInfo.processInfo.globallyUniqueString
         
         let resultPointer = PQprepare(pointer, name, sql, Int32(types.count), types.map { $0 ?? 0 })!
-        _ = try PostgreSQL.Result(pointer: resultPointer)
+        _ = try PGResult(pointer: resultPointer)
         
-        return PostgreSQL.PreparedStatement(connection: self, name: name, deallocating: true)
+        return PGPreparedStatement(connection: self, name: name, deallocating: true)
     }
 }
 
-extension PostgreSQL.PreparedStatement {
+extension PGPreparedStatement {
     /// - RecommendedOver: `PQexecPrepared`
-    public func execute(with parameterValues: [PostgreSQL.RawValue?], resultingIn resultFormat: PostgreSQL.RawValue.Format = .textual) throws -> PostgreSQL.Result {
+    public func execute(with parameterValues: [PGRawValue?], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
         guard let name = self.name else {
             preconditionFailure("Called execute(with:) on deallocated prepared statement")
         }
@@ -47,11 +47,11 @@ extension PostgreSQL.PreparedStatement {
             PQexecPrepared(self.connection.pointer, name, Int32(valueBuffers.count), valueBuffers, lengths, formats, resultFormat.rawValue)!
         }
         
-        return try PostgreSQL.Result(pointer: resultPointer)
+        return try PGResult(pointer: resultPointer)
     }
 }
 
-fileprivate func withDeconstructed<R>(_ parameterValues: [PostgreSQL.RawValue?], do body: (_ buffers: [UnsafePointer<Int8>?], _ lengths: [Int32], _ formats: [Int32]) throws -> R) rethrows -> R {
+fileprivate func withDeconstructed<R>(_ parameterValues: [PGRawValue?], do body: (_ buffers: [UnsafePointer<Int8>?], _ lengths: [Int32], _ formats: [Int32]) throws -> R) rethrows -> R {
     var datas: [Data?] = []
     var lengths: [Int32] = []
     var formats: [Int32] = []

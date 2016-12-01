@@ -20,7 +20,7 @@ import Foundation
 /// `PostgreSQL.ConnectionState` and `PostgreSQL.QueryState` expose types from 
 /// the library this client wraps, so you can use them to perform operations not 
 /// directly supported by `SQLKit`.
-extension PostgreSQL: SQLClient {
+public enum PostgreSQL: SQLClient {
     /// The type of `SQLDatabase<PostgreSQL>.state`.
     public struct DatabaseState {
         let url: URL
@@ -29,20 +29,20 @@ extension PostgreSQL: SQLClient {
     /// The type of `SQLConnection<PostgreSQL>.state`. This is a `PGConnection` 
     /// instance, which you can use directly if you need low-level access to the 
     /// database.
-    public typealias ConnectionState = PostgreSQL.Connection
+    public typealias ConnectionState = PGConn
     
     /// The type of `SQLQuery<PostgreSQL>.state`. This is a `PGResult` instance, 
     /// which you can use directly if you need low-level access to the query results.
-    public typealias QueryState = PostgreSQL.Result
+    public typealias QueryState = PGResult
     
     /// The type backing a `SQLRowIterator<PostgreSQL>` or 
     /// `SQLRowCollection<PostgreSQL>`. Because this type conforms to 
     /// `RandomAccessCollection`, you can access the rows returned by a query in 
     /// any order and as many times as you wish.
-    public typealias RowStateSequence = PostgreSQL.Result.TupleView
+    public typealias RowStateSequence = PGResult.TupleView
     
     /// The type of `SQLRow<PostgreSQL>.state`.
-    public typealias RowState = PostgreSQL.Result.Tuple
+    public typealias RowState = PGResult.Tuple
     
     public static func supports(_ url: URL) -> Bool {
         guard let scheme = url.scheme else {
@@ -56,7 +56,7 @@ extension PostgreSQL: SQLClient {
     }
     
     public static func makeConnectionState(with databaseState: DatabaseState) throws -> ConnectionState {
-        let conn = try Connection(connectingToURL: databaseState.url)
+        let conn = try PGConn(connectingToURL: databaseState.url)
         
         try execute("SET DateStyle = 'ISO'", with: conn)
         try execute("SET TimeZone = 'UTC'", with: conn)
@@ -87,7 +87,7 @@ extension PostgreSQL: SQLClient {
             return "$\(parameters.count)"
         }
         
-        return try connectionState.execute(sql, with: parameters.map { $0.map(PostgreSQL.RawValue.textual) })
+        return try connectionState.execute(sql, with: parameters.map { $0.map(PGRawValue.textual) })
     }
     
     public static func columnIndex<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> Int? {
@@ -114,7 +114,7 @@ extension PostgreSQL: SQLClient {
         return queryState.tuples
     }
     
-    private static func value<Value: SQLValue>(at index: Int, as _: Value.Type, in tuple: PostgreSQL.Result.Tuple) throws -> Value? {
+    private static func value<Value: SQLValue>(at index: Int, as _: Value.Type, in tuple: PGResult.Tuple) throws -> Value? {
         guard let rawValue = tuple[index] else {
             return nil
         }

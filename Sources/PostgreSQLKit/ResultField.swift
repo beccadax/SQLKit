@@ -9,9 +9,9 @@
 import Foundation
 import libpq
 
-extension PostgreSQL.Result {
+extension PGResult {
     public struct Field {
-        let result: PostgreSQL.Result
+        let result: PGResult
         public let index: Int
         
         /// - PreferredOver: `PQftype`
@@ -57,14 +57,14 @@ extension PostgreSQL.Result {
             return column - 1
         }
         
-        public var format: PostgreSQL.RawValue.Format {
+        public var format: PGRawValue.Format {
             let raw = PQfformat(result.pointer, Int32(index))
-            return PostgreSQL.RawValue.Format(rawValue: raw)!
+            return PGRawValue.Format(rawValue: raw)!
         }
     }
     
     public struct FieldView: _IntIndexedCollection, RandomAccessCollection {
-        fileprivate let result: PostgreSQL.Result
+        fileprivate let result: PGResult
         
         /// - PreferredOver: `PQnfields`
         public var endIndex: Int {

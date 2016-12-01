@@ -9,13 +9,13 @@
 import Foundation
 import libpq
 
-extension PostgreSQL.Result {
+extension PGResult {
     public var tuples: TupleView {
         return TupleView(result: self)
     }
     
     public struct Tuple: _IntIndexedCollection, RandomAccessCollection {
-        fileprivate let result: PostgreSQL.Result
+        fileprivate let result: PGResult
         public let index: Int
         
         public var endIndex: Int {
@@ -23,12 +23,12 @@ extension PostgreSQL.Result {
         }
         
         /// - PreferredOver: `PQgetvalue`, `PQgetisnull`, `PQgetlength`
-        public subscript(fieldIndex: Int) -> PostgreSQL.RawValue? {
+        public subscript(fieldIndex: Int) -> PGRawValue? {
             let field = result.fields[fieldIndex]
             return self[field]
         }
         
-        public subscript(field: Field) -> PostgreSQL.RawValue? {
+        public subscript(field: Field) -> PGRawValue? {
             precondition(field.result === result, "Used a Field from one Result to access a Tuple from another Result")
             
             guard PQgetisnull(result.pointer, Int32(index), Int32(field.index)) == 0 else {
@@ -40,10 +40,10 @@ extension PostgreSQL.Result {
             
             let valueData = Data(bytes: bytes, count: Int(length))
             
-            return PostgreSQL.RawValue(data: valueData, format: field.format)
+            return PGRawValue(data: valueData, format: field.format)
         }
         
-        public subscript(fieldName: String) -> PostgreSQL.RawValue?? {
+        public subscript(fieldName: String) -> PGRawValue?? {
             guard let fieldIndex = result.fields.index(of: fieldName) else {
                 return nil
             }
@@ -52,7 +52,7 @@ extension PostgreSQL.Result {
     }
 
     public struct TupleView: _IntIndexedCollection, RandomAccessCollection {
-        fileprivate let result: PostgreSQL.Result
+        fileprivate let result: PGResult
         
         /// - PreferredOver: `PQntuples`
         public var endIndex: Int {
