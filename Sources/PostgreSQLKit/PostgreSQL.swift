@@ -115,8 +115,12 @@ extension PostgreSQL: SQLClient {
     }
     
     private static func value<Value: SQLValue>(at index: Int, as _: Value.Type, in tuple: PostgreSQL.Result.Tuple) throws -> Value? {
-        guard let string = tuple[index] else {
+        guard let rawValue = tuple[index] else {
             return nil
+        }
+        
+        guard case .textual(let string) = rawValue else {
+            preconditionFailure("Somehow received a RawValue.binary, not a .textual!")
         }
         
         guard let value = Value(sqlLiteral: string) else {

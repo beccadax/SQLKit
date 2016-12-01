@@ -23,25 +23,27 @@ extension PostgreSQL.Result {
         }
         
         /// - PreferredOver: `PQgetvalue`, `PQgetisnull`, `PQgetlength`
-        public subscript(fieldIndex: Int) -> String? {
-            guard PQgetisnull(result.pointer, Int32(index), Int32(fieldIndex)) == 0 else {
+        public subscript(fieldIndex: Int) -> PostgreSQL.RawValue? {
+            let field = result.fields[fieldIndex]
+            return self[field]
+        }
+        
+        public subscript(field: Field) -> PostgreSQL.RawValue? {
+            precondition(field.result === result, "Used a Field from one Result to access a Tuple from another Result")
+            
+            guard PQgetisnull(result.pointer, Int32(index), Int32(field.index)) == 0 else {
                 return nil
             }
             
-            let length = PQgetlength(result.pointer, Int32(index), Int32(fieldIndex))
-            let bytes = PQgetvalue(result.pointer, Int32(index), Int32(fieldIndex))!
+            let length = PQgetlength(result.pointer, Int32(index), Int32(field.index))
+            let bytes = PQgetvalue(result.pointer, Int32(index), Int32(field.index))!
             
             let valueData = Data(bytes: bytes, count: Int(length))
             
-            return String(data: valueData, encoding: .utf8)
+            return PostgreSQL.RawValue(data: valueData, format: field.format)
         }
         
-        public subscript(field: Field) -> String? {
-            precondition(field.result === result, "Used a Field from one Result to access a Tuple from another Result")
-            return self[field.index]
-        }
-        
-        public subscript(fieldName: String) -> String?? {
+        public subscript(fieldName: String) -> PostgreSQL.RawValue?? {
             guard let fieldIndex = result.fields.index(of: fieldName) else {
                 return nil
             }

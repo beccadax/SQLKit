@@ -19,6 +19,15 @@ extension PostgreSQL {
         case textual(String)
         case binary(Data)
         
+        public init(data: Data, format: Format) {
+            switch format {
+            case .textual:
+                self = .textual(String(data: data, encoding: .utf8)!)
+            case .binary:
+                self = .binary(data)
+            }
+        }
+        
         public var format: Format {
             switch self {
             case .textual:
