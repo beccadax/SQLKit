@@ -56,6 +56,11 @@ extension PostgreSQL.Result {
             }
             return column - 1
         }
+        
+        public var format: PostgreSQL.RawValue.Format {
+            let raw = PQfformat(result.pointer, Int32(index))
+            return PostgreSQL.RawValue.Format(rawValue: raw)!
+        }
     }
     
     public struct FieldView: _IntIndexedCollection, RandomAccessCollection {
