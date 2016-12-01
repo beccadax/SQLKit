@@ -9,51 +9,6 @@
 import Foundation
 import libpq
 
-extension PostgreSQL {
-    public enum RawValue {
-        public enum Format: Int32 {
-            case textual = 0
-            case binary = 1
-        }
-        
-        case textual(String)
-        case binary(Data)
-        
-        public init(data: Data, format: Format) {
-            switch format {
-            case .textual:
-                self = .textual(String(data: data, encoding: .utf8)!)
-            case .binary:
-                self = .binary(data)
-            }
-        }
-        
-        public var format: Format {
-            switch self {
-            case .textual:
-                return .textual
-            case .binary:
-                return .binary
-            }
-        }
-        
-        fileprivate func deconstruct() -> (data: Data?, length: Int32, format: Int32) {
-            var encodedData: Data
-            
-            switch self {
-            case .textual(let string):
-                encodedData = string.data(using: .utf8)!
-                encodedData.append(0)
-                
-            case .binary(let data):
-                encodedData = data
-            }
-            
-            return (encodedData, Int32(encodedData.count), format.rawValue)
-        }
-    }
-}
-
 extension PostgreSQL.Connection {
     /// - RecommendedOver: `PQexec`
     public func execute(_ sql: String) throws -> PostgreSQL.Result {
@@ -117,5 +72,23 @@ extension PostgreSQL.PreparedStatement {
         }
         
         return try PostgreSQL.Result(pointer: resultPointer)
+    }
+}
+
+
+extension PostgreSQL.RawValue {
+    fileprivate func deconstruct() -> (data: Data?, length: Int32, format: Int32) {
+        var encodedData: Data
+        
+        switch self {
+        case .textual(let string):
+            encodedData = string.data(using: .utf8)!
+            encodedData.append(0)
+            
+        case .binary(let data):
+            encodedData = data
+        }
+        
+        return (encodedData, Int32(encodedData.count), format.rawValue)
     }
 }
