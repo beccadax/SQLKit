@@ -11,12 +11,12 @@ import Foundation
 public final class PGPreparedStatement {
     public let connection: PGConn
     public private(set) var name: String?
-    public let deallocating: Bool
+    public let deallocateOnDeinit: Bool
     
-    public init(connection: PGConn, name: String, deallocating: Bool = false) {
+    public init(connection: PGConn, name: String, deallocatingOnDeinit: Bool = false) {
         self.connection = connection
         self.name = name
-        self.deallocating = deallocating
+        self.deallocateOnDeinit = deallocatingOnDeinit
     }
     
     public func deallocate() throws {
@@ -29,6 +29,6 @@ public final class PGPreparedStatement {
     }
     
     deinit {
-        if deallocating { _ = try? deallocate() }
+        if deallocateOnDeinit { _ = try? deallocate() }
     }
 }

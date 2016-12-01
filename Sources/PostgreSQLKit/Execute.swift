@@ -32,7 +32,7 @@ extension PGConn {
         let resultPointer = PQprepare(pointer, name, sql, Int32(types.count), types.map { $0 ?? 0 })!
         _ = try PGResult(pointer: resultPointer)
         
-        return PGPreparedStatement(connection: self, name: name, deallocating: true)
+        return PGPreparedStatement(connection: self, name: name, deallocatingOnDeinit: true)
     }
 }
 
