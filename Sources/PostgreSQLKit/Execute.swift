@@ -11,19 +11,36 @@ import libpq
 
 extension PostgreSQL {
     public enum RawValue {
+        public enum Format: Int32 {
+            case textual = 0
+            case binary = 1
+        }
+        
         case textual(String)
         case binary(Data)
         
+        public var format: Format {
+            switch self {
+            case .textual:
+                return .textual
+            case .binary:
+                return .binary
+            }
+        }
+        
         fileprivate func deconstruct() -> (data: Data?, length: Int32, format: Int32) {
+            var encodedData: Data
+            
             switch self {
             case .textual(let string):
-                var data = string.data(using: .utf8)!
-                data.append(0)
-                return (data, 0, 0)
+                encodedData = string.data(using: .utf8)!
+                encodedData.append(0)
                 
             case .binary(let data):
-                return (data, Int32(data.count), 1)
+                encodedData = data
             }
+            
+            return (encodedData, Int32(encodedData.count), format.rawValue)
         }
     }
 }
