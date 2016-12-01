@@ -27,6 +27,18 @@ extension PostgreSQL {
             }
         }
         
+        public var data: Data {
+            switch self {
+            case .textual(let string):
+                var data = string.data(using: .utf8)!
+                data.append(0)
+                return data
+                
+            case .binary(let data):
+                return data
+            }
+        }
+        
         public var format: Format {
             switch self {
             case .textual:

@@ -52,37 +52,21 @@ extension PostgreSQL.PreparedStatement {
 }
 
 fileprivate func withDeconstructed<R>(_ parameterValues: [PostgreSQL.RawValue?], do body: (_ buffers: [UnsafePointer<Int8>?], _ lengths: [Int32], _ formats: [Int32]) throws -> R) rethrows -> R {
-    fatalError()
     var datas: [Data?] = []
     var lengths: [Int32] = []
     var formats: [Int32] = []
     
     for value in parameterValues {
-        let deconstructed = value?.deconstruct() ?? (data: nil, length: 0, format: 0)
+        let data = value?.data
+        let length = Int32(data?.count ?? 0)
+        let format = value?.format ?? .textual
         
-        datas.append(deconstructed.data)
-        lengths.append(deconstructed.length)
-        formats.append(deconstructed.format)
+        datas.append(data)
+        lengths.append(length)
+        formats.append(format.rawValue)
     }
     
     return try withUnsafePointers(to: datas) {
         try body($0, lengths, formats)
-    }
-}
-
-extension PostgreSQL.RawValue {
-    fileprivate func deconstruct() -> (data: Data?, length: Int32, format: Int32) {
-        var encodedData: Data
-        
-        switch self {
-        case .textual(let string):
-            encodedData = string.data(using: .utf8)!
-            encodedData.append(0)
-            
-        case .binary(let data):
-            encodedData = data
-        }
-        
-        return (encodedData, Int32(encodedData.count), format.rawValue)
     }
 }
