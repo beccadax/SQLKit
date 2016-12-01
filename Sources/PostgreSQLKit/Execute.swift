@@ -18,8 +18,15 @@ extension PGConn {
     
     /// - RecommendedOver: `PQexecParams`
     public func execute(_ sql: String, with parameterValues: [PGRawValue?], ofTypes parameterTypes: [Oid?] = [], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
+        // Replace nil types with 0s, pad to length of values array
+        var types = parameterTypes.map { $0 ?? 0 }
+        let shortfall = parameterValues.count - parameterTypes.count 
+        if shortfall > 0 {
+            types += repeatElement(0, count: shortfall)
+        }
+        
         let resultPointer = withDeconstructed(parameterValues) { valueBuffers, lengths, formats in
-            PQexecParams(pointer, sql, Int32(valueBuffers.count), parameterTypes.map { $0 ?? 0 }, valueBuffers, lengths, formats, resultFormat.rawValue)!
+            PQexecParams(pointer, sql, Int32(valueBuffers.count), types, valueBuffers, lengths, formats, resultFormat.rawValue)!
         }
         
         return try PGResult(pointer: resultPointer)
