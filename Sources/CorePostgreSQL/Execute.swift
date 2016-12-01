@@ -17,26 +17,33 @@ extension PGConn {
     }
     
     /// - RecommendedOver: `PQexecParams`
-    public func execute(_ sql: String, with parameterValues: [PGRawValue?], ofTypes parameterTypes: [Oid?] = [], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
-        // Replace nil types with 0s, pad to length of values array
-        var types = parameterTypes.map { $0 ?? 0 }
+    public func execute(_ sql: String, withRaw parameterValues: [PGRawValue?], ofTypes parameterTypes: [PGType?] = [], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
+        var typeOids = oids(of: parameterTypes)
+        
+        // We need to pad this to the same length as the other arrays.
         let shortfall = parameterValues.count - parameterTypes.count 
         if shortfall > 0 {
-            types += repeatElement(0, count: shortfall)
+            typeOids += repeatElement(PGType.automaticOid, count: shortfall)
         }
         
         let resultPointer = withDeconstructed(parameterValues) { valueBuffers, lengths, formats in
-            PQexecParams(pointer, sql, Int32(valueBuffers.count), types, valueBuffers, lengths, formats, resultFormat.rawValue)!
+            PQexecParams(pointer, sql, Int32(valueBuffers.count), typeOids, valueBuffers, lengths, formats, resultFormat.rawValue)!
         }
         
         return try PGResult(pointer: resultPointer)
     }
     
+    public func execute(_ sql: String, with parameterValues: [PGValue?], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
+        let (rawParameters, types) = rawValues(of: parameterValues)
+        return try execute(sql, withRaw: rawParameters, ofTypes: types, resultingIn: resultFormat)
+    }
+    
     /// - RecommendedOver: `PQprepare`
-    public func prepare(_ sql: String, withTypes types: [Oid?] = [], name: String? = nil) throws -> PGPreparedStatement {
+    public func prepare(_ sql: String, withRawTypes types: [PGType?] = [], name: String? = nil) throws -> PGPreparedStatement {
         let name = name ?? ProcessInfo.processInfo.globallyUniqueString
+        let typeOids = oids(of: types)
         
-        let resultPointer = PQprepare(pointer, name, sql, Int32(types.count), types.map { $0 ?? 0 })!
+        let resultPointer = PQprepare(pointer, name, sql, Int32(typeOids.count), typeOids)!
         _ = try PGResult(pointer: resultPointer)
         
         return PGPreparedStatement(connection: self, name: name, deallocatingOnDeinit: true)
@@ -45,7 +52,7 @@ extension PGConn {
 
 extension PGPreparedStatement {
     /// - RecommendedOver: `PQexecPrepared`
-    public func execute(with parameterValues: [PGRawValue?], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
+    public func execute(withRaw parameterValues: [PGRawValue?], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
         guard let name = self.name else {
             preconditionFailure("Called execute(with:) on deallocated prepared statement")
         }
@@ -55,6 +62,12 @@ extension PGPreparedStatement {
         }
         
         return try PGResult(pointer: resultPointer)
+    }
+    
+    
+    public func execute(with parameterValues: [PGValue?], resultingIn resultFormat: PGRawValue.Format = .textual) throws -> PGResult {
+        let (rawParameters, _) = rawValues(of: parameterValues)
+        return try execute(withRaw: rawParameters, resultingIn: resultFormat)
     }
 }
 

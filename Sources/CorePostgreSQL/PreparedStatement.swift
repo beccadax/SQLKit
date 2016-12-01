@@ -24,7 +24,7 @@ public final class PGPreparedStatement {
             return
         }
         
-        _ = try connection.execute("DEALLOCATE $1", with: [.textual(name)])
+        _ = try connection.execute("DEALLOCATE $1", with: [name])
         self.name = nil
     }
     

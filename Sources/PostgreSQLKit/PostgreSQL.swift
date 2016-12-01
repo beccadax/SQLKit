@@ -88,7 +88,7 @@ public enum PostgreSQL: SQLClient {
             return "$\(parameters.count)"
         }
         
-        return try connectionState.execute(sql, with: parameters.map { $0.map(PGRawValue.textual) })
+        return try connectionState.execute(sql, with: parameters)
     }
     
     public static func columnIndex<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> Int? {
