@@ -53,7 +53,7 @@ extension PostgreSQL.Connection {
     }
     
     /// - RecommendedOver: `PQexecParams`
-    public func execute(_ sql: String, with parameterValues: [PostgreSQL.RawValue?], ofTypes parameterTypes: [Oid?] = []) throws -> PostgreSQL.Result {
+    public func execute(_ sql: String, with parameterValues: [PostgreSQL.RawValue?], ofTypes parameterTypes: [Oid?] = [], resultingIn resultFormat: PostgreSQL.RawValue.Format = .textual) throws -> PostgreSQL.Result {
         var parameterDatas: [Data?] = []
         var parameterLengths: [Int32] = []
         var parameterFormats: [Int32] = []
@@ -67,7 +67,7 @@ extension PostgreSQL.Connection {
         }
         
         let resultPointer = withUnsafePointers(to: parameterDatas) {
-            PQexecParams(pointer, sql, Int32($0.count), parameterTypes.map { $0 ?? 0 }, $0, parameterLengths, parameterFormats, 0)!
+            PQexecParams(pointer, sql, Int32($0.count), parameterTypes.map { $0 ?? 0 }, $0, parameterLengths, parameterFormats, resultFormat.rawValue)!
         }
         
         return try PostgreSQL.Result(pointer: resultPointer)
@@ -86,7 +86,7 @@ extension PostgreSQL.Connection {
 
 extension PostgreSQL.PreparedStatement {
     /// - RecommendedOver: `PQexecPrepared`
-    public func execute(with parameterValues: [PostgreSQL.RawValue?]) throws -> PostgreSQL.Result {
+    public func execute(with parameterValues: [PostgreSQL.RawValue?], resultingIn resultFormat: PostgreSQL.RawValue.Format = .textual) throws -> PostgreSQL.Result {
         guard let name = name else {
             preconditionFailure("Called execute(with:) on deallocated prepared statement")
         }
@@ -104,7 +104,7 @@ extension PostgreSQL.PreparedStatement {
         }
         
         let resultPointer = withUnsafePointers(to: parameterDatas) {
-            PQexecPrepared(connection.pointer, name, Int32($0.count), $0, parameterLengths, parameterFormats, 0)!
+            PQexecPrepared(connection.pointer, name, Int32($0.count), $0, parameterLengths, parameterFormats, resultFormat.rawValue)!
         }
         
         return try PostgreSQL.Result(pointer: resultPointer)
