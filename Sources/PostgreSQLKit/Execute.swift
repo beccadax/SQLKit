@@ -18,20 +18,8 @@ extension PostgreSQL.Connection {
     
     /// - RecommendedOver: `PQexecParams`
     public func execute(_ sql: String, with parameterValues: [PostgreSQL.RawValue?], ofTypes parameterTypes: [Oid?] = [], resultingIn resultFormat: PostgreSQL.RawValue.Format = .textual) throws -> PostgreSQL.Result {
-        var parameterDatas: [Data?] = []
-        var parameterLengths: [Int32] = []
-        var parameterFormats: [Int32] = []
-        
-        for value in parameterValues {
-            let deconstructed = value?.deconstruct() ?? (data: nil, length: 0, format: 0)
-            
-            parameterDatas.append(deconstructed.data)
-            parameterLengths.append(deconstructed.length)
-            parameterFormats.append(deconstructed.format)
-        }
-        
-        let resultPointer = withUnsafePointers(to: parameterDatas) {
-            PQexecParams(pointer, sql, Int32($0.count), parameterTypes.map { $0 ?? 0 }, $0, parameterLengths, parameterFormats, resultFormat.rawValue)!
+        let resultPointer = withDeconstructed(parameterValues) { valueBuffers, lengths, formats in
+            PQexecParams(pointer, sql, Int32(valueBuffers.count), parameterTypes.map { $0 ?? 0 }, valueBuffers, lengths, formats, resultFormat.rawValue)!
         }
         
         return try PostgreSQL.Result(pointer: resultPointer)
@@ -51,30 +39,36 @@ extension PostgreSQL.Connection {
 extension PostgreSQL.PreparedStatement {
     /// - RecommendedOver: `PQexecPrepared`
     public func execute(with parameterValues: [PostgreSQL.RawValue?], resultingIn resultFormat: PostgreSQL.RawValue.Format = .textual) throws -> PostgreSQL.Result {
-        guard let name = name else {
+        guard let name = self.name else {
             preconditionFailure("Called execute(with:) on deallocated prepared statement")
         }
         
-        var parameterDatas: [Data?] = []
-        var parameterLengths: [Int32] = []
-        var parameterFormats: [Int32] = []
-        
-        for value in parameterValues {
-            let deconstructed = value?.deconstruct() ?? (data: nil, length: 0, format: 0)
-            
-            parameterDatas.append(deconstructed.data)
-            parameterLengths.append(deconstructed.length)
-            parameterFormats.append(deconstructed.format)
-        }
-        
-        let resultPointer = withUnsafePointers(to: parameterDatas) {
-            PQexecPrepared(connection.pointer, name, Int32($0.count), $0, parameterLengths, parameterFormats, resultFormat.rawValue)!
+        let resultPointer = withDeconstructed(parameterValues) { valueBuffers, lengths, formats in
+            PQexecPrepared(self.connection.pointer, name, Int32(valueBuffers.count), valueBuffers, lengths, formats, resultFormat.rawValue)!
         }
         
         return try PostgreSQL.Result(pointer: resultPointer)
     }
 }
 
+fileprivate func withDeconstructed<R>(_ parameterValues: [PostgreSQL.RawValue?], do body: (_ buffers: [UnsafePointer<Int8>?], _ lengths: [Int32], _ formats: [Int32]) throws -> R) rethrows -> R {
+    fatalError()
+    var datas: [Data?] = []
+    var lengths: [Int32] = []
+    var formats: [Int32] = []
+    
+    for value in parameterValues {
+        let deconstructed = value?.deconstruct() ?? (data: nil, length: 0, format: 0)
+        
+        datas.append(deconstructed.data)
+        lengths.append(deconstructed.length)
+        formats.append(deconstructed.format)
+    }
+    
+    return try withUnsafePointers(to: datas) {
+        try body($0, lengths, formats)
+    }
+}
 
 extension PostgreSQL.RawValue {
     fileprivate func deconstruct() -> (data: Data?, length: Int32, format: Int32) {
