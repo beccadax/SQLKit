@@ -49,26 +49,13 @@ extension SQLValueError: LocalizedError {
         case .valueNull:
             return NSLocalizedString("was unexpectedly null", comment: "")
             
-        case let .valueNotConvertible(sqlLiteral: value, underlying: underlying):
-            let valuePart: String
-            let underlyingPart: String
+        case let .stringNotConvertible(sqlLiteral, type):
+            let shortValue = sqlLiteral.truncated(to: 30)
             
-            if let value = value {
-                let shortValue = value.truncated(to: 30)
-                valuePart = NSLocalizedString("\"\(shortValue)\" ", comment: "")
-            }
-            else {
-                valuePart = ""
-            }
+            return NSLocalizedString("\"\(shortValue)\" could not be converted to the desired type \(type)", comment: "")
             
-            if let underlying = underlying, let underlyingReason = (underlying as NSError).localizedFailureReason {
-                underlyingPart = NSLocalizedString(". \(underlyingReason)", comment: "")
-            }
-            else {
-                underlyingPart = ""
-            }
-            
-            return NSLocalizedString("\(valuePart)could not be converted to the desired type\(underlyingPart)", comment: "")
+        case let .typeUnsupportedByClient(valueType, client):
+            return NSLocalizedString("\(client) does not support values of type \(valueType)", comment: "")
         }
     }
     
@@ -85,8 +72,11 @@ extension SQLValueError: LocalizedError {
         case .valueNull:
             return NSLocalizedString("Check that the data is correct and the application handles all expected cases.", comment: "")
             
-        case .valueNotConvertible:
-            return NSLocalizedString("Ensure that the desired type is supported by the SQL client and suits the data being stored into it.", comment: "")
+        case .stringNotConvertible:
+            return NSLocalizedString("Ensure that the string is properly formed so that it can be parsed by the type.", comment: "")
+        
+        case .typeUnsupportedByClient:
+            return NSLocalizedString("Make the type SQLStringConvertible to provide a string-based fallback, or choose a supported type.", comment: "")
         }
     }
 }

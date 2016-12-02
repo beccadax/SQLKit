@@ -96,17 +96,21 @@ public enum SQLColumnError: Error {
 }
 
 /// Errors which describe common reasons a `SQLError.valueInvalid` may be thrown.
-/// 
-/// `valueNotConvertible` is often thrown by `SQLClient.value(for:with:)` 
-/// implementations, and in fact is the only `SQLKit` error which should be directly 
-/// thrown by a `SQLClient`.
 public enum SQLValueError: Error {
     /// The value was `NULL`, but it was accessed using a non-nullable `SQLColumnKey`.
     case valueNull
     
     /// The value could not be converted to the type the column key indicates it 
     /// ought to be.
-    case valueNotConvertible(sqlLiteral: String?, underlying: Error?)
+    /// 
+    /// This should be thrown by `SQLStringConvertible.init(sqlLiteral:)` when there 
+    /// is no more specific error that can be communicated.
+    case stringNotConvertible(sqlLiteral: String, type: SQLStringConvertible.Type)
+    
+    /// Indicates that the `valueType` type indicated is not supported by `client`.
+    /// See `SQLValue` for more information on why this might happen and what 
+    /// `SQLValue` conformance means.
+    case typeUnsupportedByClient(valueType: SQLValue.Type, client: _SQLClient.Type)
 }
 
 extension SQLError {
