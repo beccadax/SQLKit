@@ -23,11 +23,6 @@ extension PGResult {
         }
         
         /// - PreferredOver: `PQgetvalue`, `PQgetisnull`, `PQgetlength`
-        public subscript(fieldIndex: Int) -> PGRawValue? {
-            let field = result.fields[fieldIndex]
-            return self[field]
-        }
-        
         public subscript(field: Field) -> PGRawValue? {
             precondition(field.result === result, "Used a Field from one Result to access a Tuple from another Result")
             
@@ -43,11 +38,34 @@ extension PGResult {
             return PGRawValue(data: valueData, format: field.format)
         }
         
+        public subscript(fieldIndex: Int) -> PGRawValue? {
+            let field = result.fields[fieldIndex]
+            return self[field]
+        }
+        
         public subscript(fieldName: String) -> PGRawValue?? {
             guard let fieldIndex = result.fields.index(of: fieldName) else {
                 return nil
             }
             return self[fieldIndex]
+        }
+        
+        // WORKAROUND: Swift does not support generic subscripts 
+        public func value<Value: PGValue>(in field: Field, as valueType: Value.Type) throws -> Value? {
+            let rawValue = self[field]
+            return try rawValue.map(valueType.init(rawPGValue:))
+        }
+        
+        public func value<Value: PGValue>(at fieldIndex: Int, as valueType: Value.Type) throws -> Value? {
+            let field = result.fields[fieldIndex]
+            return try self.value(in: field, as: valueType)
+        }
+        
+        public func value<Value: PGValue>(for fieldName: String, as valueType: Value.Type) throws -> Value?? {
+            guard let fieldIndex = result.fields.index(of: fieldName) else {
+                return nil
+            }
+            return try self.value(at: fieldIndex, as: valueType)
         }
     }
 
