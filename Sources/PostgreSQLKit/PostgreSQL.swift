@@ -82,16 +82,34 @@ public enum PostgreSQL: SQLClient {
     }
     
     public static func makeQueryState(_ statement: SQLStatement, with connectionState: ConnectionState) throws -> QueryState {
-        var parameters: [String?] = []
-        let sql = statement.rawSQLByReplacingParameters { value in
-            parameters.append(value?.sqlLiteral)
+        var parameters: [PGValue?] = []
+        let sql = try statement.rawSQLByReplacingParameters { value in
+            switch value {
+            case let value as PGValue?:
+                parameters.append(value)
+            
+            case let value as SQLStringConvertible?:
+                parameters.append(value?.sqlLiteral)
+            
+            default:
+                throw SQLValueError.typeUnsupportedByClient(valueType: type(of: value!), client: self)
+            }
+            
             return "$\(parameters.count)"
         }
         
         return try connectionState.execute(sql, with: parameters)
     }
     
+    private static func checkCompatibility<Value: SQLValue>(of type: Value.Type) throws {
+        guard type is PGValue.Type || type is SQLStringConvertible.Type else {
+            throw SQLValueError.typeUnsupportedByClient(valueType: type, client: self)
+        }
+    }
+    
     public static func columnIndex<Value: SQLValue>(forName name: String, as valueType: Value.Type, with queryState: QueryState) throws -> Int? {
+        try checkCompatibility(of: valueType)
+        
         guard let index = queryState.fields.index(of: name) else {
             return nil
         }
@@ -99,6 +117,8 @@ public enum PostgreSQL: SQLClient {
     }
     
     public static func columnName<Value: SQLValue>(at index: Int, as valueType: Value.Type, with queryState: QueryState) throws -> String? {
+        try checkCompatibility(of: valueType)
+        
         guard queryState.fields.indices.contains(index) else {
             return nil
         }
@@ -115,20 +135,22 @@ public enum PostgreSQL: SQLClient {
         return queryState.tuples
     }
     
-    private static func value<Value: SQLValue>(at index: Int, as _: Value.Type, in tuple: PGResult.Tuple) throws -> Value? {
+    private static func value<Value: SQLValue>(at index: Int, as valueType: Value.Type, in tuple: PGResult.Tuple) throws -> Value? {
         guard let rawValue = tuple[index] else {
             return nil
         }
         
-        guard case .textual(let string) = rawValue else {
-            preconditionFailure("Somehow received a RawValue.binary, not a .textual!")
-        }
+        switch valueType {
+        case let valueType as PGValue.Type:
+            return (try valueType.init(rawPGValue: rawValue) as! Value)
+            
+        case let valueType as SQLStringConvertible.Type:
+            let literal = try String(rawPGValue: rawValue) 
+            return (try valueType.init(sqlLiteral: literal) as! Value)
         
-        guard let value = Value(sqlLiteral: string) else {
-            throw SQLValueError.valueNotConvertible(sqlLiteral: string, underlying: nil) 
+        default:
+            preconditionFailure("Somehow got a column key for a type unsupported by PostgreSQL!")
         }
-        
-        return value
     }
     
     public static func value<Value: SQLValue>(for key: SQLColumnKey<Value>, with rowState: RowState) throws -> Value? {

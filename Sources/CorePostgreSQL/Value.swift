@@ -54,10 +54,37 @@ public protocol PGValue {
     
     init(textualRawPGValue text: String) throws
     var rawPGValue: PGRawValue { get }
+    
+    // Implemented by extension; do not override.
+    init(rawPGValue: PGRawValue) throws
+}
+
+extension PGValue {
+    public init(rawPGValue: PGRawValue) throws {
+        switch rawPGValue {
+        case .textual(let text):
+            try self.init(textualRawPGValue: text)
+            
+        case .binary(_):
+            fatalError("Type does not support binary values.")
+        }
+    }
 }
 
 public protocol PGBinaryValue: PGValue {
     init(binaryRawPGValue bytes: Data) throws
+}
+
+extension PGBinaryValue {
+    public init(rawPGValue: PGRawValue) throws {
+        switch rawPGValue {
+        case .textual(let text):
+            try self.init(textualRawPGValue: text)
+            
+        case .binary(let bytes):
+            try self.init(binaryRawPGValue: bytes)
+        }
+    }
 }
 
 extension String: PGValue {
