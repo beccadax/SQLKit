@@ -229,17 +229,3 @@ private extension String {
         return String(characters.dropLast(maxLength))
     }
 }
-
-extension Int {
-    func formatted(digits: Int) -> String {
-        let base = String(self)
-        
-        let extraCount = digits - base.characters.count
-        guard extraCount > 0 else {
-            return base
-        }
-        
-        let extra = String(repeating: "0", count: extraCount)
-        return extra + base
-    }
-}
