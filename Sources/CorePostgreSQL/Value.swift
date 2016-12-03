@@ -117,22 +117,6 @@ extension Data: PGBinaryValue {
     }
 }
 
-enum PGConversionError: Error {
-    case invalidNumber(String)
-    
-    case invalidDate(underlying: Error, at: String.Index, in: String)
-    case unexpectedDateCharacter(Character, during: Any)
-    case invalidTimeZoneOffset(String)
-    case nonexistentDate(DateComponents)
-    case earlyTermination(during: Any)
-    
-    case invalidInterval(underlying: Error, at: String.Index, in: String)
-    case unknownIntervalUnit(Character)
-    case redundantQuantity(oldValue: Int, newValue: Int, for: PGInterval.Component)
-    case unitlessQuantity(Int)
-    case missingIntervalPrefix(Character)
-}
-
 extension Int: PGValue {
     public static let preferredPGType = PGType.int8
 

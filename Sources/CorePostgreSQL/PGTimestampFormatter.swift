@@ -52,7 +52,7 @@ class PGTimestampFormatter: Formatter {
 }
 
 extension PGTimestampFormatter {
-    enum Progress: Hashable {
+    enum Progress: Hashable, PGConversionErrorParsingState {
         case year, month, day, hour, minute, second, timeZone, eraB, eraC, end
     }
     
