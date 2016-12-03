@@ -46,9 +46,9 @@ extension PGIntervalFormatter {
             case readingQuantity(NumberAccumulator, in: PGInterval.Component.Section, for: PGInterval)
         }
         
-        fileprivate let initialParseState = ParseState.start(for: PGInterval())
+        let initialParseState = ParseState.start(for: PGInterval())
         
-        fileprivate func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
+        func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
             switch (state, char) {
             case (.start(for: let interval), "P"):
                 return .expectingQuantity(in: .date, for: interval)
@@ -85,7 +85,7 @@ extension PGIntervalFormatter {
             }
         }
         
-        fileprivate func finishParsing(in state: ParseState) throws -> PGInterval {
+        func finishParsing(in state: ParseState) throws -> PGInterval {
             switch state {
             case .expectingQuantity(in: _, for: let interval):
                 return interval
