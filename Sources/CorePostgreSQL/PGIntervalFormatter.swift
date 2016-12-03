@@ -89,36 +89,6 @@ extension PGIntervalFormatter {
             throw PGConversionError.invalidInterval(underlying: error, at: text.characters.endIndex, in: text)
         }
     }
-    
-    private struct IntervalWriter {
-        var interval = PGInterval()
-        var digits = ""
-        
-        var section: PGInterval.Component.Section? = nil
-        
-        mutating func addDigit(_ digit: Character) {
-            digits.append(digit)
-        }
-        
-        mutating func writeDigits(to component: PGInterval.Component) throws {
-            let number = try Int(textualRawPGValue: digits)
-            
-            if let oldValue = interval[component] {
-                throw PGConversionError.redundantQuantity(oldValue: oldValue, newValue: number, for: component)
-            }
-            
-            interval[component] = number
-            digits = ""
-        }
-        
-        mutating func advance(to section: PGInterval.Component.Section?) throws {
-            guard digits.isEmpty else {
-                let number = try Int(textualRawPGValue: digits)
-                throw PGConversionError.unitlessQuantity(number)
-            }
-            self.section = section
-        }
-    }
 }
 
 extension PGIntervalFormatter {
