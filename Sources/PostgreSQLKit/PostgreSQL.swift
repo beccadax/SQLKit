@@ -60,6 +60,7 @@ public enum PostgreSQL: SQLClient {
         let conn = try PGConn(connectingToURL: databaseState.url)
         
         try execute("SET DateStyle = 'ISO'", with: conn)
+        try execute("SET IntervalStyle = 'iso_8601'", with: conn)
         try execute("SET TimeZone = 'UTC'", with: conn)
         
         return conn

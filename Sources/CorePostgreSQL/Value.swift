@@ -117,6 +117,100 @@ extension Data: PGBinaryValue {
     }
 }
 
+enum PGConversionError: Error {
+    case invalidNumber(String)
+    
+    case invalidDateComponents(underlying: Error, at: String.Index, in: String)
+    case unexpectedDateCharacter(Character, during: Calendar.Component)
+    case invalidTimeZoneOffset(String)
+    case nonexistentDate(DateComponents)
+    
+    case invalidInterval(underlying: Error, at: String.Index, in: String)
+    case unknownIntervalUnit(Character)
+    case redundantQuantity(oldValue: Int, newValue: Int, for: PGInterval.Component)
+    case unitlessQuantity(Int)
+    case missingIntervalPrefix(Character)
+}
+
+extension Int: PGValue {
+    public static let preferredPGType = PGType.int8
+
+    public init(textualRawPGValue text: String) throws {
+        guard let value = Int(text) else {
+            throw PGConversionError.invalidNumber(text)
+        }
+        
+        self = value
+    }
+    
+    public var rawPGValue: PGRawValue {
+        return .textual(String(self))
+    }
+}
+
+extension Double: PGValue {
+    public static let preferredPGType = PGType.float8
+    
+    public init(textualRawPGValue text: String) throws {
+        guard let value = Double(text) else {
+            throw PGConversionError.invalidNumber(text)
+        }
+        
+        self = value
+    }
+    
+    public var rawPGValue: PGRawValue {
+        return .textual(String(self))
+    }
+}
+
+extension Date: PGValue {
+    public static let preferredPGType = PGType.timestampTZ
+        
+    public init(textualRawPGValue text: String) throws {
+        let components = try DateComponents(textualRawPGValue: text)
+        guard let date = Calendar.gregorian.date(from: components) else {
+            throw PGConversionError.nonexistentDate(components)
+        }
+        self = date
+    }
+
+    public var rawPGValue: PGRawValue {
+        let components = Calendar.gregorian.dateComponents(in: .utc, from: self)
+        assert(components.timeZone != nil, "Need Calendar.dateComponents(in:from:) to fill in the time zone")
+        return components.rawPGValue
+    }
+}
+
+extension DateComponents: PGValue {
+    public static let preferredPGType = PGType.timestampTZ
+    
+    private static let formatter = PGDateFormatter()
+    
+    public init(textualRawPGValue text: String) throws {
+        self = try DateComponents.formatter.dateComponents(from: text)
+    }
+    
+    public var rawPGValue: PGRawValue {
+        return .textual(DateComponents.formatter.string(from: self))
+    }
+}
+
+extension PGInterval: PGValue {
+    public static let preferredPGType = PGType.interval
+    
+    private static let formatter = PGIntervalFormatter()
+    
+    public init(textualRawPGValue text: String) throws {
+        self.init()     // XXX compiler crash
+        self = try PGInterval.formatter.interval(from: text)
+    }
+    
+    public var rawPGValue: PGRawValue {
+        return .textual(PGInterval.formatter.string(from: self))
+    }
+}
+
 func rawValues(of values: [PGValue?]) -> ([PGRawValue?], [PGType?]) {
     var rawValues: [PGRawValue?] = []
     var types: [PGType?] = []
