@@ -164,6 +164,22 @@ extension Double: PGValue {
     }
 }
 
+extension Decimal: PGValue {
+    public static let preferredPGType = PGType.numeric
+    
+    public init(textualRawPGValue text: String) throws {
+        guard let value = Decimal(string: text, locale: .posix) else {
+            throw PGConversionError.invalidNumber(text)
+        }
+        
+        self = value
+    }
+    
+    public var rawPGValue: PGRawValue {
+        return .textual(String(describing: self))
+    }
+}
+
 extension Date: PGValue {
     public static let preferredPGType = PGType.timestampTZ
         
