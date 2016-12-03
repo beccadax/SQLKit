@@ -12,7 +12,7 @@ import libpq
 public enum PGType: Oid {
     static let automaticOid: Oid = 0
     
-    case bool = 16
+    case boolean = 16
     case byteA = 17
     case char = 18
     case name = 19

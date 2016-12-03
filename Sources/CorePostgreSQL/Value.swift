@@ -117,6 +117,25 @@ extension Data: PGBinaryValue {
     }
 }
 
+extension Bool: PGValue {
+    public static let preferredPGType = PGType.boolean
+    
+    public init(textualRawPGValue text: String) throws {
+        switch text {
+        case "t", "true", "y", "yes", "on", "1":
+            self = true
+        case "f", "false", "n", "no", "off", "0":
+            self = false
+        default:
+            throw PGConversionError.invalidBoolean(text)
+        }
+    }
+    
+    public var rawPGValue: PGRawValue {
+        return .textual(self ? "t" : "f")
+    }
+}
+
 extension Int: PGValue {
     public static let preferredPGType = PGType.int8
 

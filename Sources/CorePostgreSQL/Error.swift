@@ -13,6 +13,7 @@ public protocol PGConversionParsingState {
 }
 
 public enum PGConversionError: Error {
+    case invalidBoolean(String)
     case invalidNumber(String)
     case invalidDate(Error, at: String.Index, in: String, during: PGConversionParsingState)
     case invalidInterval(Error, at: String.Index, in: String, during: PGConversionParsingState)
@@ -28,6 +29,9 @@ public enum PGConversionError: Error {
 extension PGConversionError: LocalizedError {
     public var errorDescription: String? {
         switch self {
+        case .invalidBoolean(let string):
+            return NSLocalizedString("Could not parse '\(string)' into a boolean.", comment: "")
+            
         case .invalidNumber(let digits):
             return NSLocalizedString("Could not parse '\(digits)' into a number.", comment: "")
             
