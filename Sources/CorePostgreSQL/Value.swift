@@ -182,35 +182,46 @@ extension Decimal: PGValue {
     }
 }
 
-extension Date: PGValue {
+extension PGTimestamp: PGValue {
     public static let preferredPGType = PGType.timestampTZ
-        
+    private static let formatter = PGTimestampFormatter(style: .timestamp)
+    
     public init(textualRawPGValue text: String) throws {
-        let components = try DateComponents(textualRawPGValue: text)
-        guard let date = Calendar.gregorian.date(from: components) else {
-            throw PGConversionError.nonexistentDate(components)
-        }
-        self = date
+        self = try PGTimestamp.formatter.timestamp(from: text)
     }
-
+    
     public var rawPGValue: PGRawValue {
-        let components = Calendar.gregorian.dateComponents(in: .utc, from: self)
-        assert(components.timeZone != nil, "Need Calendar.dateComponents(in:from:) to fill in the time zone")
-        return components.rawPGValue
+        return .textual(PGTimestamp.formatter.string(from: self)!)
     }
 }
 
-extension DateComponents: PGValue {
+extension PGDate: PGValue {
     public static let preferredPGType = PGType.timestampTZ
-    
-    private static let formatter = PGDateFormatter()
+    private static let formatter = PGTimestampFormatter(style: .date)
     
     public init(textualRawPGValue text: String) throws {
-        self = try DateComponents.formatter.dateComponents(from: text)
+        let timestamp = try PGDate.formatter.timestamp(from: text)
+        self = timestamp.date
     }
     
     public var rawPGValue: PGRawValue {
-        return .textual(DateComponents.formatter.string(from: self))
+        let timestamp = PGTimestamp(date: self, time: nil)
+        return .textual(PGDate.formatter.string(from: timestamp)!)
+    }
+}
+
+extension PGTime: PGValue {
+    public static let preferredPGType = PGType.timestampTZ
+    private static let formatter = PGTimestampFormatter(style: .time)
+    
+    public init(textualRawPGValue text: String) throws {
+        let timestamp = try PGTime.formatter.timestamp(from: text)
+        self = timestamp.time!
+    }
+    
+    public var rawPGValue: PGRawValue {
+        let timestamp = PGTimestamp(date: .date(era: .ad, year: 0, month: 0, day: 0), time: self)
+        return .textual(PGTime.formatter.string(from: timestamp)!)
     }
 }
 
