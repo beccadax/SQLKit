@@ -120,7 +120,6 @@ extension Data: PGBinaryValue {
 enum PGConversionError: Error {
     case invalidNumber(String)
     
-    case invalidDateComponents(underlying: Error, at: String.Index, in: String)
     case invalidDate(underlying: Error, at: String.Index, in: String)
     case unexpectedDateCharacter(Character, during: Any)
     case invalidTimeZoneOffset(String)
