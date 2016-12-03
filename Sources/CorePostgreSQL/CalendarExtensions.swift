@@ -15,3 +15,7 @@ extension Calendar {
 extension TimeZone {
     internal static let utc = TimeZone(secondsFromGMT: 0)!
 }
+
+extension DateComponents {
+    internal static let nanosecondDigits = 9
+}

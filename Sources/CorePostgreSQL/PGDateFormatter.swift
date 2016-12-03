@@ -8,8 +8,6 @@
 
 import Foundation
 
-fileprivate let nanosecondDigits = 9
-
 class PGDateFormatter: Formatter {
     override func getObjectValue(_ objectValue: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
         do {
@@ -74,7 +72,7 @@ extension PGDateFormatter {
                 dateComponents.timeZone = TimeZone(secondsFromGMT: offset)
                 
             case .nanosecond:
-                let paddingNeeded = nanosecondDigits - digits.characters.count
+                let paddingNeeded = DateComponents.nanosecondDigits - digits.characters.count
                 
                 if paddingNeeded >= 0 {
                     digits += String(repeating: "0", count: paddingNeeded) 
@@ -190,7 +188,7 @@ extension PGDateFormatter {
         }
         
         if any(comps.hour, comps.minute, comps.second, comps.nanosecond) {
-            let timePart = "\(f(comps.hour)):\(f(comps.minute)):\(f(comps.second)).\(f(comps.nanosecond, digits: nanosecondDigits))"
+            let timePart = "\(f(comps.hour)):\(f(comps.minute)):\(f(comps.second)).\(f(comps.nanosecond, digits: DateComponents.nanosecondDigits))"
             
             let calendar = comps.calendar ?? Calendar(identifier: .gregorian)        
             if let timeZone = comps.timeZone {
