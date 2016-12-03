@@ -19,3 +19,7 @@ extension TimeZone {
 extension DateComponents {
     internal static let nanosecondDigits = 9
 }
+
+extension Locale {
+    internal static let posix = Locale(identifier: "en_US_POSIX")
+}
