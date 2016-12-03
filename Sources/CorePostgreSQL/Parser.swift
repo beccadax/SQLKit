@@ -9,7 +9,7 @@
 import Foundation
 
 protocol StringParser {
-    associatedtype ParseState: PGConversionErrorParsingState
+    associatedtype ParseState: PGConversionParsingState
     associatedtype ParseResult
     
     var initialParseState: ParseState { get }

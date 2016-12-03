@@ -40,7 +40,7 @@ extension PGIntervalFormatter {
     }
     
     fileprivate struct Parser: StringParser {
-        enum ParseState: PGConversionErrorParsingState {
+        enum ParseState: PGConversionParsingState {
             case start(for: PGInterval)
             case expectingQuantity(in: PGInterval.Component.Section, for: PGInterval)
             case readingQuantity(NumberAccumulator, in: PGInterval.Component.Section, for: PGInterval)

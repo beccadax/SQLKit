@@ -59,7 +59,7 @@ extension PGTimestampFormatter {
             case year, month, day, hour, minute, second, timeZone
         }
         
-        enum ParseState: PGConversionErrorParsingState {
+        enum ParseState: PGConversionParsingState {
             case expectingField(NumericField, for: PGTimestamp)
             case parsingField(NumericField, accumulated: NumberAccumulator, for: PGTimestamp)
             case expectingEraB(for: PGTimestamp)
