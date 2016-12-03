@@ -15,7 +15,9 @@ public protocol PGConversionParsingState {
 public enum PGConversionError: Error {
     case invalidBoolean(String)
     case invalidNumber(String)
+    case invalidTimestamp(Error, at: String.Index, in: String, during: PGConversionParsingState)
     case invalidDate(Error, at: String.Index, in: String, during: PGConversionParsingState)
+    case invalidTime(Error, at: String.Index, in: String, during: PGConversionParsingState)
     case invalidInterval(Error, at: String.Index, in: String, during: PGConversionParsingState)
     
     case unexpectedCharacter(Character)
@@ -35,9 +37,15 @@ extension PGConversionError: LocalizedError {
         case .invalidNumber(let digits):
             return NSLocalizedString("Could not parse '\(digits)' into a number.", comment: "")
             
+        case let .invalidTimestamp(error, at: _, in: _, during: state):
+            return NSLocalizedString("Error \(state.localizedStateDescription) in a timestamp: \(error.localizedDescription)", comment: "")
+        
         case let .invalidDate(error, at: _, in: _, during: state):
             return NSLocalizedString("Error \(state.localizedStateDescription) in a date: \(error.localizedDescription)", comment: "")
-        
+            
+        case let .invalidTime(error, at: _, in: _, during: state):
+            return NSLocalizedString("Error \(state.localizedStateDescription) in a time: \(error.localizedDescription)", comment: "")
+            
         case let .invalidInterval(error, at: _, in: _, during: state):
             return NSLocalizedString("Error \(state.localizedStateDescription) in an interval: \(error.localizedDescription)", comment: "")
             

@@ -181,7 +181,14 @@ extension PGTimestampFormatter {
         }
         
         func wrapError(_ error: Error, at index: String.Index, in string: String, during state: ParseState) -> Error {
-            return PGConversionError.invalidDate(error, at: index, in: string, during: state)
+            switch formatter.style {
+            case .timestamp:
+                return PGConversionError.invalidTimestamp(error, at: index, in: string, during: state)
+            case .date:
+                return PGConversionError.invalidDate(error, at: index, in: string, during: state)
+            case .time:
+                return PGConversionError.invalidTime(error, at: index, in: string, during: state)
+            }
         }
     }
     
