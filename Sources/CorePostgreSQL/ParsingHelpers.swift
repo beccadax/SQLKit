@@ -46,11 +46,17 @@ struct NumberAccumulator {
     mutating func make() throws -> PGTime.Zone {
         let timeCode = try self.make() as Int
         
-        if abs(timeCode) < 100 {
+        switch abs(timeCode) {
+        case 0...12:
+            // A `±hh` offset
             return (hours: timeCode, minutes: 0)
-        }
-        else {
+            
+        case 100...1200 where 0..<60 ~= abs(timeCode) % 100:
+            // A `±hhmm` offset
             return (hours: timeCode / 100, minutes: timeCode % 100)
+            
+        default:
+            throw PGConversionError.invalidTimeZoneOffset(timeCode)
         }
     }
 }
