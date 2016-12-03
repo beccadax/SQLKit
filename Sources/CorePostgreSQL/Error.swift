@@ -18,13 +18,11 @@ public enum PGConversionError: Error {
     case invalidDate(underlying: Error, at: String.Index, in: String)
     case unexpectedDateCharacter(Character, during: PGConversionErrorParsingState)
     case nonexistentDate(DateComponents)
+    case unexpectedCharacter(Character, during: PGConversionErrorParsingState)
     case invalidTimeZoneOffset(Int)
     case earlyTermination(during: PGConversionErrorParsingState)
     
     case invalidInterval(Error, at: String.Index, in: String, during: PGConversionErrorParsingState)
-    case unknownIntervalUnit(Character)
     case redundantQuantity(oldValue: Int, newValue: Int, for: PGInterval.Component)
     case unitlessQuantity(Int)
-    case missingIntervalPrefix(Character?)
-    case missingQuantity(Character)
 }
