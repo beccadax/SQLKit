@@ -65,6 +65,19 @@ extension PGTimestampFormatter {
             case expectingEraB(for: PGTimestamp)
             case expectingEraC(for: PGTimestamp)
             case parsedBC(for: PGTimestamp)
+            
+            var localizedStateDescription: String {
+                switch self {
+                case .expectingField(let field, for: _):
+                    return NSLocalizedString("instead of the \(field) field", comment: "")
+                case .parsingField(let field, accumulated: _, for: _):
+                    return NSLocalizedString("while parsing the \(field) field", comment: "")
+                case .expectingEraB, .expectingEraC:
+                    return NSLocalizedString("instead of the 'BC' suffix", comment: "")
+                case .parsedBC:
+                    return NSLocalizedString("after the 'BC' suffix", comment: "")
+                }
+            }
         }
         
         var initialParseState: ParseState {

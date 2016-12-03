@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol PGConversionErrorParsingState {
-    
+    var localizedStateDescription: String { get }
 }
 
 public enum PGConversionError: Error {

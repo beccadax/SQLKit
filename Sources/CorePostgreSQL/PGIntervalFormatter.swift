@@ -44,6 +44,21 @@ extension PGIntervalFormatter {
             case start(for: PGInterval)
             case expectingQuantity(in: PGInterval.Component.Section, for: PGInterval)
             case readingQuantity(NumberAccumulator, in: PGInterval.Component.Section, for: PGInterval)
+            
+            var localizedStateDescription: String {
+                switch self {
+                case .start:
+                    return NSLocalizedString("at the start of the text", comment: "")
+                case .expectingQuantity(in: .date, for: _):
+                    return NSLocalizedString("while processing the date section", comment: "")
+                case .expectingQuantity(in: .time, for: _):
+                    return NSLocalizedString("while processing the time section", comment: "")
+                case .readingQuantity(_, in: .date, for: _):
+                    return NSLocalizedString("while reading a number in the date section", comment: "")
+                case .readingQuantity(_, in: .time, for: _):
+                    return NSLocalizedString("while reading a number in the time section", comment: "")
+                }
+            }
         }
         
         let initialParseState = ParseState.start(for: PGInterval())
