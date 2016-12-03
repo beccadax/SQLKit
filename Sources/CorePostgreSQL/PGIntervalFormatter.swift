@@ -36,12 +36,7 @@ class PGIntervalFormatter: Formatter {
 
 extension PGIntervalFormatter {
     func interval(from text: String) throws -> PGInterval {
-        do {
-            return try Parser().parse(text)
-        }
-        catch let StringParserError.parseError(error, at: index, in: string, during: state) {
-            throw PGConversionError.invalidInterval(error, at: index, in: string, during: state)
-        }
+        return try Parser().parse(text)
     }
     
     fileprivate struct Parser: StringParser {
@@ -101,6 +96,10 @@ extension PGIntervalFormatter {
             case .readingQuantity(var accumulator, in: _, for: _):
                 throw PGConversionError.unitlessQuantity(try accumulator.make())
             }
+        }
+        
+        func wrapError(_ error: Error, at index: String.Index, in string: String, during state: ParseState) -> Error {
+            return PGConversionError.invalidInterval(error, at: index, in: string, during: state)
         }
     }
 }

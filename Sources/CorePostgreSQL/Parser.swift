@@ -8,10 +8,6 @@
 
 import Foundation
 
-enum StringParserError: Error {
-    case parseError(Error, at: String.Index, in: String, during: PGConversionErrorParsingState)
-}
-
 protocol StringParser {
     associatedtype ParseState: PGConversionErrorParsingState
     associatedtype ParseResult
@@ -19,6 +15,7 @@ protocol StringParser {
     var initialParseState: ParseState { get }
     func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState
     func finishParsing(in state: ParseState) throws -> ParseResult
+    func wrapError(_ error: Error, at index: String.Index, in string: String, during state: ParseState) -> Error
 }
 
 extension StringParser {
@@ -32,14 +29,14 @@ extension StringParser {
                 return try continueParsing(char, in: state)
             }
             catch {
-                throw StringParserError.parseError(error, at: index, in: string, during: state)
+                throw wrapError(error, at: index, in: string, during: state)
             }
         }
         do {
             return try finishParsing(in: finalState)
         }
         catch {
-            throw StringParserError.parseError(error, at: string.endIndex, in: string, during: finalState)
+            throw wrapError(error, at: string.endIndex, in: string, during: finalState)
         }
     }
 }
