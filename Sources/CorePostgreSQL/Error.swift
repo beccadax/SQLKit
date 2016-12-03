@@ -17,7 +17,6 @@ public enum PGConversionError: Error {
     
     case invalidDate(underlying: Error, at: String.Index, in: String)
     case unexpectedDateCharacter(Character, during: PGConversionErrorParsingState)
-    case nonexistentDate(DateComponents)
     case unexpectedCharacter(Character, during: PGConversionErrorParsingState)
     case invalidTimeZoneOffset(Int)
     case earlyTermination(during: PGConversionErrorParsingState)
