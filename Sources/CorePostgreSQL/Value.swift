@@ -121,9 +121,11 @@ enum PGConversionError: Error {
     case invalidNumber(String)
     
     case invalidDateComponents(underlying: Error, at: String.Index, in: String)
-    case unexpectedDateCharacter(Character, during: Calendar.Component)
+    case invalidDate(underlying: Error, at: String.Index, in: String)
+    case unexpectedDateCharacter(Character, during: Any)
     case invalidTimeZoneOffset(String)
     case nonexistentDate(DateComponents)
+    case earlyTermination(during: Any)
     
     case invalidInterval(underlying: Error, at: String.Index, in: String)
     case unknownIntervalUnit(Character)
