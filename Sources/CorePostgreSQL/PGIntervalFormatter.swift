@@ -36,39 +36,44 @@ class PGIntervalFormatter: Formatter {
 
 extension PGIntervalFormatter {
     func interval(from text: String) throws -> PGInterval {
-        var writer = IntervalWriter()
+        var accumulator = NumberAccumulator()
+        var interval = PGInterval()
+        var section: PGInterval.Component.Section? = nil
+        
+        func advance(to newSection: PGInterval.Component.Section?) throws {
+            guard accumulator.isEmpty else {
+                throw PGConversionError.unitlessQuantity(try accumulator.make())
+            }
+            section = newSection
+        }
         
         for i in text.characters.indices {
             let char = text.characters[i]
             do {
-                switch (writer.section, char) {
+                switch (section, char) {
                 case (nil, "P"):
                     // We expect and require a leading "P".
-                    try writer.advance(to: .date)
+                    try advance(to: .date)
                     
                 case (nil, _):
                     throw PGConversionError.missingIntervalPrefix(char)
                 
-                case (_?, "+") where writer.digits.isEmpty,
-                      (_?, "-") where writer.digits.isEmpty,
-                      (_?, "0"),
-                      (_?, "1"),
-                      (_?, "2"),
-                      (_?, "3"),
-                      (_?, "4"),
-                      (_?, "5"),
-                      (_?, "6"),
-                      (_?, "7"),
-                      (_?, "8"),
-                      (_?, "9"):
-                    writer.addDigit(char)
+                case (_?, AnyOf("+", "-")) where accumulator.isEmpty,
+                      (_?, NumberAccumulator.digits):
+                    accumulator.addDigit(char)
                     
                 case (.date?, "T"):
-                    try writer.advance(to: .time)
+                    try advance(to: .time)
                     
                 case (let section?, _):
                     let component = try PGInterval.Component(section: section, unit: char)
-                    try writer.writeDigits(to: component)
+                    let newValue = try accumulator.make() as Int
+                    
+                    if let oldValue = interval[component] {
+                        throw PGConversionError.redundantQuantity(oldValue: oldValue, newValue: newValue, for: component)
+                    }
+                    
+                    interval[component] = newValue
                 }
             }
             catch {
@@ -77,8 +82,8 @@ extension PGIntervalFormatter {
         }
         
         do {
-            try writer.advance(to: nil)
-            return writer.interval
+            try advance(to: nil)
+            return interval
         }
         catch {
             throw PGConversionError.invalidInterval(underlying: error, at: text.characters.endIndex, in: text)
