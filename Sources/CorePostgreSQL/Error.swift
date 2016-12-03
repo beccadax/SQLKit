@@ -15,8 +15,7 @@ public protocol PGConversionErrorParsingState {
 public enum PGConversionError: Error {
     case invalidNumber(String)
     
-    case invalidDate(underlying: Error, at: String.Index, in: String)
-    case unexpectedDateCharacter(Character, during: PGConversionErrorParsingState)
+    case invalidDate(Error, at: String.Index, in: String, during: PGConversionErrorParsingState)
     case unexpectedCharacter(Character, during: PGConversionErrorParsingState)
     case invalidTimeZoneOffset(Int)
     case earlyTermination(during: PGConversionErrorParsingState)

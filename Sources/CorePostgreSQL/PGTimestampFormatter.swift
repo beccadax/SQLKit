@@ -52,6 +52,126 @@ class PGTimestampFormatter: Formatter {
 }
 
 extension PGTimestampFormatter {
+    fileprivate struct Parser: StringParser {
+        let formatter: PGTimestampFormatter
+        
+        enum NumericField: Hashable {
+            case year, month, day, hour, minute, second, timeZone
+        }
+        
+        enum ParseState: PGConversionErrorParsingState {
+            case expectingField(NumericField, for: PGTimestamp)
+            case parsingField(NumericField, accumulated: NumberAccumulator, for: PGTimestamp)
+            case expectingEraB(for: PGTimestamp)
+            case expectingEraC(for: PGTimestamp)
+            case parsedBC(for: PGTimestamp)
+        }
+        
+        var initialParseState: ParseState {
+            if formatter.includeDate {
+                return .expectingField(.year, for: PGTimestamp())
+            }
+            else {
+                return .expectingField(.hour, for: PGTimestamp())
+            }
+        }
+        
+        func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
+            switch (state, char) {
+            case (let .expectingField(field, for: timestamp), NumberAccumulator.digits):
+                var accumulator = NumberAccumulator()
+                accumulator.addDigit(char)
+                return .parsingField(field, accumulated: accumulator, for: timestamp)
+            
+            case (.parsingField(let field, accumulated: var accumulator, for: let timestamp), NumberAccumulator.digits):
+                accumulator.addDigit(char)
+                return .parsingField(field, accumulated: accumulator, for: timestamp)
+                
+            case (.parsingField(.year, accumulated: var accumulator, for: var timestamp), "-"):
+                timestamp.date.setYear(to: try accumulator.make())
+                return .expectingField(.month, for: timestamp)
+                
+            case (.parsingField(.month, accumulated: var accumulator, for: var timestamp), "-"):
+                timestamp.date.setMonth(to: try accumulator.make())
+                return .expectingField(.day, for: timestamp)
+                
+            case (.parsingField(.day, accumulated: var accumulator, for: var timestamp), " "):
+                timestamp.date.setDay(to: try accumulator.make())
+                if formatter.includeTime {
+                    return .expectingField(.hour, for: timestamp)
+                }
+                else {
+                    return .expectingEraB(for: timestamp)
+                }
+            
+            case (.parsingField(.hour, accumulated: var accumulator, for: var timestamp), ":"):
+                timestamp.time!.hour = try accumulator.make()
+                return .expectingField(.minute, for: timestamp)
+                
+            case (.parsingField(.minute, accumulated: var accumulator, for: var timestamp), ":"):
+                timestamp.time!.minute = try accumulator.make()
+                return .expectingField(.second, for: timestamp)
+                
+            case (.parsingField(.second, accumulated: var accumulator, for: let timestamp), "."):
+                accumulator.addDigit(char)
+                return .parsingField(.second, accumulated: accumulator, for: timestamp)
+                
+            case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), AnyOf("+", "-")):
+                timestamp.time!.second = try accumulator.make()
+                accumulator.addDigit(char)
+                return .parsingField(.timeZone, accumulated: accumulator, for: timestamp)
+            
+            case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), " ") where formatter.includeDate:
+                timestamp.time!.second = try accumulator.make()
+                return .expectingEraB(for: timestamp)
+                
+            case (.parsingField(.timeZone, accumulated: _, for: _), ":"):
+                // Ignore this character
+                return state
+                
+            case (.parsingField(.timeZone, accumulated: var accumulator, for: var timestamp), " ") where formatter.includeDate:
+                timestamp.time!.timeZone = try accumulator.make()
+                return .expectingEraB(for: timestamp)
+            
+            case (.expectingEraB(for: let interval), "B"):
+                return .expectingEraC(for: interval)
+                
+            case (.expectingEraC(for: var interval), "C"):
+                interval.date.setEra(to: .bc)
+                return .parsedBC(for: interval)
+                
+            default:
+                throw PGConversionError.unexpectedCharacter(char, during: state)
+            }
+        }
+        
+        func finishParsing(in state: ParseState) throws -> PGTimestamp {
+            switch state {
+            case .parsingField(.day, accumulated: var accumulator, for: var timestamp) where !formatter.includeTime:
+                timestamp.date.setDay(to: try accumulator.make())
+                return timestamp
+                
+            case .parsingField(.second, accumulated: var accumulator, for: var timestamp):
+                timestamp.time!.second = try accumulator.make()
+                return timestamp
+                
+            case .parsingField(.timeZone, accumulated: var accumulator, for: var timestamp):
+                timestamp.time!.timeZone = try accumulator.make()
+                return timestamp
+                
+            case .parsedBC(for: let timestamp):
+                return timestamp
+                
+            default:
+                throw PGConversionError.earlyTermination(during: state)
+            }
+        }
+        
+        func wrapError(_ error: Error, at index: String.Index, in string: String, during state: ParseState) -> Error {
+            return PGConversionError.invalidDate(error, at: index, in: string, during: state)
+        }
+    }
+    
     enum Progress: Hashable, PGConversionErrorParsingState {
         case year, month, day, hour, minute, second, timeZone, eraB, eraC, end
     }
@@ -70,109 +190,8 @@ extension PGTimestampFormatter {
                 break
             }
         }
-                
-        var timestamp = PGTimestamp.timestamp(era: .ad, year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, timeZone: nil)
-        var accumulator = NumberAccumulator()
-        var expecting = includeDate ? Progress.year : Progress.hour 
         
-        for i in text.characters.indices {
-            do {
-                let char = text.characters[i]
-                
-                switch (expecting, char) {
-                case (AnyOf(.year, .month, .day, .hour, .minute, .second, .timeZone), NumberAccumulator.digits),
-                      (.second, ".") where includeDate:
-                    accumulator.addDigit(char)
-                    
-                case (.year, "-") where includeDate:
-                    timestamp.date.setYear(to: try accumulator.make())
-                    expecting = .month
-                    
-                case (.month, "-") where includeDate:
-                    timestamp.date.setMonth(to: try accumulator.make())
-                    expecting = .day
-                
-                case (.day, " ") where includeDate:
-                    timestamp.date.setDay(to: try accumulator.make())
-                    if includeTime {
-                        expecting = .hour
-                    }
-                    else {
-                        expecting = .eraB
-                    }
-                    
-                case (.hour, ":") where includeTime:
-                    timestamp.time?.hour = try accumulator.make()
-                    expecting = .minute
-                    
-                case (.minute, ":") where includeTime:
-                    timestamp.time?.minute = try accumulator.make()
-                    expecting = .second
-                    
-                case (.second, AnyOf("+", "-")) where includeTime:
-                    timestamp.time?.second = try accumulator.make()
-                    accumulator.addDigit(char)
-                    expecting = .timeZone
-                    
-                case (.timeZone, ":") where includeTime:
-                    // Ignore this
-                    break
-                
-                case (.second, " ") where includeTime:
-                    timestamp.time?.second = try accumulator.make()
-                    if includeDate {
-                        expecting = .eraB
-                    }
-                    else {
-                        expecting = .end
-                    }
-                    
-                case (.timeZone, " ") where includeTime:
-                    timestamp.time?.timeZone = try accumulator.make()
-                    if includeDate {
-                        expecting = .eraB
-                    }
-                    else {
-                        expecting = .end
-                    }
-                
-                case (.eraB, "B") where includeDate:
-                    expecting = .eraC
-                
-                case (.eraC, "C") where includeDate:
-                    timestamp.date.setEra(to: .bc)
-                    expecting = .end
-                    
-                default:
-                    throw PGConversionError.unexpectedDateCharacter(char, during: expecting)
-                }
-            }
-            catch {
-                throw PGConversionError.invalidDate(underlying: error, at: i, in: text)
-            }
-        }
-        
-        do {
-            switch expecting {
-            case .day where !includeTime:
-                timestamp.date.setDay(to: try accumulator.make())
-                expecting = .end
-            case .second where includeTime:
-                timestamp.time?.second = try accumulator.make()
-                expecting = .end
-            case .timeZone where includeTime:
-                timestamp.time?.timeZone = try accumulator.make()
-            case .end:
-                break
-            default:
-                throw PGConversionError.earlyTermination(during: expecting)
-            }
-            
-            return timestamp
-        }
-        catch {
-            throw PGConversionError.invalidDate(underlying: error, at: text.characters.endIndex, in: text)
-        }
+        return try Parser(formatter: self).parse(text)
     }
 }
 
