@@ -172,10 +172,6 @@ extension PGTimestampFormatter {
         }
     }
     
-    enum Progress: Hashable, PGConversionErrorParsingState {
-        case year, month, day, hour, minute, second, timeZone, eraB, eraC, end
-    }
-    
     var includeTime: Bool { return style != .date }
     var includeDate: Bool { return style != .time }
     
