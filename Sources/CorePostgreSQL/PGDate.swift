@@ -64,6 +64,10 @@ public enum PGTimestamp {
     case distantPast
     case timestamp(era: PGDate.Era, year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Decimal, timeZone: PGTime.Zone?)
     case distantFuture
+    
+    init() {
+        self = .timestamp(era: .ad, year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, timeZone: nil)
+    }
 }
 
 extension PGTimestamp {
