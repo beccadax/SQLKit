@@ -21,9 +21,10 @@ public enum PGConversionError: Error {
     case nonexistentDate(DateComponents)
     case earlyTermination(during: PGConversionErrorParsingState)
     
-    case invalidInterval(underlying: Error, at: String.Index, in: String)
+    case invalidInterval(Error, at: String.Index, in: String, during: PGConversionErrorParsingState)
     case unknownIntervalUnit(Character)
     case redundantQuantity(oldValue: Int, newValue: Int, for: PGInterval.Component)
     case unitlessQuantity(Int)
-    case missingIntervalPrefix(Character)
+    case missingIntervalPrefix(Character?)
+    case missingQuantity(Character)
 }

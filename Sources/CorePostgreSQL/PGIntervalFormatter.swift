@@ -36,57 +36,71 @@ class PGIntervalFormatter: Formatter {
 
 extension PGIntervalFormatter {
     func interval(from text: String) throws -> PGInterval {
-        var accumulator = NumberAccumulator()
-        var interval = PGInterval()
-        var section: PGInterval.Component.Section? = nil
+        do {
+            return try Parser().parse(text)
+        }
+        catch let StringParserError.parseError(error, at: index, in: string, during: state) {
+            throw PGConversionError.invalidInterval(error, at: index, in: string, during: state)
+        }
+    }
+    
+    fileprivate struct Parser: StringParser {
+        enum ParseState: PGConversionErrorParsingState {
+            case start(for: PGInterval)
+            case expectingQuantity(in: PGInterval.Component.Section, for: PGInterval)
+            case readingQuantity(NumberAccumulator, in: PGInterval.Component.Section, for: PGInterval)
+        }
         
-        func advance(to newSection: PGInterval.Component.Section?) throws {
-            guard accumulator.isEmpty else {
+        fileprivate let initialParseState = ParseState.start(for: PGInterval())
+        
+        fileprivate func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
+            switch (state, char) {
+            case (.start(for: let interval), "P"):
+                return .expectingQuantity(in: .date, for: interval)
+            
+            case (.start, _):
+                throw PGConversionError.missingIntervalPrefix(char)
+                
+            case (.expectingQuantity(in: .date, for: let interval), "T"):
+                return .expectingQuantity(in: .time, for: interval)
+            
+            case (.expectingQuantity(in: let section, for: let interval), NumberAccumulator.digits):
+                var accumulator = NumberAccumulator()
+                accumulator.addDigit(char)
+                return .readingQuantity(accumulator, in: section, for: interval)
+                
+            case (.expectingQuantity, _):
+                throw PGConversionError.missingQuantity(char)
+            
+            case (.readingQuantity(var accumulator, in: let section, for: let interval), NumberAccumulator.digits):
+                accumulator.addDigit(char)
+                return .readingQuantity(accumulator, in: section, for: interval)
+                
+            case (.readingQuantity(var accumulator, in: let section, for: var interval), _):
+                let component = try PGInterval.Component(section: section, unit: char)
+                let newValue = try accumulator.make() as Int
+                
+                if let oldValue = interval[component] {
+                    throw PGConversionError.redundantQuantity(oldValue: oldValue, newValue: newValue, for: component)
+                }
+                
+                interval[component] = newValue
+                
+                return .expectingQuantity(in: section, for: interval)
+            }
+        }
+        
+        fileprivate func finishParsing(in state: ParseState) throws -> PGInterval {
+            switch state {
+            case .expectingQuantity(in: _, for: let interval):
+                return interval
+                
+            case .start:
+                throw PGConversionError.missingIntervalPrefix(nil)
+                
+            case .readingQuantity(var accumulator, in: _, for: _):
                 throw PGConversionError.unitlessQuantity(try accumulator.make())
             }
-            section = newSection
-        }
-        
-        for i in text.characters.indices {
-            let char = text.characters[i]
-            do {
-                switch (section, char) {
-                case (nil, "P"):
-                    // We expect and require a leading "P".
-                    try advance(to: .date)
-                    
-                case (nil, _):
-                    throw PGConversionError.missingIntervalPrefix(char)
-                
-                case (_?, AnyOf("+", "-")) where accumulator.isEmpty,
-                      (_?, NumberAccumulator.digits):
-                    accumulator.addDigit(char)
-                    
-                case (.date?, "T"):
-                    try advance(to: .time)
-                    
-                case (let section?, _):
-                    let component = try PGInterval.Component(section: section, unit: char)
-                    let newValue = try accumulator.make() as Int
-                    
-                    if let oldValue = interval[component] {
-                        throw PGConversionError.redundantQuantity(oldValue: oldValue, newValue: newValue, for: component)
-                    }
-                    
-                    interval[component] = newValue
-                }
-            }
-            catch {
-                throw PGConversionError.invalidInterval(underlying: error, at: i, in: text)
-            }
-        }
-        
-        do {
-            try advance(to: nil)
-            return interval
-        }
-        catch {
-            throw PGConversionError.invalidInterval(underlying: error, at: text.characters.endIndex, in: text)
         }
     }
 }
