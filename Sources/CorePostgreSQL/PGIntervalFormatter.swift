@@ -54,7 +54,7 @@ extension PGIntervalFormatter {
                 return .expectingQuantity(in: .date, for: interval)
             
             case (.start, _):
-                throw PGConversionError.unexpectedCharacter(char, during: state)
+                throw PGConversionError.unexpectedCharacter(char)
                 
             case (.expectingQuantity(in: .date, for: let interval), "T"):
                 return .expectingQuantity(in: .time, for: interval)
@@ -65,7 +65,7 @@ extension PGIntervalFormatter {
                 return .readingQuantity(accumulator, in: section, for: interval)
                 
             case (.expectingQuantity, _):
-                throw PGConversionError.unexpectedCharacter(char, during: state)
+                throw PGConversionError.unexpectedCharacter(char)
             
             case (.readingQuantity(var accumulator, in: let section, for: let interval), NumberAccumulator.digits):
                 accumulator.addDigit(char)
@@ -73,7 +73,7 @@ extension PGIntervalFormatter {
                 
             case (.readingQuantity(var accumulator, in: let section, for: var interval), _):
                 guard let component = PGInterval.Component(section: section, unit: char) else {
-                    throw PGConversionError.unexpectedCharacter(char, during: state)
+                    throw PGConversionError.unexpectedCharacter(char)
                 }
                 let newValue = try accumulator.make() as Int
                 
@@ -93,7 +93,7 @@ extension PGIntervalFormatter {
                 return interval
                 
             case .start:
-                throw PGConversionError.earlyTermination(during: state)
+                throw PGConversionError.earlyTermination
                 
             case .readingQuantity(var accumulator, in: _, for: _):
                 throw PGConversionError.unitlessQuantity(try accumulator.make())

@@ -16,9 +16,9 @@ public enum PGConversionError: Error {
     case invalidNumber(String)
     
     case invalidDate(Error, at: String.Index, in: String, during: PGConversionErrorParsingState)
-    case unexpectedCharacter(Character, during: PGConversionErrorParsingState)
+    case unexpectedCharacter(Character)
     case invalidTimeZoneOffset(Int)
-    case earlyTermination(during: PGConversionErrorParsingState)
+    case earlyTermination
     
     case invalidInterval(Error, at: String.Index, in: String, during: PGConversionErrorParsingState)
     case redundantQuantity(oldValue: Int, newValue: Int, for: PGInterval.Component)

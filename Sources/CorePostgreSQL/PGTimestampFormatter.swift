@@ -141,7 +141,7 @@ extension PGTimestampFormatter {
                 return .parsedBC(for: interval)
                 
             default:
-                throw PGConversionError.unexpectedCharacter(char, during: state)
+                throw PGConversionError.unexpectedCharacter(char)
             }
         }
         
@@ -163,7 +163,7 @@ extension PGTimestampFormatter {
                 return timestamp
                 
             default:
-                throw PGConversionError.earlyTermination(during: state)
+                throw PGConversionError.earlyTermination
             }
         }
         
