@@ -193,7 +193,7 @@ extension DateComponents {
 }
 
 extension Date {
-    init?(_ timestamp: PGTimestamp) {
+    public init?(_ timestamp: PGTimestamp) {
         guard let comps = DateComponents(timestamp) else {
             return nil
         }
