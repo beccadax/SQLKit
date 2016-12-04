@@ -16,6 +16,16 @@ extension PGResult {
     }
     
     public struct Error: Swift.Error {
+        public var isSuccessful: Bool {
+            switch status {
+            case PGRES_COMMAND_OK, PGRES_TUPLES_OK, PGRES_SINGLE_TUPLE, PGRES_NONFATAL_ERROR:
+                return true
+                
+            default:
+                return false
+            }
+        }
+        
         public let status: ExecStatusType
         fileprivate let fields: [FieldCode: String]
         

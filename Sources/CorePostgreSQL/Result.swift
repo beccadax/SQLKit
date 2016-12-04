@@ -17,11 +17,7 @@ public final class PGResult {
         self.pointer = pointer
         
         let error = self.error 
-        switch error.status {
-        case PGRES_COMMAND_OK, PGRES_TUPLES_OK, PGRES_SINGLE_TUPLE, PGRES_NONFATAL_ERROR:
-            break
-            
-        default:
+        guard error.isSuccessful else {
             throw PGError.executionFailed(error)
         }
     }
