@@ -19,7 +19,7 @@ public final class PGConn {
             throw error
         }
         
-        clientEncoding = "Unicode"
+        clientEncoding = .utf8
     }
     
     /// - RecommendedOver: `PQconnectdb`
