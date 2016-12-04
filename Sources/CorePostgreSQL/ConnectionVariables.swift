@@ -10,6 +10,19 @@ import Foundation
 import libpq
 
 extension PGConn {
+    internal func value(for variable: String) -> String? {
+        let result = try! execute("SHOW $1", with: [variable])
+        
+        precondition(result.tuples.count == 1, "Retrieved \(result.tuples.count) rows while trying to show \(variable)")
+        precondition(result.fields.count == 1, "Retrieved \(result.tuples.count) columns while trying to show \(variable)")
+        
+        return try! result.tuples[0].value(at: 0, as: String.self)
+    }
+    
+    internal func setValue(_ value: String?, for variable: String) {
+        _ = try! execute("SET $1 = $2", with: [variable, value])
+    }
+    
     /// The encoding which strings are retrieved as; equivalent to the 
     /// `client_encoding` configuration variable.
     /// 
@@ -40,8 +53,84 @@ extension PGConn {
             precondition(hadError == 0, "Can't set client encoding to \(newValue)")
         }
     }
-
     
+    public internal(set) var dateStyle: DateStyle {
+        get {
+            let rawValue = value(for: "DateStyle")!
+            return DateStyle(rawValue: rawValue)!
+        }
+        set {
+            setValue(newValue.rawValue, for: "DateStyle")
+        }
+    }
+    
+    public internal(set) var intervalStyle: IntervalStyle {
+        get {
+            let rawValue = value(for: "IntervalStyle")!
+            return IntervalStyle(rawValue: rawValue)!
+        }
+        set {
+            setValue(newValue.rawValue, for: "IntervalStyle")
+        }
+    }
+    
+    public enum IntervalStyle: String {
+        case sqlStandard = "sql_standard"
+        case postgres = "postgres"
+        case postgresVerbose = "postgres_verbose"
+        case iso8601 = "iso_8601"
+    }
+    
+    public struct DateStyle: RawRepresentable {
+        public var format: Format
+        public var order: Order
+        
+        public init(format: Format, order: Order) {
+            self.format = format
+            self.order = order
+        }
+        
+        public init?(rawValue: String) {
+            let parts = rawValue.components(separatedBy: ", ")
+            precondition(parts.count == 2, "DateStyle string should have two parts")
+            
+            guard let format = Format(rawValue: parts[0]), let order = Order(rawValue: parts[1]) else {
+                return nil
+            }
+            
+            self.init(format: format, order: order)
+        }
+        
+        public var rawValue: String {
+            return "\(format.rawValue), \(order.rawValue)"
+        }
+        
+        public enum Format: String {
+            case iso = "ISO"
+            case postgres = "Postgres"
+            case sql = "SQL"
+            case german = "German"
+        }
+        
+        public enum Order: String {
+            case dmy = "DMY"
+            case mdy = "MDY"
+            case ymd = "YMD"
+            
+            private static let names: [String: Order] = [
+                "DMY": .dmy, "Euro": .dmy, "European": .dmy,
+                "MDY": .mdy, "US": .mdy, "NonEuro": .mdy, "NonEuropean": .mdy,
+                "YMD": .ymd,
+            ]
+            
+            public init?(rawValue: String) {
+                guard let order = Order.names[rawValue] else {
+                    return nil
+                }
+                self = order
+            }
+        }
+    }
     
     public enum Encoding: String {
         static let unknownSQLASCIIName = "SQL_ASCII"
@@ -88,7 +177,7 @@ extension PGConn {
         case win1257 = "WIN1257"
         case win1258 = "WIN1258"
         
-        static let names: [String: Encoding?] = [
+        private static let names: [String: Encoding?] = [
             "UTF8": .utf8, "UNICODE": .utf8,
             "BIG5": .big5, "WIN950": .big5, "Windows950": .big5,
             "EUC_CN": .eucCN,

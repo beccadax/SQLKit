@@ -20,6 +20,8 @@ public final class PGConn {
         }
         
         clientEncoding = .utf8
+        dateStyle = DateStyle(format: .iso, order: .ymd)
+        intervalStyle = .iso8601
     }
     
     /// - RecommendedOver: `PQconnectdb`
