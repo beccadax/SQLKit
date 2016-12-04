@@ -69,7 +69,7 @@ extension PGIntervalFormatter {
                 return .expectingQuantity(in: .date, for: interval)
             
             case (.start, _):
-                throw PGConversionError.unexpectedCharacter(char)
+                throw PGError.unexpectedCharacter(char)
                 
             case (.expectingQuantity(in: .date, for: let interval), "T"):
                 return .expectingQuantity(in: .time, for: interval)
@@ -80,7 +80,7 @@ extension PGIntervalFormatter {
                 return .readingQuantity(accumulator, in: section, for: interval)
                 
             case (.expectingQuantity, _):
-                throw PGConversionError.unexpectedCharacter(char)
+                throw PGError.unexpectedCharacter(char)
             
             case (.readingQuantity(var accumulator, in: let section, for: let interval), NumberAccumulator.digits):
                 accumulator.addDigit(char)
@@ -88,12 +88,12 @@ extension PGIntervalFormatter {
                 
             case (.readingQuantity(var accumulator, in: let section, for: var interval), _):
                 guard let component = PGInterval.Component(section: section, unit: char) else {
-                    throw PGConversionError.unexpectedCharacter(char)
+                    throw PGError.unexpectedCharacter(char)
                 }
                 let newValue = try accumulator.make() as Int
                 
                 if let oldValue = interval[component] {
-                    throw PGConversionError.redundantQuantity(oldValue: oldValue, newValue: newValue, for: component)
+                    throw PGError.redundantQuantity(oldValue: oldValue, newValue: newValue, for: component)
                 }
                 
                 interval[component] = newValue
@@ -108,15 +108,15 @@ extension PGIntervalFormatter {
                 return interval
                 
             case .start:
-                throw PGConversionError.earlyTermination
+                throw PGError.earlyTermination
                 
             case .readingQuantity(var accumulator, in: _, for: _):
-                throw PGConversionError.unitlessQuantity(try accumulator.make())
+                throw PGError.unitlessQuantity(try accumulator.make())
             }
         }
         
         func wrapError(_ error: Error, at index: String.Index, in string: String, during state: ParseState) -> Error {
-            return PGConversionError.invalidInterval(error, at: index, in: string, during: state)
+            return PGError.invalidInterval(error, at: index, in: string, during: state)
         }
     }
 }

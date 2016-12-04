@@ -127,7 +127,7 @@ extension Bool: PGValue {
         case "f", "false", "n", "no", "off", "0":
             self = false
         default:
-            throw PGConversionError.invalidBoolean(text)
+            throw PGError.invalidBoolean(text)
         }
     }
     
@@ -141,7 +141,7 @@ extension Int: PGValue {
 
     public init(textualRawPGValue text: String) throws {
         guard let value = Int(text) else {
-            throw PGConversionError.invalidNumber(text)
+            throw PGError.invalidNumber(text)
         }
         
         self = value
@@ -157,7 +157,7 @@ extension Double: PGValue {
     
     public init(textualRawPGValue text: String) throws {
         guard let value = Double(text) else {
-            throw PGConversionError.invalidNumber(text)
+            throw PGError.invalidNumber(text)
         }
         
         self = value
@@ -173,7 +173,7 @@ extension Decimal: PGValue {
     
     public init(textualRawPGValue text: String) throws {
         guard let value = Decimal(string: text, locale: .posix) else {
-            throw PGConversionError.invalidNumber(text)
+            throw PGError.invalidNumber(text)
         }
         
         self = value

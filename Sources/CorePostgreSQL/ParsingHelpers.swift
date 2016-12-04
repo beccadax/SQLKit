@@ -56,7 +56,7 @@ struct NumberAccumulator {
             return (hours: timeCode / 100, minutes: timeCode % 100)
             
         default:
-            throw PGConversionError.invalidTimeZoneOffset(timeCode)
+            throw PGError.invalidTimeZoneOffset(timeCode)
         }
     }
 }

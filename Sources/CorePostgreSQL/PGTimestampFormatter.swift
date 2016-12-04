@@ -154,7 +154,7 @@ extension PGTimestampFormatter {
                 return .parsedBC(for: interval)
                 
             default:
-                throw PGConversionError.unexpectedCharacter(char)
+                throw PGError.unexpectedCharacter(char)
             }
         }
         
@@ -176,18 +176,18 @@ extension PGTimestampFormatter {
                 return timestamp
                 
             default:
-                throw PGConversionError.earlyTermination
+                throw PGError.earlyTermination
             }
         }
         
         func wrapError(_ error: Error, at index: String.Index, in string: String, during state: ParseState) -> Error {
             switch formatter.style {
             case .timestamp:
-                return PGConversionError.invalidTimestamp(error, at: index, in: string, during: state)
+                return PGError.invalidTimestamp(error, at: index, in: string, during: state)
             case .date:
-                return PGConversionError.invalidDate(error, at: index, in: string, during: state)
+                return PGError.invalidDate(error, at: index, in: string, during: state)
             case .time:
-                return PGConversionError.invalidTime(error, at: index, in: string, during: state)
+                return PGError.invalidTime(error, at: index, in: string, during: state)
             }
         }
     }

@@ -12,7 +12,10 @@ public protocol PGConversionParsingState {
     var localizedStateDescription: String { get }
 }
 
-public enum PGConversionError: Error {
+public enum PGError: Error {
+    case connectionFailed(message: String)
+    case executionFailed(PGResult.Error)
+    
     case invalidBoolean(String)
     case invalidNumber(String)
     case invalidTimestamp(Error, at: String.Index, in: String, during: PGConversionParsingState)
