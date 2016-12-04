@@ -10,17 +10,32 @@ import Foundation
 import libpq
 
 extension PGConn {
+    /// - RecommendedOver: `PQescapeLiteral`
+    public func quotedLiteral(_ string: String?) -> String {
+        guard let string = string else {
+            return "NULL"
+        }
+        
+        return string.withCString { inCString in
+            let outCString = PQescapeLiteral(pointer, inCString, Int(strlen(inCString)))!
+            defer { PQfreemem(outCString) }
+            return String(cString: outCString)
+        }
+    }
+    
     internal func value(for variable: String) -> String? {
-        let result = try! execute("SHOW $1", with: [variable])
+        let result = try! execute("SHOW \(variable)")
         
         precondition(result.tuples.count == 1, "Retrieved \(result.tuples.count) rows while trying to show \(variable)")
         precondition(result.fields.count == 1, "Retrieved \(result.tuples.count) columns while trying to show \(variable)")
         
-        return try! result.tuples[0].value(at: 0, as: String.self)
+        return try! result.tuples[0].value(at: 0, as: String.self)!
     }
     
     internal func setValue(_ value: String?, for variable: String) {
-        _ = try! execute("SET $1 = $2", with: [variable, value])
+        let quotedValue = quotedLiteral(value)
+        
+        _ = try! execute("SET \(variable) = \(quotedValue)")
     }
     
     /// The encoding which strings are retrieved as; equivalent to the 
