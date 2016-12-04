@@ -22,7 +22,7 @@ public final class PGResult {
             break
             
         default:
-            throw error
+            throw PGError.executionFailed(error)
         }
     }
     

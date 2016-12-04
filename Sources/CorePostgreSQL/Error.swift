@@ -31,9 +31,15 @@ public enum PGError: Error {
     case unitlessQuantity(Int)
 }
 
-extension PGConversionError: LocalizedError {
+extension PGError: LocalizedError {
     public var errorDescription: String? {
         switch self {
+        case let .connectionFailed(message):
+            return message
+        
+        case let .executionFailed(status):
+            return status[.localizedPrimaryMessage]
+            
         case .invalidBoolean(let string):
             return NSLocalizedString("Could not parse '\(string)' into a boolean.", comment: "")
             

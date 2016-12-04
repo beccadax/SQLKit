@@ -10,10 +10,6 @@ import Foundation
 import libpq
 
 public final class PGConn {
-    public struct Error: LocalizedError {
-        public fileprivate(set) var errorDescription: String
-    }
-    
     public private(set) var pointer: OpaquePointer?
     
     /// - Throws: If the status is `CONNECTION_BAD`.
@@ -67,7 +63,7 @@ public final class PGConn {
         let status = PQstatus(pointer)
         guard status != CONNECTION_BAD else {
             let message = String(validatingUTF8: PQerrorMessage(pointer))!
-            return Error(errorDescription: message)
+            return PGError.connectionFailed(message: message)
         }
         
         return nil
