@@ -16,9 +16,9 @@ public final class PGResult {
     public init(pointer: OpaquePointer) throws {
         self.pointer = pointer
         
-        let error = self.error 
-        guard error.isSuccessful else {
-            throw PGError.executionFailed(error)
+        let status = self.status 
+        guard status.isSuccessful else {
+            throw PGError.executionFailed(status)
         }
     }
     

@@ -14,7 +14,7 @@ public protocol PGConversionParsingState {
 
 public enum PGError: Error {
     case connectionFailed(message: String)
-    case executionFailed(PGResult.Error)
+    case executionFailed(PGResult.Status)
     
     case invalidBoolean(String)
     case invalidNumber(String)

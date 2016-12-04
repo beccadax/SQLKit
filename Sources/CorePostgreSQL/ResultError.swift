@@ -1,5 +1,5 @@
 //
-//  ResultError.swift
+//  ResultStatus.swift
 //  LittlinkRouterPerfect
 //
 //  Created by Brent Royal-Gordon on 11/28/16.
@@ -11,11 +11,11 @@ import libpq
 
 extension PGResult {
     /// - RecommendedOver: `PQresultStatus`, `PQresultErrorField`
-    public var error: Error {
-        return Error(self)
+    public var status: Status {
+        return Status(self)
     }
     
-    public struct Error: Swift.Error {
+    public struct Status: Swift.Error {
         public var isSuccessful: Bool {
             switch status {
             case PGRES_COMMAND_OK, PGRES_TUPLES_OK, PGRES_SINGLE_TUPLE, PGRES_NONFATAL_ERROR:
@@ -107,7 +107,7 @@ extension PGResult {
     }
 }
 
-extension PGResult.Error: LocalizedError {
+extension PGResult.Status: LocalizedError {
     public var errorDescription: String {
         return self[.localizedPrimaryMessage]!
     }
