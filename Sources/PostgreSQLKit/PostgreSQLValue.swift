@@ -29,9 +29,9 @@ extension SQLValue {
         case let selfType as PGValue.Type:
             self = try selfType.init(rawPGValue: rawValue) as! Self
             
-        case let convertibleType as SQLStringConvertible.Type:
+        case let stringConvertibleType as SQLStringConvertible.Type:
             let string = try String(rawPGValue: rawValue)
-            self = try convertibleType.init(sqlLiteral: string) as! Self
+            self = try stringConvertibleType.init(sqlLiteral: string) as! Self
             
         default:
             throw SQLValueError.typeUnsupportedByClient(valueType: Self.self, client: PostgreSQL.self)
@@ -43,8 +43,8 @@ extension SQLValue {
         case let pgValue as PGValue:
             return pgValue
         
-        case let convertible as SQLStringConvertible:
-            return convertible.sqlLiteral
+        case let stringConvertible as SQLStringConvertible:
+            return stringConvertible.sqlLiteral
             
         default:
             throw SQLValueError.typeUnsupportedByClient(valueType: Self.self, client: PostgreSQL.self)
