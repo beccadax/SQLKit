@@ -74,4 +74,18 @@ extension PGError: LocalizedError {
             return NSLocalizedString("No unit was specified for the number \(number).", comment: "")
         }
     }
+    
+    public var failureReason: String? {
+        guard case .executionFailed(let status) = self else {
+            return nil
+        }
+        return status[.localizedDetailMessage]
+    }
+    
+    public var recoverySuggestion: String? {
+        guard case .executionFailed(let status) = self else {
+            return nil
+        }
+        return status[.localizedHintMessage]
+    }
 }

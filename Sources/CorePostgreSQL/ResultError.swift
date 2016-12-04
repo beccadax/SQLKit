@@ -15,7 +15,7 @@ extension PGResult {
         return Status(self)
     }
     
-    public struct Status: Swift.Error {
+    public struct Status {
         public var isSuccessful: Bool {
             switch status {
             case PGRES_COMMAND_OK, PGRES_TUPLES_OK, PGRES_SINGLE_TUPLE, PGRES_NONFATAL_ERROR:
@@ -104,19 +104,5 @@ extension PGResult {
             case info = "INFO"
             case log = "LOG"
         }
-    }
-}
-
-extension PGResult.Status: LocalizedError {
-    public var errorDescription: String {
-        return self[.localizedPrimaryMessage]!
-    }
-    
-    public var failureReason: String? {
-        return self[.localizedDetailMessage]
-    }
-    
-    public var recoverySuggestion: String? {
-        return self[.localizedHintMessage]
     }
 }
