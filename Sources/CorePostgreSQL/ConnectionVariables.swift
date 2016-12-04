@@ -10,6 +10,19 @@ import Foundation
 import libpq
 
 extension PGConn {
+    /// - RecommendedOver: `PQescapeIdentifier`
+    public func quotedIdentifier(_ identifier: String?) -> String {
+        guard let identifier = identifier else {
+            return "NULL"
+        }
+        
+        return identifier.withCString { inCString in
+            let outCString = PQescapeLiteral(pointer, inCString, Int(strlen(inCString)))!
+            defer { PQfreemem(outCString) }
+            return String(cString: outCString)
+        }
+    }
+    
     /// - RecommendedOver: `PQescapeLiteral`
     public func quotedLiteral(_ string: String?) -> String {
         guard let string = string else {
