@@ -82,6 +82,8 @@ extension PGResult {
             if i == -1 { return nil }
             return Int(i)
         }
+        
+        public typealias Indices = DefaultRandomAccessIndices<FieldView>
     }
     
     public var fields: FieldView {
