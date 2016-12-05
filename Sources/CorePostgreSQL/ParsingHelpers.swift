@@ -23,31 +23,27 @@ func ~= <Element: Hashable>(pattern: AnyOf<Element>, candidate: Element) -> Bool
 struct ValueAccumulator {
     static let digits = AnyOf<Character>("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     
-    private var digits = ""
+    private var text = ""
     
     var isEmpty: Bool {
-        return digits.isEmpty
+        return text.isEmpty
     }
     
     init() {}
     
     init(_ char: Character) {
         self.init()
-        digits.append(char)
+        text.append(char)
     }
     
     func adding(_ char: Character) -> ValueAccumulator {
         var copy = self
-        copy.digits.append(char)
+        copy.text.append(char)
         return copy
     }
     
-    mutating func addDigit(_ char: Character) {
-        digits.append(char)
-    }
-    
     func make<Value: PGValue>() throws -> Value {
-        return try Value(textualRawPGValue: digits)
+        return try Value(textualRawPGValue: text)
     }
     
     func make() throws -> PGTime.Zone {
