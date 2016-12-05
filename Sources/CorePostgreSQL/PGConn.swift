@@ -40,7 +40,7 @@ public final class PGConn {
         }
         
         clientEncoding = .utf8
-        dateStyle = DateStyle(format: .iso, order: .ymd)
+        dateStyle = .iso
         intervalStyle = .iso8601
     }
     

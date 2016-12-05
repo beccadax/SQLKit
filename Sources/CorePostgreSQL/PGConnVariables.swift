@@ -149,20 +149,11 @@ extension PGConn {
     }
     
     /// Supported styles for DATE, TIME, and TIMESTAMP columns and values. 
-    public struct DateStyle: RawRepresentable {
-        /// The general format of this date style.
-        public var format: Format
-        /// The order of the date fields in this date style.
-        public var order: Order
-        
-        /// The general format of a date style. This governs the separators, 
-        /// order of some date fields, and verbosity of certain fields.
-        public enum Format: String {
-            case iso = "ISO"
-            case postgres = "Postgres"
-            case sql = "SQL"
-            case german = "German"
-        }
+    public enum DateStyle: RawRepresentable {
+        case iso
+        case german
+        case sql(Order)
+        case postgres(Order)
         
         /// The order of the date fields.
         public enum Order: String {
@@ -184,24 +175,49 @@ extension PGConn {
             }
         }
         
-        public init(format: Format, order: Order) {
-            self.format = format
-            self.order = order
-        }
-        
         public init?(rawValue: String) {
             let parts = rawValue.components(separatedBy: ", ")
-            precondition(parts.count == 2, "DateStyle string should have two parts")
+            precondition(parts.count == 1 || parts.count == 2, "DateStyle string should have two parts")
             
-            guard let format = Format(rawValue: parts[0]), let order = Order(rawValue: parts[1]) else {
+            switch (parts[0], parts.last) {
+            case ("ISO", _):
+                self = .iso
+                
+            case ("German", _):
+                self = .german
+                
+            case ("SQL", nil):
+                self = .sql(.mdy)
+            case ("SQL", let orderRaw?):
+                guard let order = Order(rawValue: orderRaw) else {
+                    return nil
+                }
+                self = .sql(order)
+                
+            case ("Postgres", nil):
+                self = .postgres(.mdy)
+            case ("Postgres", let orderRaw?):
+                guard let order = Order(rawValue: orderRaw) else {
+                    return nil
+                }
+                self = .postgres(order)
+                
+            default: 
                 return nil
             }
-            
-            self.init(format: format, order: order)
         }
         
         public var rawValue: String {
-            return "\(format.rawValue), \(order.rawValue)"
+            switch self {
+            case .iso:
+                return "ISO"
+            case .german:
+                return "German"
+            case .sql(let order):
+                return "SQL, \(order.rawValue)"
+            case .postgres(let order):
+                return "Postgres, \(order.rawValue)"
+            }
         }
     }
     
