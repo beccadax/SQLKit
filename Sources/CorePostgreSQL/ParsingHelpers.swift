@@ -46,17 +46,15 @@ struct NumberAccumulator {
         digits.append(char)
     }
     
-    mutating func make() throws -> Int {
-        defer { digits = "" }
+    func make() throws -> Int {
         return try Int(textualRawPGValue: digits)
     }
     
-    mutating func make() throws -> Decimal {
-        defer { digits = "" }
+    func make() throws -> Decimal {
         return try Decimal(textualRawPGValue: digits)
     }
     
-    mutating func make() throws -> PGTime.Zone {
+    func make() throws -> PGTime.Zone {
         let timeCode = try self.make() as Int
         
         switch abs(timeCode) {

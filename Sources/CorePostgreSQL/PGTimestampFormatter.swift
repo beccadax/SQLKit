@@ -97,15 +97,15 @@ extension PGTimestampFormatter {
             case (.parsingField(let field, accumulated: let accumulator, for: let timestamp), NumberAccumulator.digits):
                 return .parsingField(field, accumulated: accumulator.adding(char), for: timestamp)
                 
-            case (.parsingField(.year, accumulated: var accumulator, for: var timestamp), "-"):
+            case (.parsingField(.year, accumulated: let accumulator, for: var timestamp), "-"):
                 timestamp.date.setYear(to: try accumulator.make())
                 return .expectingField(.month, for: timestamp)
                 
-            case (.parsingField(.month, accumulated: var accumulator, for: var timestamp), "-"):
+            case (.parsingField(.month, accumulated: let accumulator, for: var timestamp), "-"):
                 timestamp.date.setMonth(to: try accumulator.make())
                 return .expectingField(.day, for: timestamp)
                 
-            case (.parsingField(.day, accumulated: var accumulator, for: var timestamp), " "):
+            case (.parsingField(.day, accumulated: let accumulator, for: var timestamp), " "):
                 timestamp.date.setDay(to: try accumulator.make())
                 if formatter.includeTime {
                     return .expectingField(.hour, for: timestamp)
@@ -114,22 +114,22 @@ extension PGTimestampFormatter {
                     return .expectingEraB(for: timestamp)
                 }
             
-            case (.parsingField(.hour, accumulated: var accumulator, for: var timestamp), ":"):
+            case (.parsingField(.hour, accumulated: let accumulator, for: var timestamp), ":"):
                 timestamp.time!.hour = try accumulator.make()
                 return .expectingField(.minute, for: timestamp)
                 
-            case (.parsingField(.minute, accumulated: var accumulator, for: var timestamp), ":"):
+            case (.parsingField(.minute, accumulated: let accumulator, for: var timestamp), ":"):
                 timestamp.time!.minute = try accumulator.make()
                 return .expectingField(.second, for: timestamp)
                 
             case (.parsingField(.second, accumulated: let accumulator, for: let timestamp), "."):
                 return .parsingField(.second, accumulated: accumulator.adding(char), for: timestamp)
                 
-            case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), AnyOf("+", "-")):
+            case (.parsingField(.second, accumulated: let accumulator, for: var timestamp), AnyOf("+", "-")):
                 timestamp.time!.second = try accumulator.make()
                 return .parsingField(.timeZone, accumulated: NumberAccumulator(char), for: timestamp)
             
-            case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), " ") where formatter.includeDate:
+            case (.parsingField(.second, accumulated: let accumulator, for: var timestamp), " ") where formatter.includeDate:
                 timestamp.time!.second = try accumulator.make()
                 return .expectingEraB(for: timestamp)
                 
@@ -137,7 +137,7 @@ extension PGTimestampFormatter {
                 // Ignore this character
                 return state
                 
-            case (.parsingField(.timeZone, accumulated: var accumulator, for: var timestamp), " ") where formatter.includeDate:
+            case (.parsingField(.timeZone, accumulated: let accumulator, for: var timestamp), " ") where formatter.includeDate:
                 timestamp.time!.timeZone = try accumulator.make()
                 return .expectingEraB(for: timestamp)
             
@@ -155,15 +155,15 @@ extension PGTimestampFormatter {
         
         func finishParsing(in state: ParseState) throws -> PGTimestamp {
             switch state {
-            case .parsingField(.day, accumulated: var accumulator, for: var timestamp) where !formatter.includeTime:
+            case .parsingField(.day, accumulated: let accumulator, for: var timestamp) where !formatter.includeTime:
                 timestamp.date.setDay(to: try accumulator.make())
                 return timestamp
                 
-            case .parsingField(.second, accumulated: var accumulator, for: var timestamp):
+            case .parsingField(.second, accumulated: let accumulator, for: var timestamp):
                 timestamp.time!.second = try accumulator.make()
                 return timestamp
                 
-            case .parsingField(.timeZone, accumulated: var accumulator, for: var timestamp):
+            case .parsingField(.timeZone, accumulated: let accumulator, for: var timestamp):
                 timestamp.time!.timeZone = try accumulator.make()
                 return timestamp
                 

@@ -83,7 +83,7 @@ extension PGIntervalFormatter {
             case (.readingQuantity(let accumulator, in: let section, for: let interval), NumberAccumulator.digits):
                 return .readingQuantity(accumulator.adding(char), in: section, for: interval)
                 
-            case (.readingQuantity(var accumulator, in: let section, for: var interval), _):
+            case (.readingQuantity(let accumulator, in: let section, for: var interval), _):
                 guard let component = PGInterval.Component(section: section, unit: char) else {
                     throw PGError.unexpectedCharacter(char)
                 }
@@ -108,7 +108,7 @@ extension PGIntervalFormatter {
             case .start:
                 throw PGError.earlyTermination
                 
-            case .readingQuantity(var accumulator, in: _, for: _):
+            case .readingQuantity(let accumulator, in: _, for: _):
                 throw PGError.unitlessQuantity(try accumulator.make())
             }
         }
