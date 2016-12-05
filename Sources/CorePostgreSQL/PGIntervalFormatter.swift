@@ -137,7 +137,9 @@ extension PGIntervalFormatter {
     
     fileprivate func components(from section: PGInterval.Component.Section, in interval: PGInterval) -> String {
         return section.components.flatMap { component in
-            interval[component].map { value in "\(value)\(component.unit)" }
+            let value = interval[component]
+            guard value != 0 else { return nil }
+            return "\(value)\(component.unit)"
         }.joined()
     }
 }

@@ -16,12 +16,12 @@ public struct PGInterval {
     
     fileprivate var components: [Component: Int] = [:]
     
-    public subscript(component: Component) -> Int? {
+    public subscript(component: Component) -> Int {
         get {
             return components[component] ?? 0
         }
         set {
-            components[component] = newValue
+            components[component] = (newValue == 0 ? nil : newValue)
         }
     }
 }
