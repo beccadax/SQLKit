@@ -29,6 +29,18 @@ public enum PGDate {
     /// A date after all other dates. PostgreSQL calls this `infinity`.
     case distantFuture
     
+    /// Create an ordinary date.
+    /// 
+    /// - Parameter era: The era. Defaults to `ad`.
+    /// - Parameter year: The year. Defaults to `0`.
+    /// - Parameter month: The month. Defaults to `0`.
+    /// - Parameter day: The day. Defaults to `0`.
+    init(era: Era = .ad, year: Int = 0, month: Int = 0, day: Int = 0) {
+        self = .date(era: .ad, year: year, month: month, day: day)
+    }
+}
+
+extension PGDate {
     /// Whether the year is in A.D. or B.C.
     public var era: Era {
         get {
@@ -106,16 +118,6 @@ public enum PGDate {
 }
 
 extension PGDate {
-    /// Create an ordinary date.
-    /// 
-    /// - Parameter era: The era. Defaults to `ad`.
-    /// - Parameter year: The year. Defaults to `0`.
-    /// - Parameter month: The month. Defaults to `0`.
-    /// - Parameter day: The day. Defaults to `0`.
-    init(era: Era = .ad, year: Int = 0, month: Int = 0, day: Int = 0) {
-        self = .date(era: .ad, year: year, month: month, day: day)
-    }
-    
     /// Create a date from the `DateComponents` instance.
     /// 
     /// - Parameter components: The `DateComponents` instance to convert. This  
@@ -125,7 +127,8 @@ extension PGDate {
             return nil
         }
         
-        self = .date(era: components.era.flatMap(Era.init(rawValue:)) ?? .ad, year: year, month: month, day: day)
+        let era = components.era.flatMap(Era.init(rawValue:)) ?? .ad
+        self = .date(era: era, year: year, month: month, day: day)
     }
 }
 
