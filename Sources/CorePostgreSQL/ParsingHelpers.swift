@@ -20,7 +20,7 @@ func ~= <Element: Hashable>(pattern: AnyOf<Element>, candidate: Element) -> Bool
     return pattern.candidates.contains(candidate)
 }
 
-struct NumberAccumulator {
+struct ValueAccumulator {
     static let digits = AnyOf<Character>("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     
     private var digits = ""
@@ -36,7 +36,7 @@ struct NumberAccumulator {
         digits.append(char)
     }
     
-    func adding(_ char: Character) -> NumberAccumulator {
+    func adding(_ char: Character) -> ValueAccumulator {
         var copy = self
         copy.digits.append(char)
         return copy
@@ -46,12 +46,8 @@ struct NumberAccumulator {
         digits.append(char)
     }
     
-    func make() throws -> Int {
-        return try Int(textualRawPGValue: digits)
-    }
-    
-    func make() throws -> Decimal {
-        return try Decimal(textualRawPGValue: digits)
+    func make<Value: PGValue>() throws -> Value {
+        return try Value(textualRawPGValue: digits)
     }
     
     func make() throws -> PGTime.Zone {

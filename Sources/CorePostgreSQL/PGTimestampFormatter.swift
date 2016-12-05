@@ -61,7 +61,7 @@ extension PGTimestampFormatter {
         
         enum ParseState: PGConversionParsingState {
             case expectingField(NumericField, for: PGTimestamp)
-            case parsingField(NumericField, accumulated: NumberAccumulator, for: PGTimestamp)
+            case parsingField(NumericField, accumulated: ValueAccumulator, for: PGTimestamp)
             case expectingEraB(for: PGTimestamp)
             case expectingEraC(for: PGTimestamp)
             case parsedBC(for: PGTimestamp)
@@ -91,10 +91,10 @@ extension PGTimestampFormatter {
         
         func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
             switch (state, char) {
-            case (let .expectingField(field, for: timestamp), NumberAccumulator.digits):
-                return .parsingField(field, accumulated: NumberAccumulator(char), for: timestamp)
+            case (let .expectingField(field, for: timestamp), ValueAccumulator.digits):
+                return .parsingField(field, accumulated: ValueAccumulator(char), for: timestamp)
             
-            case (.parsingField(let field, accumulated: let accumulator, for: let timestamp), NumberAccumulator.digits):
+            case (.parsingField(let field, accumulated: let accumulator, for: let timestamp), ValueAccumulator.digits):
                 return .parsingField(field, accumulated: accumulator.adding(char), for: timestamp)
                 
             case (.parsingField(.year, accumulated: let accumulator, for: var timestamp), "-"):
@@ -127,7 +127,7 @@ extension PGTimestampFormatter {
                 
             case (.parsingField(.second, accumulated: let accumulator, for: var timestamp), AnyOf("+", "-")):
                 timestamp.time!.second = try accumulator.make()
-                return .parsingField(.timeZone, accumulated: NumberAccumulator(char), for: timestamp)
+                return .parsingField(.timeZone, accumulated: ValueAccumulator(char), for: timestamp)
             
             case (.parsingField(.second, accumulated: let accumulator, for: var timestamp), " ") where formatter.includeDate:
                 timestamp.time!.second = try accumulator.make()

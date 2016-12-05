@@ -43,7 +43,7 @@ extension PGIntervalFormatter {
         enum ParseState: PGConversionParsingState {
             case start(for: PGInterval)
             case expectingQuantity(in: PGInterval.Component.Section, for: PGInterval)
-            case readingQuantity(NumberAccumulator, in: PGInterval.Component.Section, for: PGInterval)
+            case readingQuantity(ValueAccumulator, in: PGInterval.Component.Section, for: PGInterval)
             
             var localizedStateDescription: String {
                 switch self {
@@ -74,13 +74,13 @@ extension PGIntervalFormatter {
             case (.expectingQuantity(in: .date, for: let interval), "T"):
                 return .expectingQuantity(in: .time, for: interval)
             
-            case (.expectingQuantity(in: let section, for: let interval), NumberAccumulator.digits):
-                return .readingQuantity(NumberAccumulator(char), in: section, for: interval)
+            case (.expectingQuantity(in: let section, for: let interval), ValueAccumulator.digits):
+                return .readingQuantity(ValueAccumulator(char), in: section, for: interval)
                 
             case (.expectingQuantity, _):
                 throw PGError.unexpectedCharacter(char)
             
-            case (.readingQuantity(let accumulator, in: let section, for: let interval), NumberAccumulator.digits):
+            case (.readingQuantity(let accumulator, in: let section, for: let interval), ValueAccumulator.digits):
                 return .readingQuantity(accumulator.adding(char), in: section, for: interval)
                 
             case (.readingQuantity(let accumulator, in: let section, for: var interval), _):
