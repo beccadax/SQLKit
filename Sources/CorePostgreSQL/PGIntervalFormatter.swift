@@ -91,8 +91,9 @@ extension PGIntervalFormatter {
                     throw PGError.unexpectedCharacter(char)
                 }
                 let newValue = try accumulator.make() as Int
+                let oldValue = interval[component]
                 
-                if let oldValue = interval[component] {
+                guard oldValue == 0 else {
                     throw PGError.redundantQuantity(oldValue: oldValue, newValue: newValue, for: component)
                 }
                 

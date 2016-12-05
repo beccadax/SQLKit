@@ -50,7 +50,7 @@ extension PGInterval {
         self.init()
         
         for (int, cals) in correspondences {
-            self[int] = cals.flatMap({ dateComponents.value(for: $0) }).first
+            self[int] = cals.flatMap({ dateComponents.value(for: $0) }).first ?? 0
         }
     }
 }
