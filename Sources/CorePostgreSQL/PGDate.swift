@@ -18,36 +18,72 @@ public enum PGDate {
     case date(era: Era, year: Int, month: Int, day: Int)
     case distantFuture
     
-    @discardableResult mutating func setEra(to era: Era) -> Bool {
-        guard case let .date(_, year, month, day) = self else {
-            return false
+    public var era: Era {
+        get {
+            guard case .date(let era, _, _, _) = self else {
+                return .ad
+            }
+            return era
         }
-        self = .date(era: era, year: year, month: month, day: day)
-        return true
+        set {
+            if case let .date(_, year, month, day) = self {
+                self = .date(era: newValue, year: year, month: month, day: day)
+            }
+            else {
+                self = .date(era: newValue, year: 0, month: 0, day: 0)
+            }
+        }
     }
     
-    @discardableResult mutating func setYear(to year: Int) -> Bool {
-        guard case let .date(era, _, month, day) = self else {
-            return false
+    public var year: Int {
+        get {
+            guard case .date(_, let year, _, _) = self else {
+                return 0
+            }
+            return year
         }
-        self = .date(era: era, year: year, month: month, day: day)
-        return true
+        set {
+            if case let .date(era, _, month, day) = self {
+                self = .date(era: era, year: newValue, month: month, day: day)
+            }
+            else {
+                self = .date(era: .ad, year: newValue, month: 0, day: 0)
+            }
+        }
     }
     
-    @discardableResult mutating func setMonth(to month: Int) -> Bool {
-        guard case let .date(era, year, _, day) = self else {
-            return false
+    public var month: Int {
+        get {
+            guard case .date(_, _, let month, _) = self else {
+                return 0
+            }
+            return month
         }
-        self = .date(era: era, year: year, month: month, day: day)
-        return true
+        set {
+            if case let .date(era, year, _, day) = self {
+                self = .date(era: era, year: year, month: month, day: day)
+            }
+            else {
+                self = .date(era: .ad, year: 0, month: newValue, day: 0)
+            }
+        }
     }
     
-    @discardableResult mutating func setDay(to day: Int) -> Bool {
-        guard case let .date(era, year, month, _) = self else {
-            return false
+    public var day: Int {
+        get {
+            guard case .date(_, _, _, let day) = self else {
+                return 0
+            }
+            return day
         }
-        self = .date(era: era, year: year, month: month, day: day)
-        return true
+        set {
+            if case let .date(era, year, month, _) = self {
+                self = .date(era: era, year: year, month: month, day: newValue)
+            }
+            else {
+                self = .date(era: .ad, year: 0, month: 0, day: newValue)
+            }
+        }
     }
 }
 

@@ -98,15 +98,15 @@ extension PGTimestampFormatter {
                 return .parsingField(field, accumulated: accumulator.adding(char), for: timestamp)
                 
             case (.parsingField(.year, accumulated: let accumulator, for: var timestamp), "-"):
-                timestamp.date.setYear(to: try accumulator.make())
+                timestamp.date.year = try accumulator.make()
                 return .expectingField(.month, for: timestamp)
                 
             case (.parsingField(.month, accumulated: let accumulator, for: var timestamp), "-"):
-                timestamp.date.setMonth(to: try accumulator.make())
+                timestamp.date.month = try accumulator.make()
                 return .expectingField(.day, for: timestamp)
                 
             case (.parsingField(.day, accumulated: let accumulator, for: var timestamp), " "):
-                timestamp.date.setDay(to: try accumulator.make())
+                timestamp.date.day = try accumulator.make()
                 if formatter.includeTime {
                     return .expectingField(.hour, for: timestamp)
                 }
@@ -145,7 +145,7 @@ extension PGTimestampFormatter {
                 return .expectingEraC(for: interval)
                 
             case (.expectingEraC(for: var interval), "C"):
-                interval.date.setEra(to: .bc)
+                interval.date.era = .bc
                 return .parsedBC(for: interval)
                 
             default:
@@ -156,7 +156,7 @@ extension PGTimestampFormatter {
         func finishParsing(in state: ParseState) throws -> PGTimestamp {
             switch state {
             case .parsingField(.day, accumulated: let accumulator, for: var timestamp) where !formatter.includeTime:
-                timestamp.date.setDay(to: try accumulator.make())
+                timestamp.date.day = try accumulator.make()
                 return timestamp
                 
             case .parsingField(.second, accumulated: let accumulator, for: var timestamp):
