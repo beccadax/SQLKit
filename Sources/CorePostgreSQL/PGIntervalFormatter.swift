@@ -75,8 +75,7 @@ extension PGIntervalFormatter {
                 return .expectingQuantity(in: .time, for: interval)
             
             case (.expectingQuantity(in: let section, for: let interval), NumberAccumulator.digits):
-                let accumulator = NumberAccumulator().adding(char)
-                return .readingQuantity(accumulator, in: section, for: interval)
+                return .readingQuantity(NumberAccumulator(char), in: section, for: interval)
                 
             case (.expectingQuantity, _):
                 throw PGError.unexpectedCharacter(char)

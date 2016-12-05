@@ -92,8 +92,7 @@ extension PGTimestampFormatter {
         func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
             switch (state, char) {
             case (let .expectingField(field, for: timestamp), NumberAccumulator.digits):
-                let accumulator = NumberAccumulator().adding(char)
-                return .parsingField(field, accumulated: accumulator, for: timestamp)
+                return .parsingField(field, accumulated: NumberAccumulator(char), for: timestamp)
             
             case (.parsingField(let field, accumulated: let accumulator, for: let timestamp), NumberAccumulator.digits):
                 return .parsingField(field, accumulated: accumulator.adding(char), for: timestamp)
@@ -128,8 +127,7 @@ extension PGTimestampFormatter {
                 
             case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), AnyOf("+", "-")):
                 timestamp.time!.second = try accumulator.make()
-                accumulator.addDigit(char)
-                return .parsingField(.timeZone, accumulated: accumulator, for: timestamp)
+                return .parsingField(.timeZone, accumulated: NumberAccumulator(char), for: timestamp)
             
             case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), " ") where formatter.includeDate:
                 timestamp.time!.second = try accumulator.make()
