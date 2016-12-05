@@ -10,6 +10,12 @@ import Foundation
 import libpq
 
 extension PGConn {
+    /// Returns a quoted form of the string which can be concatenated with a 
+    /// SQL statement to add an identifier, such as a table or column name.
+    /// 
+    /// - Parameter identifier: The identifier string to quote.
+    /// - Returns: A string that can be concatenated into a SQL string.
+    /// 
     /// - RecommendedOver: `PQescapeIdentifier`
     public func quotedIdentifier(_ identifier: String) -> String {
         return identifier.withCString { inCString in
@@ -19,6 +25,18 @@ extension PGConn {
         }
     }
     
+    /// Returns a quoted form of the string which can be concatenated with a 
+    /// SQL statement to add a string literal.
+    ///
+    /// - Parameter string: The string to quote, or `nil` if a `NULL` should be 
+    ///               added.
+    /// - Returns: A string that can be concatenated into a SQL string.
+    /// 
+    /// - Note: While it's usually better to use `PGConn.execute(_:with:returningIn:)`  
+    ///          to pass data without concatenating it into a SQL string, occasionally  
+    ///          PostgreSQL will not allow a placeholder at a particular location. 
+    ///          This method can help you in such a situation.
+    /// 
     /// - RecommendedOver: `PQescapeLiteral`
     public func quotedLiteral(_ string: String?) -> String {
         guard let string = string else {
@@ -78,6 +96,14 @@ extension PGConn {
         }
     }
     
+    /// The format of DATE, TIME, and TIMESTAMP columns when rendered as text.
+    /// 
+    /// This property is read-only because this library requires that the 
+    /// date style always be set to `DateStyle(format: .iso, order: .ymd)`. 
+    /// If it is set to anything else, this library may not be able to correctly 
+    /// interpret date values returned by queries. Never use any  
+    /// mechanism to set the `DateStyle` configuration variable to 
+    /// anything but `ISO, YMD`.
     public internal(set) var dateStyle: DateStyle {
         get {
             let rawValue = value(for: "DateStyle")!
@@ -88,6 +114,14 @@ extension PGConn {
         }
     }
     
+    /// The format of INTERVAL columns when rendered as text.
+    /// 
+    /// This property is read-only because this library requires that the 
+    /// date style always be set to `IntervalStyle.iso8601`. 
+    /// If it is set to anything else, this library may not be able to correctly 
+    /// interpret interval values returned by queries. Never use any  
+    /// mechanism to set the `IntervalStyle` configuration variable to 
+    /// anything but `iso_8601`.
     public internal(set) var intervalStyle: IntervalStyle {
         get {
             let rawValue = value(for: "IntervalStyle")!
@@ -98,16 +132,57 @@ extension PGConn {
         }
     }
     
+    /// Supported styles for INTERVAL columns and values.
     public enum IntervalStyle: String {
+        /// The `sql_standard` format (e.g. `-1-2 +3 -4:05:06`).
         case sqlStandard = "sql_standard"
+        
+        /// The `postgres` format (e.g. `-1 year -2 mons +3 days -04:05:06`).
         case postgres = "postgres"
+        
+        /// The `postgres_verbose` format (e.g. 
+        /// `@ 1 year 2 mons -3 days 4 hours 5 mins 6 secs ago`).
         case postgresVerbose = "postgres_verbose"
+        
+        /// The `iso_8601` format (e.g. `P-1Y-2M3DT-4H-5M-6S`).
         case iso8601 = "iso_8601"
     }
     
+    /// Supported styles for DATE, TIME, and TIMESTAMP columns and values. 
     public struct DateStyle: RawRepresentable {
+        /// The general format of this date style.
         public var format: Format
+        /// The order of the date fields in this date style.
         public var order: Order
+        
+        /// The general format of a date style. This governs the separators, 
+        /// order of some date fields, and verbosity of certain fields.
+        public enum Format: String {
+            case iso = "ISO"
+            case postgres = "Postgres"
+            case sql = "SQL"
+            case german = "German"
+        }
+        
+        /// The order of the date fields.
+        public enum Order: String {
+            case dmy = "DMY"
+            case mdy = "MDY"
+            case ymd = "YMD"
+            
+            private static let names: [String: Order] = [
+                "DMY": .dmy, "Euro": .dmy, "European": .dmy,
+                "MDY": .mdy, "US": .mdy, "NonEuro": .mdy, "NonEuropean": .mdy,
+                "YMD": .ymd,
+            ]
+            
+            public init?(rawValue: String) {
+                guard let order = Order.names[rawValue] else {
+                    return nil
+                }
+                self = order
+            }
+        }
         
         public init(format: Format, order: Order) {
             self.format = format
@@ -128,34 +203,9 @@ extension PGConn {
         public var rawValue: String {
             return "\(format.rawValue), \(order.rawValue)"
         }
-        
-        public enum Format: String {
-            case iso = "ISO"
-            case postgres = "Postgres"
-            case sql = "SQL"
-            case german = "German"
-        }
-        
-        public enum Order: String {
-            case dmy = "DMY"
-            case mdy = "MDY"
-            case ymd = "YMD"
-            
-            private static let names: [String: Order] = [
-                "DMY": .dmy, "Euro": .dmy, "European": .dmy,
-                "MDY": .mdy, "US": .mdy, "NonEuro": .mdy, "NonEuropean": .mdy,
-                "YMD": .ymd,
-            ]
-            
-            public init?(rawValue: String) {
-                guard let order = Order.names[rawValue] else {
-                    return nil
-                }
-                self = order
-            }
-        }
     }
     
+    /// Text encodings supported in some fashion by PostgreSQL.
     public enum Encoding: String {
         static let unknownSQLASCIIName = "SQL_ASCII"
         
