@@ -32,20 +32,32 @@ extension PGTime {
                 throw PGError.invalidTimeZoneOffset(timeCode)
             }
         }
+        
+        public init(secondsFromUTC seconds: Int) {
+            let minutes = seconds / 60
+            self.init(hours: minutes / 60, minutes: minutes % 60)
+        }
+        
+        public var secondsFromUTC: Int {
+            get {
+                return (hours * 60 + minutes) * 60
+            }
+            set {
+                self = Zone(secondsFromUTC: newValue)
+            }
+        }
     }
 }
 
 extension PGTime.Zone {
-    init(_ timeZone: TimeZone, on referenceDate: Date) {
-        let seconds = timeZone.secondsFromGMT(for: referenceDate) / 60
-        let minutes = seconds / 60
-        self.init(hours: minutes / 60, minutes: minutes % 60)
+    public init(_ timeZone: TimeZone, on referenceDate: Date) {
+        let seconds = timeZone.secondsFromGMT(for: referenceDate)
+        self.init(secondsFromUTC: seconds)
     }
 }
 
 extension TimeZone {
-    init?(_ zone: PGTime.Zone) {
-        let offsetInSeconds = (zone.hours * 60 + zone.minutes) * 60
-        self.init(secondsFromGMT: offsetInSeconds)
+    public init?(_ zone: PGTime.Zone) {
+        self.init(secondsFromGMT: zone.secondsFromUTC)
     }
 }
