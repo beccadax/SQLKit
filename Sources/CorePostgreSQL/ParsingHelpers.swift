@@ -8,6 +8,8 @@
 
 import Foundation
 
+/// Used in a pattern match, this type will match if any of its elements is equal 
+/// to the value.
 struct AnyOf<Element: Hashable> {
     var candidates: Set<Element>
     
