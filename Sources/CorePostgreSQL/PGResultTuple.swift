@@ -1,5 +1,5 @@
 //
-//  ResultTuple.swift
+//  PGResultTuple.swift
 //  LittlinkRouterPerfect
 //
 //  Created by Brent Royal-Gordon on 11/28/16.

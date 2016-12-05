@@ -1,5 +1,5 @@
 //
-//  ConnectionVariables.swift
+//  PGConnVariables.swift
 //  LittlinkRouterPerfect
 //
 //  Created by Brent Royal-Gordon on 12/3/16.
