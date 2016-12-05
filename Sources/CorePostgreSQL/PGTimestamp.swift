@@ -42,3 +42,26 @@ extension PGTimestamp {
         self.init(date: date, time: time)
     }
 }
+
+extension DateComponents {
+    public init?(_ timestamp: PGTimestamp) {
+        guard let dateComps = DateComponents(timestamp.date) else {
+            return nil
+        }
+        let timeComps = DateComponents(timestamp.time)
+        
+        self.init(timeZone: timeComps.timeZone, era: dateComps.era, year: dateComps.year, month: dateComps.month, day: dateComps.day, hour: timeComps.hour, minute: timeComps.minute, second: timeComps.second, nanosecond: timeComps.nanosecond)
+    }
+}
+
+extension Date {
+    public init?(_ timestamp: PGTimestamp) {
+        guard let comps = DateComponents(timestamp) else {
+            return nil
+        }
+        guard let date = Calendar.gregorian.date(from: comps) else {
+            return nil
+        }
+        self = date
+    }
+}

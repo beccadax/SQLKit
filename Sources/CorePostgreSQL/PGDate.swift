@@ -73,37 +73,6 @@ extension DateComponents {
         
         self.init(era: era.rawValue, year: year, month: month, day: day)
     }
-    
-    public init(_ time: PGTime) {
-        let second = Int(time.second)
-        let nanosecond = Int((time.second - Decimal(second)) * pow(10, DateComponents.nanosecondDigits))
-        
-        let timeZoneOffset = time.timeZone.map { tz in (tz.hours * 60 + tz.minutes) * 60 }
-        let timeZone = timeZoneOffset.flatMap(TimeZone.init(secondsFromGMT:))
-        
-        self.init(timeZone: timeZone, hour: time.hour, minute: time.minute, second: second, nanosecond: nanosecond)
-    }
-    
-    public init?(_ timestamp: PGTimestamp) {
-        guard let dateComps = DateComponents(timestamp.date) else {
-            return nil
-        }
-        let timeComps = DateComponents(timestamp.time)
-        
-        self.init(timeZone: timeComps.timeZone, era: dateComps.era, year: dateComps.year, month: dateComps.month, day: dateComps.day, hour: timeComps.hour, minute: timeComps.minute, second: timeComps.second, nanosecond: timeComps.nanosecond)
-    }
-}
-
-extension Date {
-    public init?(_ timestamp: PGTimestamp) {
-        guard let comps = DateComponents(timestamp) else {
-            return nil
-        }
-        guard let date = Calendar.gregorian.date(from: comps) else {
-            return nil
-        }
-        self = date
-    }
 }
 
 extension Int {
