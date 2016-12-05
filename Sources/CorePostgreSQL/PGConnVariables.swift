@@ -150,15 +150,28 @@ extension PGConn {
     
     /// Supported styles for DATE, TIME, and TIMESTAMP columns and values. 
     public enum DateStyle: RawRepresentable {
+        /// The `ISO` format (e.g. `1997-12-17 07:37:16-08`).
+        /// 
+        /// - Note: This is, at best, an ISO-inspired format; it does not follow 
+        ///          ISO-8601 faithfully.
         case iso
+        
+        /// The `German` format (e.g. `17.12.1997 07:37:16.00 PST`).
         case german
+        
+        /// The `SQL` format (e.g. `12/17/1997 07:37:16.00 PST`).
         case sql(Order)
+        
+        /// The `Postgres` format (e.g. `Wed Dec 17 07:37:16 1997 PST`).
         case postgres(Order)
         
-        /// The order of the date fields.
+        /// The order of the date fields in `sql` or `postgres` formats.
         public enum Order: String {
+            /// Day, month, year order.
             case dmy = "DMY"
+            /// Month, day, year order.
             case mdy = "MDY"
+            /// Year, month, day order.
             case ymd = "YMD"
             
             private static let names: [String: Order] = [
