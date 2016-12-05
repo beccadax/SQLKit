@@ -11,11 +11,7 @@ import libpq
 
 extension PGConn {
     /// - RecommendedOver: `PQescapeIdentifier`
-    public func quotedIdentifier(_ identifier: String?) -> String {
-        guard let identifier = identifier else {
-            return "NULL"
-        }
-        
+    public func quotedIdentifier(_ identifier: String) -> String {
         return identifier.withCString { inCString in
             let outCString = PQescapeLiteral(pointer, inCString, Int(strlen(inCString)))!
             defer { PQfreemem(outCString) }
