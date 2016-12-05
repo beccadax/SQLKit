@@ -24,7 +24,7 @@ extension PGTime {
                 // A `±hh` offset
                 self.init(hours: timeCode, minutes: 0)
                 
-            case 100...1200 where 0..<60 ~= abs(timeCode) % 100:
+            case 15...1200 where 0..<60 ~= abs(timeCode) % 100:
                 // A `±hhmm` offset
                 self.init(hours: timeCode / 100, minutes: timeCode % 100)
                 
