@@ -9,6 +9,13 @@
 import Foundation
 
 public struct PGTime {
+    public init(hour: Int = 0, minute: Int = 0, second: Decimal = 0, timeZone: Zone? = nil) {
+        self.hour = hour
+        self.minute = minute
+        self.second = second
+        self.timeZone = timeZone
+    }
+    
     public var hour: Int
     public var minute: Int
     public var second: Decimal

@@ -8,70 +8,29 @@
 
 import Foundation
 
-public enum PGTimestamp {
-    case distantPast
-    case timestamp(era: PGDate.Era, year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Decimal, timeZone: PGTime.Zone?)
-    case distantFuture
+public struct PGTimestamp {
+    public static var distantPast = PGTimestamp(date: .distantPast)
+    public static var distantFuture = PGTimestamp(date: .distantFuture)
     
-    init() {
-        self = .timestamp(era: .ad, year: 0, month: 0, day: 0, hour: 0, minute: 0, second: 0, timeZone: nil)
-    }
-}
-
-extension PGTimestamp {
-    public init(date: PGDate, time: PGTime?) {
-        switch (date, time) {
-        case (.distantPast, _):
-            self = .distantPast
-        case (.distantFuture, _):
-            self = .distantFuture
-        case let (.date(era, year, month, day), time?):
-            self = .timestamp(era: era, year: year, month: month, day: day, hour: time.hour, minute: time.minute, second: time.second, timeZone: time.timeZone)
-        case let (.date(era, year, month, day), nil):
-            self = .timestamp(era: era, year: year, month: month, day: day, hour: 0, minute: 0, second: 0, timeZone: nil)
-        }
+    public init(date: PGDate = PGDate(), time: PGTime = PGTime()) {
+        self.date = date
+        self.time = time
     }
     
-    public var date: PGDate {
-        get {
-            switch self {
-            case .distantPast:
-                return .distantPast
-            case .timestamp(let era, let year, let month, let day, _, _, _, _):
-                return .date(era: era, year: year, month: month, day: day)
-            case .distantFuture:
-                return .distantFuture
-            }
-        }
-        set {
-            self = PGTimestamp(date: newValue, time: time)
-        }
-    }
-    
-    public var time: PGTime? {
-        get {
-            guard case let .timestamp(_, _, _, _, hour, minute, second, timeZone) = self else {
-                return nil
-            }
-            
-            return PGTime(hour: hour, minute: minute, second: second, timeZone: timeZone)
-        }
-        set {
-            self = PGTimestamp(date: date, time: newValue)
-        }
-    }
+    public var date: PGDate
+    public var time: PGTime
 }
 
 extension PGTimestamp {
     public init(_ date: Date) {
         switch date {
         case Date.distantPast:
-            self = .distantPast
+            self.init(date: .distantPast)
         case Date.distantFuture:
-            self = .distantFuture
+            self.init(date: .distantFuture)
         default:
             let components = Calendar.gregorian.dateComponents([.era, .year, .month, .day, .hour, .minute, .second, .nanosecond, .timeZone], from: date)
-            self = PGTimestamp(components)!
+            self.init(components)!
         }
     }
     

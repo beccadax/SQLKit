@@ -52,6 +52,10 @@ public enum PGDate {
 }
 
 extension PGDate {
+    init(era: Era = .ad, year: Int = 0, month: Int = 0, day: Int = 0) {
+        self = .date(era: .ad, year: year, month: month, day: day)
+    }
+    
     public init?(_ components: DateComponents) {
         guard let year = components.year, let month = components.month, let day = components.day else {
             return nil
@@ -84,7 +88,7 @@ extension DateComponents {
         guard let dateComps = DateComponents(timestamp.date) else {
             return nil
         }
-        let timeComps = DateComponents(timestamp.time!)
+        let timeComps = DateComponents(timestamp.time)
         
         self.init(timeZone: timeComps.timeZone, era: dateComps.era, year: dateComps.year, month: dateComps.month, day: dateComps.day, hour: timeComps.hour, minute: timeComps.minute, second: timeComps.second, nanosecond: timeComps.nanosecond)
     }

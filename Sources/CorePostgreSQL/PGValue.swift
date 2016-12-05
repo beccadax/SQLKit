@@ -167,7 +167,7 @@ extension PGDate: PGValue {
     }
     
     public var rawPGValue: PGRawValue {
-        let timestamp = PGTimestamp(date: self, time: nil)
+        let timestamp = PGTimestamp(date: self)
         return .textual(PGDate.formatter.string(from: timestamp)!)
     }
 }
@@ -178,11 +178,11 @@ extension PGTime: PGValue {
     
     public init(textualRawPGValue text: String) throws {
         let timestamp = try PGTime.formatter.timestamp(from: text)
-        self = timestamp.time!
+        self = timestamp.time
     }
     
     public var rawPGValue: PGRawValue {
-        let timestamp = PGTimestamp(date: .date(era: .ad, year: 0, month: 0, day: 0), time: self)
+        let timestamp = PGTimestamp(time: self)
         return .textual(PGTime.formatter.string(from: timestamp)!)
     }
 }

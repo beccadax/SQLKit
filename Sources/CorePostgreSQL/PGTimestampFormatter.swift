@@ -115,22 +115,22 @@ extension PGTimestampFormatter {
                 }
             
             case (.parsingField(.hour, accumulated: let accumulator, for: var timestamp), ":"):
-                timestamp.time!.hour = try accumulator.make()
+                timestamp.time.hour = try accumulator.make()
                 return .expectingField(.minute, for: timestamp)
                 
             case (.parsingField(.minute, accumulated: let accumulator, for: var timestamp), ":"):
-                timestamp.time!.minute = try accumulator.make()
+                timestamp.time.minute = try accumulator.make()
                 return .expectingField(.second, for: timestamp)
                 
             case (.parsingField(.second, accumulated: let accumulator, for: let timestamp), "."):
                 return .parsingField(.second, accumulated: accumulator.adding(char), for: timestamp)
                 
             case (.parsingField(.second, accumulated: let accumulator, for: var timestamp), AnyOf("+", "-")):
-                timestamp.time!.second = try accumulator.make()
+                timestamp.time.second = try accumulator.make()
                 return .parsingField(.timeZone, accumulated: ValueAccumulator(char), for: timestamp)
             
             case (.parsingField(.second, accumulated: let accumulator, for: var timestamp), " ") where formatter.includeDate:
-                timestamp.time!.second = try accumulator.make()
+                timestamp.time.second = try accumulator.make()
                 return .expectingEraB(for: timestamp)
                 
             case (.parsingField(.timeZone, accumulated: _, for: _), ":"):
@@ -138,7 +138,7 @@ extension PGTimestampFormatter {
                 return state
                 
             case (.parsingField(.timeZone, accumulated: let accumulator, for: var timestamp), " ") where formatter.includeDate:
-                timestamp.time!.timeZone = try accumulator.make()
+                timestamp.time.timeZone = try accumulator.make()
                 return .expectingEraB(for: timestamp)
             
             case (.expectingEraB(for: let interval), "B"):
@@ -160,11 +160,11 @@ extension PGTimestampFormatter {
                 return timestamp
                 
             case .parsingField(.second, accumulated: let accumulator, for: var timestamp):
-                timestamp.time!.second = try accumulator.make()
+                timestamp.time.second = try accumulator.make()
                 return timestamp
                 
             case .parsingField(.timeZone, accumulated: let accumulator, for: var timestamp):
-                timestamp.time!.timeZone = try accumulator.make()
+                timestamp.time.timeZone = try accumulator.make()
                 return timestamp
                 
             case .parsedBC(for: let timestamp):
@@ -223,7 +223,7 @@ extension PGTimestampFormatter {
     
     func string(from timestamp: PGTimestamp) -> String? {
         if !includeDate {
-            return timestamp.time.map(string(from:))
+            return string(from: timestamp.time)
         }
         
         switch timestamp.date {
@@ -234,7 +234,7 @@ extension PGTimestampFormatter {
             return "infinity"
             
         case let .date(era, year, month, day):
-            let timePart = includeTime ? " " + string(from: timestamp.time!) : ""
+            let timePart = includeTime ? " " + string(from: timestamp.time) : ""
             let datePart = "\(f(year, digits: 4))-\(f(month))-\(f(day))"
             
             switch era {
