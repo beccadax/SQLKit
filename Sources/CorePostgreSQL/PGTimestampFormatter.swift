@@ -92,13 +92,11 @@ extension PGTimestampFormatter {
         func continueParsing(_ char: Character, in state: ParseState) throws -> ParseState {
             switch (state, char) {
             case (let .expectingField(field, for: timestamp), NumberAccumulator.digits):
-                var accumulator = NumberAccumulator()
-                accumulator.addDigit(char)
+                let accumulator = NumberAccumulator().adding(char)
                 return .parsingField(field, accumulated: accumulator, for: timestamp)
             
-            case (.parsingField(let field, accumulated: var accumulator, for: let timestamp), NumberAccumulator.digits):
-                accumulator.addDigit(char)
-                return .parsingField(field, accumulated: accumulator, for: timestamp)
+            case (.parsingField(let field, accumulated: let accumulator, for: let timestamp), NumberAccumulator.digits):
+                return .parsingField(field, accumulated: accumulator.adding(char), for: timestamp)
                 
             case (.parsingField(.year, accumulated: var accumulator, for: var timestamp), "-"):
                 timestamp.date.setYear(to: try accumulator.make())
@@ -125,9 +123,8 @@ extension PGTimestampFormatter {
                 timestamp.time!.minute = try accumulator.make()
                 return .expectingField(.second, for: timestamp)
                 
-            case (.parsingField(.second, accumulated: var accumulator, for: let timestamp), "."):
-                accumulator.addDigit(char)
-                return .parsingField(.second, accumulated: accumulator, for: timestamp)
+            case (.parsingField(.second, accumulated: let accumulator, for: let timestamp), "."):
+                return .parsingField(.second, accumulated: accumulator.adding(char), for: timestamp)
                 
             case (.parsingField(.second, accumulated: var accumulator, for: var timestamp), AnyOf("+", "-")):
                 timestamp.time!.second = try accumulator.make()

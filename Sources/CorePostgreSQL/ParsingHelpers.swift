@@ -29,6 +29,12 @@ struct NumberAccumulator {
         return digits.isEmpty
     }
     
+    func adding(_ char: Character) -> NumberAccumulator {
+        var copy = self
+        copy.digits.append(char)
+        return copy
+    }
+    
     mutating func addDigit(_ char: Character) {
         digits.append(char)
     }

@@ -75,16 +75,14 @@ extension PGIntervalFormatter {
                 return .expectingQuantity(in: .time, for: interval)
             
             case (.expectingQuantity(in: let section, for: let interval), NumberAccumulator.digits):
-                var accumulator = NumberAccumulator()
-                accumulator.addDigit(char)
+                let accumulator = NumberAccumulator().adding(char)
                 return .readingQuantity(accumulator, in: section, for: interval)
                 
             case (.expectingQuantity, _):
                 throw PGError.unexpectedCharacter(char)
             
-            case (.readingQuantity(var accumulator, in: let section, for: let interval), NumberAccumulator.digits):
-                accumulator.addDigit(char)
-                return .readingQuantity(accumulator, in: section, for: interval)
+            case (.readingQuantity(let accumulator, in: let section, for: let interval), NumberAccumulator.digits):
+                return .readingQuantity(accumulator.adding(char), in: section, for: interval)
                 
             case (.readingQuantity(var accumulator, in: let section, for: var interval), _):
                 guard let component = PGInterval.Component(section: section, unit: char) else {
