@@ -51,3 +51,9 @@ extension DateComponents {
         self.init(timeZone: timeZone, hour: time.hour, minute: time.minute, second: second, nanosecond: nanosecond)
     }
 }
+
+extension Int {
+    init(_ decimal: Decimal) {
+        self = NSDecimalNumber(decimal: decimal).intValue
+    }
+}

@@ -74,9 +74,3 @@ extension DateComponents {
         self.init(era: era.rawValue, year: year, month: month, day: day)
     }
 }
-
-extension Int {
-    init(_ decimal: Decimal) {
-        self = NSDecimalNumber(decimal: decimal).intValue
-    }
-}
