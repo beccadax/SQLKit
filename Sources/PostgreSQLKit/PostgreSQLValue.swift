@@ -10,10 +10,13 @@ import Foundation
 import SQLKit
 import CorePostgreSQL
 
+/// Implementation detail. Do not use.
 protocol _PGValueConvertible {
     var anyPGValue: PGValue { get }
 }
 
+/// `PGValueConvertible` indicates that a type is equivalent to an existing 
+/// `PGValue` type.
 protocol PGValueConvertible: _PGValueConvertible {
     associatedtype Value: PGValue
     
