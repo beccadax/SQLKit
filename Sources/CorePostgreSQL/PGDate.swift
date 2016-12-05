@@ -44,18 +44,10 @@ extension PGDate {
     /// Whether the year is in A.D. or B.C.
     public var era: Era {
         get {
-            guard case .date(let era, _, _, _) = self else {
-                return .ad
-            }
-            return era
+            return properties.era
         }
         set {
-            if case let .date(_, year, month, day) = self {
-                self = .date(era: newValue, year: year, month: month, day: day)
-            }
-            else {
-                self = .date(era: newValue, year: 0, month: 0, day: 0)
-            }
+            properties.era = newValue
         }
     }
     
@@ -63,18 +55,10 @@ extension PGDate {
     /// is not enforced.
     public var year: Int {
         get {
-            guard case .date(_, let year, _, _) = self else {
-                return 0
-            }
-            return year
+            return properties.year
         }
         set {
-            if case let .date(era, _, month, day) = self {
-                self = .date(era: era, year: newValue, month: month, day: day)
-            }
-            else {
-                self = .date(era: .ad, year: newValue, month: 0, day: 0)
-            }
+            properties.year = newValue
         }
     }
     
@@ -82,18 +66,10 @@ extension PGDate {
     /// is not enforced.
     public var month: Int {
         get {
-            guard case .date(_, _, let month, _) = self else {
-                return 0
-            }
-            return month
+            return properties.month
         }
         set {
-            if case let .date(era, year, _, day) = self {
-                self = .date(era: era, year: year, month: month, day: day)
-            }
-            else {
-                self = .date(era: .ad, year: 0, month: newValue, day: 0)
-            }
+            properties.month = newValue
         }
     }
     
@@ -101,18 +77,22 @@ extension PGDate {
     /// is not enforced.
     public var day: Int {
         get {
-            guard case .date(_, _, _, let day) = self else {
-                return 0
-            }
-            return day
+            return properties.day
         }
         set {
-            if case let .date(era, year, month, _) = self {
-                self = .date(era: era, year: year, month: month, day: newValue)
+            properties.day = newValue
+        }
+    }
+    
+    private var properties: (era: Era, year: Int, month: Int, day: Int) {
+        get {
+            guard case let .date(era, year, month, day) = self else {
+                return (.ad, 0, 0, 0)
             }
-            else {
-                self = .date(era: .ad, year: 0, month: 0, day: newValue)
-            }
+            return (era, year, month, day)
+        }
+        set {
+            self = .date(era: newValue.era, year: newValue.year, month: newValue.month, day: newValue.day)
         }
     }
 }
