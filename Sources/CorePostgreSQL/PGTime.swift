@@ -21,7 +21,15 @@ public struct PGTime {
     public var second: Decimal
     public var timeZone: Zone?
     
-    public typealias Zone = (hours: Int, minutes: Int)
+    public struct Zone {
+        public var hours: Int
+        public var minutes: Int
+        
+        public init(hours: Int, minutes: Int) {
+            self.hours = hours
+            self.minutes = minutes
+        }
+    }
 }
 
 extension PGTime {
@@ -37,6 +45,6 @@ extension PGTime {
         
         let referenceDate = components.date ?? Calendar.gregorian.date(from: components) ?? Date()
         let timeZoneOffset = components.timeZone.map { $0.secondsFromGMT(for: referenceDate) / 60 }
-        self.timeZone = timeZoneOffset.map { (hours: $0 / 60, minutes: $0 % 60) }
+        self.timeZone = timeZoneOffset.map { Zone(hours: $0 / 60, minutes: $0 % 60) }
     }
 }
