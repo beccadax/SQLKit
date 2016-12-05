@@ -16,13 +16,17 @@ struct AnyOf<Element: Hashable> {
     }
 }
 
+extension AnyOf where Element: ExpressibleByUnicodeScalarLiteral {
+    static var digits: AnyOf<Element> {
+        return .init("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    }
+}
+
 func ~= <Element: Hashable>(pattern: AnyOf<Element>, candidate: Element) -> Bool {
     return pattern.candidates.contains(candidate)
 }
 
 struct ValueAccumulator {
-    static let digits = AnyOf<Character>("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-    
     private var text = ""
     
     var isEmpty: Bool {

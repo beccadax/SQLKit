@@ -74,13 +74,13 @@ extension PGIntervalFormatter {
             case (.expectingQuantity(in: .date, for: let interval), "T"):
                 return .expectingQuantity(in: .time, for: interval)
             
-            case (.expectingQuantity(in: let section, for: let interval), ValueAccumulator.digits):
+            case (.expectingQuantity(in: let section, for: let interval), AnyOf.digits):
                 return .readingQuantity(ValueAccumulator(char), in: section, for: interval)
                 
             case (.expectingQuantity, _):
                 throw PGError.unexpectedCharacter(char)
             
-            case (.readingQuantity(let accumulator, in: let section, for: let interval), ValueAccumulator.digits):
+            case (.readingQuantity(let accumulator, in: let section, for: let interval), AnyOf.digits):
                 return .readingQuantity(accumulator.adding(char), in: section, for: interval)
                 
             case (.readingQuantity(let accumulator, in: let section, for: var interval), _):
