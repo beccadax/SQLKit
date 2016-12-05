@@ -58,8 +58,17 @@ extension PGTime {
         
         self.second = Decimal(second) + Decimal(nanosecond) / pow(10, DateComponents.nanosecondDigits)
         
-        let referenceDate = components.date ?? Calendar.gregorian.date(from: components) ?? Date()
-        let timeZoneOffset = components.timeZone.map { $0.secondsFromGMT(for: referenceDate) / 60 }
-        self.timeZone = timeZoneOffset.map { Zone(hours: $0 / 60, minutes: $0 % 60) }
+        if let timeZone = components.timeZone {
+            let referenceDate = components.date ?? Calendar.gregorian.date(from: components) ?? Date()
+            self.timeZone = Zone(timeZone, on: referenceDate)
+        }
+    }
+}
+
+extension PGTime.Zone {
+    init(_ timeZone: TimeZone, on referenceDate: Date) {
+        let seconds = timeZone.secondsFromGMT(for: referenceDate) / 60
+        let minutes = seconds / 60
+        self.init(hours: minutes / 60, minutes: minutes % 60)
     }
 }
