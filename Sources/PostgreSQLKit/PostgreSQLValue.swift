@@ -82,16 +82,3 @@ extension SQLValue {
         }
     }
 }
-
-extension Date: PGValueConvertible {
-    init(pgValue value: PGTimestamp) throws {
-        guard let date = Date(value) else {
-            throw PostgreSQLKitError.invalidDate(value)
-        }
-        self = date
-    }
-    
-    var pgValue: PGTimestamp {
-        return PGTimestamp(self)
-    }
-}
