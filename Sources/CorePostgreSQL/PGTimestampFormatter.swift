@@ -138,7 +138,7 @@ extension PGTimestampFormatter {
                 return state
                 
             case (.parsingField(.timeZone, accumulated: let accumulator, for: var timestamp), " ") where formatter.includeDate:
-                timestamp.time.timeZone = try accumulator.make()
+                timestamp.time.timeZone = try PGTime.Zone(packedOffset: accumulator.make())
                 return .expectingEraB(for: timestamp)
             
             case (.expectingEraB(for: let interval), "B"):
@@ -164,7 +164,7 @@ extension PGTimestampFormatter {
                 return timestamp
                 
             case .parsingField(.timeZone, accumulated: let accumulator, for: var timestamp):
-                timestamp.time.timeZone = try accumulator.make()
+                timestamp.time.timeZone = try PGTime.Zone(packedOffset: accumulator.make())
                 return timestamp
                 
             case .parsedBC(for: let timestamp):

@@ -29,6 +29,21 @@ public struct PGTime {
             self.hours = hours
             self.minutes = minutes
         }
+        
+        public init(packedOffset timeCode: Int) throws {
+            switch abs(timeCode) {
+            case 0...12:
+                // A `±hh` offset
+                self.init(hours: timeCode, minutes: 0)
+                
+            case 100...1200 where 0..<60 ~= abs(timeCode) % 100:
+                // A `±hhmm` offset
+                self.init(hours: timeCode / 100, minutes: timeCode % 100)
+                
+            default:
+                throw PGError.invalidTimeZoneOffset(timeCode)
+            }
+        }
     }
 }
 

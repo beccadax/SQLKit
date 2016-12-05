@@ -49,21 +49,4 @@ struct ValueAccumulator {
     func make<Value: PGValue>() throws -> Value {
         return try Value(textualRawPGValue: text)
     }
-    
-    func make() throws -> PGTime.Zone {
-        let timeCode = try self.make() as Int
-        
-        switch abs(timeCode) {
-        case 0...12:
-            // A `±hh` offset
-            return .init(hours: timeCode, minutes: 0)
-            
-        case 100...1200 where 0..<60 ~= abs(timeCode) % 100:
-            // A `±hhmm` offset
-            return .init(hours: timeCode / 100, minutes: timeCode % 100)
-            
-        default:
-            throw PGError.invalidTimeZoneOffset(timeCode)
-        }
-    }
 }
