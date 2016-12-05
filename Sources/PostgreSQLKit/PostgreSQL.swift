@@ -18,16 +18,30 @@ import CorePostgreSQL
 /// `postgresql` schemes and [the format accepted by `libpq`'s 
 /// `PQconnectdb(_:)`](https://www.postgresql.org/docs/9.4/static/libpq-connect.html#AEN41287).
 /// 
-/// `PostgreSQL.ConnectionState` and `PostgreSQL.QueryState` expose types from 
-/// the library this client wraps, so you can use them to perform operations not 
-/// directly supported by `SQLKit`.
+/// `PostgreSQL` uses the `CorePostgreSQL` module to access the database, and its 
+/// `ConnectionState`, `QueryState`, `RowStateSequence`, and `RowState` types 
+/// all wrap `CorePostgreSQL` types. By importing `CorePostgreSQL` yourself, you 
+/// can use these types to perform operations not supported by `SQLKit`.
+/// 
+/// `PostgreSQL` supports the following types as `SQLValue` types:
+/// 
+/// * `String`, `Data`, `Bool`, `Int`, `Double`, `Date`, and 
+///    `SQLStringConvertible` (required by `SQLKit`)
+/// * `PGDate`, `PGTime`, `PGTimestamp`, and `PGInterval` (from 
+///    `CorePostgreSQL`)
+/// * `Decimal`
+/// 
+/// - Warning: In order to function correctly, `CorePostgreSQL` must control the 
+///              `client_encoding`, `DateStyle`, and `IntervalStyle` configuration 
+///              parameters. Do not change these except through APIs provided by 
+///              `CorePostgreSQL`.
 public enum PostgreSQL: SQLClient {
     /// The type of `SQLDatabase<PostgreSQL>.state`.
     public struct DatabaseState {
         let url: URL
     }
     
-    /// The type of `SQLConnection<PostgreSQL>.state`. This is a `PGConnection` 
+    /// The type of `SQLConnection<PostgreSQL>.state`. This is a `PGConn` 
     /// instance, which you can use directly if you need low-level access to the 
     /// database.
     public typealias ConnectionState = PGConn
@@ -39,10 +53,13 @@ public enum PostgreSQL: SQLClient {
     /// The type backing a `SQLRowIterator<PostgreSQL>` or 
     /// `SQLRowCollection<PostgreSQL>`. Because this type conforms to 
     /// `RandomAccessCollection`, you can access the rows returned by a query in 
-    /// any order and as many times as you wish.
+    /// any order and as many times as you wish. This is a `PGResult.TupleView` 
+    /// instance, which you can use directly if you need low-level access to the 
+    /// rows.
     public typealias RowStateSequence = PGResult.TupleView
     
-    /// The type of `SQLRow<PostgreSQL>.state`.
+    /// The type of `SQLRow<PostgreSQL>.state`. This is a `PGResult.Tuple` 
+    /// instance, which you can use directly if you need low-level access to the row.
     public typealias RowState = PGResult.Tuple
     
     public static func supports(_ url: URL) -> Bool {
