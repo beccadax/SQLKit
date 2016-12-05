@@ -42,3 +42,10 @@ extension PGTime.Zone {
         self.init(hours: minutes / 60, minutes: minutes % 60)
     }
 }
+
+extension TimeZone {
+    init?(_ zone: PGTime.Zone) {
+        let offsetInSeconds = (zone.hours * 60 + zone.minutes) * 60
+        self.init(secondsFromGMT: offsetInSeconds)
+    }
+}

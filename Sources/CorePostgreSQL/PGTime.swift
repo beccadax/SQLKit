@@ -45,8 +45,7 @@ extension DateComponents {
         let second = Int(time.second)
         let nanosecond = Int((time.second - Decimal(second)) * pow(10, DateComponents.nanosecondDigits))
         
-        let timeZoneOffset = time.timeZone.map { tz in (tz.hours * 60 + tz.minutes) * 60 }
-        let timeZone = timeZoneOffset.flatMap(TimeZone.init(secondsFromGMT:))
+        let timeZone = time.timeZone.flatMap(TimeZone.init)
         
         self.init(timeZone: timeZone, hour: time.hour, minute: time.minute, second: second, nanosecond: nanosecond)
     }
