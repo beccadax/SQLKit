@@ -26,6 +26,31 @@ import Foundation
 /// best name for a `SQLClient`-conforming type thus usually does *not* include 
 /// `Client`, but merely names the engine: `PostgreSQL`, `SQLite`, etc.
 public protocol SQLClient: _SQLClient {
+    // This protocol has an awkward design which mixes different concerns into 
+    // a single type, doesn't allow instantiation, includes many opaque types,  
+    // and generally is not very easy to use or even sane.
+    // 
+    // This is intentional.
+    // 
+    // SQLKit's primary goal is to provide a uniform interface to disparate 
+    // SQL clients. To that end, it provides uniform types like `SQLConnection` 
+    // and `SQLQuery` and forces you to use them. If `SQLClient` were 
+    // decomposed into several sensible protocols--such as 
+    // `SQLConnectionProtocol`, `SQLQueryProtocol`, etc.--then it would be 
+    // very convenient to use client-specific types directly, and those 
+    // client-specific types could easily add non-uniform members which 
+    // people might use instead of the standardized SQLKit members.
+    // 
+    // By instead designing `SQLClient` as a single, monolitic protocol with 
+    // a minimal interface and various awkward features, `SQLKit` avoids this 
+    // danger and can force uniformity, which will help developers who find 
+    // themselves switching SQL clients, wanting to mock a SQL client during 
+    // testing, using SQLite in development, etc.
+    // 
+    // It is, of course, possible for a client to extend `SQLConnection where 
+    // Client == SomeClient` and thereby add client-specific members. But this 
+    // is a little more difficult, so hopefully people won't do it as casually.
+    
     /// The state backing a `SQLDatabase<Self>` instance.
     associatedtype DatabaseState
     
