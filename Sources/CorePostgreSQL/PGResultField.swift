@@ -10,6 +10,20 @@ import Foundation
 import libpq
 
 extension PGResult {
+    /// Accesses a `FieldView` describing all of the fields included in this 
+    /// result object.
+    /// 
+    /// `fields` can be used to get the number of fields or access detailed 
+    /// information about particular fields. Some examples of use:
+    /// 
+    ///    result.fields.count
+    ///    result.fields[2].name
+    ///    result.index(of: "user_id")
+    ///    print(result.fields.map { $0.name })
+    public var fields: FieldView {
+        return FieldView(result: self)
+    }
+    
     /// Represents a field in a result, describing certain pieces of metadata about 
     /// it.
     /// 
@@ -130,19 +144,5 @@ extension PGResult {
         }
         
         public typealias Indices = DefaultRandomAccessIndices<FieldView>
-    }
-    
-    /// Accesses a `FieldView` describing all of the fields included in this 
-    /// result object.
-    /// 
-    /// `fields` can be used to get the number of fields or access detailed 
-    /// information about particular fields. Some examples of use:
-    /// 
-    ///    result.fields.count
-    ///    result.fields[2].name
-    ///    result.index(of: "user_id")
-    ///    print(result.fields.map { $0.name })
-    public var fields: FieldView {
-        return FieldView(result: self)
     }
 }
