@@ -20,7 +20,7 @@ import libpq
 /// it for you just before it's deinitialized.
 public final class PGConn {
     /// The raw pointer to the underlying `PGconn` struct in `libpq`. Can be used to 
-    /// perform extremely low-level operations.
+    /// bypass `CorePostgreSQL` and use `libpq` directly.
     public private(set) var pointer: OpaquePointer?
     
     /// Constructs a `PGConn` object from a low-level `libpq` `PGconn` pointer.
