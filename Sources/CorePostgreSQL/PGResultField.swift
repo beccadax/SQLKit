@@ -15,8 +15,9 @@ extension PGResult {
         public let index: Int
         
         /// - PreferredOver: `PQftype`
-        public var type: Oid? {
-            return PQftype(result.pointer, Int32(index))
+        public var type: PGType? {
+            let oid = PQftype(result.pointer, Int32(index))
+            return PGType(rawValue: oid)
         }
         
         /// - PreferredOver: `PQfmod`
