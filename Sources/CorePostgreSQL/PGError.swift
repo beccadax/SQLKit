@@ -8,26 +8,71 @@
 
 import Foundation
 
+/// Conforming types describe what a parser was doing at the point when a parse 
+/// error occurred.
 public protocol PGConversionParsingState {
+    /// A user-understandable description of what a parser is doing.
+    /// 
+    /// In English, this will usually be a string that starts with a word like 
+    /// "during", "while", "before", "after", etc. It is meant to be incorporated 
+    /// into a larger sentence.
     var localizedStateDescription: String { get }
 }
 
+/// Errors thrown by CorePostgreSQL.
+/// 
+/// All `CorePostgreSQL` errors include a localized description; `executionFailed` 
+/// errors also include localized failure reasons and recovery suggestions, drawn 
+/// from the underlying PostgreSQL error message.
 public enum PGError: Error {
+    /// Connecting to a database failed.
     case connectionFailed(message: String)
+    /// Executing a statement failed. The associated `PGResult.Status` intance 
+    /// describes the failure in detail.
     case executionFailed(PGResult.Status)
     
+    /// Attempting to parse the associated `String` as a `Bool` failed.
     case invalidBoolean(String)
+    /// Attempting to parse the associated `String` as a number failed.
     case invalidNumber(String)
+    /// Attempting to parse the associated `String` as a TIMESTAMP failed.
+    /// The associated `Error` describes the failure in more detail; the 
+    /// `String.Index` is the index at which the parse failed, and the 
+    /// `PGConversionParsingState` describes the state of the timestamp parser 
+    /// at failure.
     case invalidTimestamp(Error, at: String.Index, in: String, during: PGConversionParsingState)
+    /// Attempting to parse the associated `String` as a DATE failed.
+    /// The associated `Error` describes the failure in more detail; the 
+    /// `String.Index` is the index at which the parse failed, and the 
+    /// `PGConversionParsingState` describes the state of the timestamp parser 
+    /// at failure.
     case invalidDate(Error, at: String.Index, in: String, during: PGConversionParsingState)
+    /// Attempting to parse the associated `String` as a TIME failed.
+    /// The associated `Error` describes the failure in more detail; the 
+    /// `String.Index` is the index at which the parse failed, and the 
+    /// `PGConversionParsingState` describes the state of the timestamp parser 
+    /// at failure.
     case invalidTime(Error, at: String.Index, in: String, during: PGConversionParsingState)
+    /// Attempting to parse the associated `String` as an INTERVAL failed.
+    /// The associated `Error` describes the failure in more detail; the 
+    /// `String.Index` is the index at which the parse failed, and the 
+    /// `PGConversionParsingState` describes the state of the timestamp parser 
+    /// at failure.
     case invalidInterval(Error, at: String.Index, in: String, during: PGConversionParsingState)
     
+    /// Parsing failed because it encountered an unexpected character.
     case unexpectedCharacter(Character)
+    /// Parsing failed because the digits in a TIME or TIMESTAMP's time zone offset  
+    /// were not in range.
     case invalidTimeZoneOffset(Int)
+    /// Parsing failed because the string ended before a complete value was parsed.
     case earlyTermination
     
+    /// Parsing a PGInterval failed because the `PGInterval.Component` had two 
+    /// conflicting values, `oldValue` and `newValue`.
     case redundantQuantity(oldValue: Int, newValue: Int, for: PGInterval.Component)
+    /// Parsing a PGInterval failed because the `Int` did not have a unit attached 
+    /// to it.
     case unitlessQuantity(Int)
 }
 

@@ -8,7 +8,8 @@
 
 import Foundation
 
-/// Representation of a PostgreSQL DATE value.
+/// Representation of a PostgreSQL DATE value, identifying a particular day in the 
+/// Gregorian calendar without a time.
 /// 
 /// A `PGDate` includes a day, month, year, and era (A.D. or B.C.). There are 
 /// also two special `PGDate`s, `distantPast` and `distantFuture`, which do not 
