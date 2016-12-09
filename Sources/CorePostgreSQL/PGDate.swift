@@ -103,6 +103,7 @@ extension PGDate {
     /// 
     /// - Parameter components: The `DateComponents` instance to convert. This  
     ///               must include at last `year`, `month`, and `day` fields.
+    ///               The `era` field will also be used if present.
     public init?(_ components: DateComponents) {
         guard let year = components.year, let month = components.month, let day = components.day else {
             return nil
