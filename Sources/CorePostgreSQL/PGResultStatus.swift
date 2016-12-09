@@ -95,14 +95,14 @@ extension PGResult {
         }
         
         public enum Severity: String {
-            case panic = "PANIC"
-            case fatal = "FATAL"
-            case error = "ERROR"
-            case warning = "WARNING"
-            case notice = "NOTICE"
             case debug = "DEBUG"
             case info = "INFO"
+            case notice = "NOTICE"
+            case warning = "WARNING"
+            case error = "ERROR"
             case log = "LOG"
+            case fatal = "FATAL"
+            case panic = "PANIC"
         }
     }
 }
