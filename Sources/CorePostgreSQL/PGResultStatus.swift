@@ -18,7 +18,7 @@ extension PGResult {
     public struct Status {
         public var isSuccessful: Bool {
             switch status {
-            case PGRES_COMMAND_OK, PGRES_TUPLES_OK, PGRES_SINGLE_TUPLE, PGRES_NONFATAL_ERROR:
+            case PGRES_COMMAND_OK, PGRES_TUPLES_OK, PGRES_SINGLE_TUPLE, PGRES_NONFATAL_ERROR, PGRES_COPY_OUT, PGRES_COPY_IN, PGRES_COPY_BOTH:
                 return true
                 
             default:
