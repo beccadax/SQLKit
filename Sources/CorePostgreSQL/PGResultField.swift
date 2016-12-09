@@ -81,7 +81,7 @@ extension PGResult {
         }
         
         /// The index of the column in `table` which the field came from.
-        /// `nil` if teh data doesn't come directly from a table column.
+        /// `nil` if the data doesn't come directly from a table column.
         /// 
         /// - Warning: Although the equivalent `libpq` functionality is 1-based, this property is zero-based.
         /// 
@@ -131,6 +131,8 @@ extension PGResult {
         }
         
         /// Retrieves information about the `i`th field in the result's fields. 
+        /// 
+        /// - Precondition: There are at least `i + 1` fields in the result. 
         public subscript(i: Int) -> Field {
             precondition(i < endIndex, "Index out of bounds")
             return Field(result: result, index: i)
