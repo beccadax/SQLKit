@@ -86,15 +86,32 @@ extension PGResult {
             case sourceFunction = "R"
         }
         
-        public enum Severity: String {
+        public enum Severity: String, Hashable, Comparable {
             case debug = "DEBUG"
+            case log = "LOG"
             case info = "INFO"
             case notice = "NOTICE"
             case warning = "WARNING"
             case error = "ERROR"
-            case log = "LOG"
             case fatal = "FATAL"
             case panic = "PANIC"
+            
+            private var ordering: Int {
+                switch self {
+                case .debug: return 0
+                case .log: return 1
+                case .info: return 2
+                case .notice: return 3
+                case .warning: return 4
+                case .error: return 5
+                case .fatal: return 6
+                case .panic: return 7
+                }
+            }
+            
+            public static func < (lhs: Severity, rhs: Severity) -> Bool {
+                return lhs.ordering < rhs.ordering
+            }
         }
     }
 }
