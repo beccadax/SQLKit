@@ -22,7 +22,7 @@ extension PGResult {
             return result.fields.endIndex
         }
         
-        /// - PreferredOver: `PQgetvalue`, `PQgetisnull`, `PQgetlength`
+        /// - RecommendedOver: `PQgetvalue`, `PQgetisnull`, `PQgetlength`
         public subscript(field: Field) -> PGRawValue? {
             precondition(field.result === result, "Used a Field from one Result to access a Tuple from another Result")
             
@@ -72,7 +72,7 @@ extension PGResult {
     public struct TupleView: _IntIndexedCollection, RandomAccessCollection {
         fileprivate let result: PGResult
         
-        /// - PreferredOver: `PQntuples`
+        /// - RecommendedOver: `PQntuples`
         public var endIndex: Int {
             return Int(PQntuples(result.pointer))
         }

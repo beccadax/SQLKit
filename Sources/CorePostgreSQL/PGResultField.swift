@@ -38,7 +38,7 @@ extension PGResult {
         
         /// The type of data in the column, if a type is known.
         /// 
-        /// - PreferredOver: `PQftype`
+        /// - RecommendedOver: `PQftype`
         public var type: PGType? {
             let oid = PQftype(result.pointer, Int32(index))
             return PGType(rawValue: oid)
@@ -48,7 +48,7 @@ extension PGResult {
         /// a precision on a numeric field, but the details vary by type. `nil` if 
         /// there is no type modifier.
         /// 
-        /// - PreferredOver: `PQfmod`
+        /// - RecommendedOver: `PQfmod`
         public var typeModifier: Int? {
             let mod = PQfmod(result.pointer, Int32(index))
             if mod == -1 {
@@ -59,7 +59,7 @@ extension PGResult {
         
         /// The name of the column.
         /// 
-        /// - PreferredOver: `PQfname`
+        /// - RecommendedOver: `PQfname`
         public var name: String {
             guard let cString = PQfname(result.pointer, Int32(index)) else {
                 preconditionFailure("Index out of range")
@@ -70,7 +70,7 @@ extension PGResult {
         /// The PostgreSQL object identifier of the table which the field came from.  
         /// `nil` if the data doesn't come directly from a table column.
         /// 
-        /// - PreferredOver: `PQftable`
+        /// - RecommendedOver: `PQftable`
         public var table: Oid? {
             let tableID = PQftable(result.pointer, Int32(index))
             
@@ -85,7 +85,7 @@ extension PGResult {
         /// 
         /// - Warning: Although the equivalent `libpq` functionality is 1-based, this property is zero-based.
         /// 
-        /// - PreferredOver: `PQftablecol`
+        /// - RecommendedOver: `PQftablecol`
         public var columnIndex: Int? {
             let column = PQftablecol(result.pointer, Int32(index))
             if column == 0 {
@@ -95,6 +95,8 @@ extension PGResult {
         }
         
         /// The format of the raw values returned when accessing this field.
+        /// 
+        /// - RecommendedOver: `PQfformat`
         public var format: PGRawValue.Format {
             let raw = PQfformat(result.pointer, Int32(index))
             return PGRawValue.Format(rawValue: raw)!
@@ -123,7 +125,7 @@ extension PGResult {
         
         /// The index after the index of the last field.
         /// 
-        /// - PreferredOver: `PQnfields`
+        /// - RecommendedOver: `PQnfields`
         public var endIndex: Int {
             return Int(PQnfields(result.pointer))
         }
@@ -136,7 +138,7 @@ extension PGResult {
         
         /// Returns the index of the field with the given `name`.
         /// 
-        /// - PreferredOver: `PQfnumber`
+        /// - RecommendedOver: `PQfnumber`
         public func index(of name: String) -> Int? {
             let i = PQfnumber(result.pointer, name)
             if i == -1 { return nil }
