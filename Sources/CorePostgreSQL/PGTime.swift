@@ -31,7 +31,8 @@ public struct PGTime {
     public var hour: Int
     /// A zero-based minute during the `hour`.
     public var minute: Int
-    /// A zero-based second during the `minute`.
+    /// A zero-based second during the `minute`. `second` is a `Decimal`; 
+    /// PostgreSQL supports up to six digits of fractional seconds.
     public var second: Decimal
     /// The time zone that the date is in, if any. `nil` means the time zone is not 
     /// specified.
