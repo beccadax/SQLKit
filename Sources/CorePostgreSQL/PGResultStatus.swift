@@ -63,14 +63,6 @@ extension PGResult {
             return self[.internalPosition].map { Int($0)! - 1 }
         }
         
-        public var internalQuery: String? {
-            return self[.internalQuery]
-        }
-        
-        public var context: String? {
-            return self[.context]
-        }
-        
         public enum FieldCode: UnicodeScalar {
             static var all = [FieldCode.localizedSeverity, .severity, .sqlState, .localizedPrimaryMessage, .localizedDetailMessage, .localizedHintMessage, .statementPosition, .internalPosition, .internalQuery, .context, .schemaName, .tableName, .columnName, .datatypeName, .constraintName, .sourceFile, .sourceLine, .sourceFunction]
             
