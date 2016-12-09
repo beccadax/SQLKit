@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Internal protocol used for implementation sharing. Do not use.
 public protocol _IntIndexedCollection {}
 
 extension _IntIndexedCollection where Self: RandomAccessCollection {
