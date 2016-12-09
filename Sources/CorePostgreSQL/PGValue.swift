@@ -9,17 +9,62 @@
 import Foundation
 import libpq
 
+/// Conforming types can be converted to and from a `PGRawValue`.
+/// 
+/// `PGValue` is the primary way you should get data in and out of PostgreSQL. 
+/// It leverages `CorePostgreSQL`'s detailed knowledge of how PostgreSQL formats 
+/// values to ensure that all data sent to PostgreSQL is in a format it will 
+/// understand and all data received from PostgreSQL will be parsed with knowledge 
+/// of any edge cases or obscure syntax.
+/// 
+/// Conforming to `PGValue` alone only guarantees that the value can understand 
+/// raw values received in `textual` format. Types which know how to parse `binary` 
+/// format should conform to `PGBinaryValue`.
+/// 
+/// Conforming types must be able to convert all values of `Self` into a 
+/// `PGRawValue`. Conversion back may in some circumstances cause an error.
 public protocol PGValue {
+    /// The PostgreSQL type which most closely corresponds to this type.
+    /// 
+    /// The `preferredPGType` should be able to express all values of `Self` as 
+    /// accurately as possible. For instance, you would not give `Double` a 
+    /// `preferredPGType` of `numeric`, because `numeric` is an exact decimal 
+    /// number whereas `Double` is an approximate binary number.  
     static var preferredPGType: PGType { get }
     
+    /// Creates an instance of `Self` from the contents of a textual raw value.
+    /// 
+    /// - Throws: If `text` is ill-formed or conversion otherwise fails.
+    /// - Note: Conforming type should implement this initializer, but you will 
+    ///          usually want to call the `init(rawPGValue:)` initializer instead of 
+    ///          this one.
     init(textualRawPGValue text: String) throws
+    
+    /// Creates a `PGRawValue` from `Self`.
+    /// 
+    /// - Note: Conforming types may return a `binary` raw value from this 
+    ///          property even if they don't conform to `PGBinaryValue`.
     var rawPGValue: PGRawValue { get }
     
     // Implemented by extension; do not override.
+    /// Creates an instance of `Self` from the `rawValue`.
+    /// 
+    /// - Precondition: `rawValue` is not in binary format unless `Self` also 
+    ///                   conforms to `PGBinaryValue`.
+    /// 
+    /// - Note: Conforming types should implement `init(textualRawPGValue:)` 
+    ///           instead of this initializer, but you should usually call this one.
     init(rawPGValue: PGRawValue) throws
 }
 
 extension PGValue {
+    /// Creates an instance of `Self` from the `rawValue`.
+    /// 
+    /// - Precondition: `rawValue` is not in binary format unless `Self` also 
+    ///                   conforms to `PGBinaryValue`.
+    /// 
+    /// - Note: Conforming types should implement `init(textualRawPGValue:)` 
+    ///           instead of this initializer, but you should usually call this one.
     public init(rawPGValue: PGRawValue) throws {
         switch rawPGValue {
         case .textual(let text):
@@ -31,11 +76,27 @@ extension PGValue {
     }
 }
 
+/// Conforming types can be converted to and from a `PGRawValue`, and support 
+/// `PGRawValue`s in both textual and binary formats.
+/// 
+/// Conforming types must be able to convert all values of `Self` into a 
+/// `PGRawValue`. Conversion back may in some circumstances cause an error.
 public protocol PGBinaryValue: PGValue {
+    /// Creates an instance of `Self` from the contents of a binary raw value.
+    /// 
+    /// - Throws: If `bytes` are ill-formed or conversion otherwise fails.
+    /// - Note: Conforming type should implement this initializer, but you will 
+    ///          usually want to call the `init(rawPGValue:)` initializer instead of 
+    ///          this one.
     init(binaryRawPGValue bytes: Data) throws
 }
 
 extension PGBinaryValue {
+    /// Creates an instance of `Self` from the `rawValue`.
+    /// 
+    /// - Note: Conforming types should implement `init(textualRawPGValue:)` and 
+    ///          init(binaryRawPGValue:)` instead of this initializer, but you should 
+    ///          usually call this one.
     public init(rawPGValue: PGRawValue) throws {
         switch rawPGValue {
         case .textual(let text):

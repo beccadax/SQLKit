@@ -9,6 +9,10 @@
 import Foundation
 import libpq
 
+/// A type representing the types built in to PostgreSQL. 
+/// 
+/// The list of types is hand-copied from 
+/// [the PostgreSQL source](https://github.com/postgres/postgres/blob/master/src/include/catalog/pg_type.h#L272).
 public enum PGType: Oid {
     static let automaticOid: Oid = 0
     
