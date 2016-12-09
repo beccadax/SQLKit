@@ -36,7 +36,7 @@ public final class PGResult {
     ///
     /// - Parameter pointer: A pointer returned by a `PQexec`-related function.
     ///
-    /// - Throws: A `PGResult.Error` if the status is not one of `PGRES_COMMAND_OK`, `PGRES_TUPLES_OK`, `PGRES_SINGLE_TUPLE`, or `PGRES_NONFATAL_ERROR`.
+    /// - Throws: A `PGResult.Error` if the `status` is not `isSuccessful`.
     /// - SeeAlso: `PGConn.execute(_:with:resultingIn:)`
     public init(pointer: OpaquePointer) throws {
         self.pointer = pointer
