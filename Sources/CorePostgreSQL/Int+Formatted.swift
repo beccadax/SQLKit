@@ -2,7 +2,7 @@
 //  Int+Formatted.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/2/16.
+//  Created by Becca Royal-Gordon on 12/2/16.
 //
 //
 
@@ -18,7 +18,7 @@ extension Int: NumericFormattable {
         
         let base = String(abs(self))
         
-        let extraCount = digits - base.characters.count
+        let extraCount = digits - base.count
         guard extraCount > 0 else {
             return base
         }
@@ -34,8 +34,8 @@ extension Decimal: NumericFormattable {
         
         let base = String(describing: abs(self))
         
-        let wholeEndIndex = base.characters.index(of: ".") ?? base.endIndex
-        let extraCount = digits - base.characters.distance(from: base.startIndex, to: wholeEndIndex)
+        let wholeEndIndex = base.firstIndex(of: ".") ?? base.endIndex
+        let extraCount = digits - base.distance(from: base.startIndex, to: wholeEndIndex)
         
         guard extraCount > 0 else {
             return base
