@@ -2,12 +2,12 @@
 //  PGConnVariables.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/3/16.
+//  Created by Becca Royal-Gordon on 12/3/16.
 //
 //
 
 import Foundation
-import libpq
+import Clibpq
 
 extension PGConn {
     /// Returns a quoted form of the string which can be concatenated with a 

@@ -2,12 +2,12 @@
 //  PGType.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/30/16.
+//  Created by Becca Royal-Gordon on 11/30/16.
 //
 //
 
 import Foundation
-import libpq
+import Clibpq
 
 /// A type representing the types built in to PostgreSQL. 
 /// 

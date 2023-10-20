@@ -2,12 +2,12 @@
 //  PGValue.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/30/16.
+//  Created by Becca Royal-Gordon on 11/30/16.
 //
 //
 
 import Foundation
-import libpq
+import Clibpq
 
 /// Conforming types can be converted to and from a `PGRawValue`.
 /// 

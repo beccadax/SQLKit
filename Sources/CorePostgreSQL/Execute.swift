@@ -2,12 +2,12 @@
 //  Execute.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/28/16.
+//  Created by Becca Royal-Gordon on 11/28/16.
 //
 //
 
 import Foundation
-import libpq
+import Clibpq
 
 extension PGConn {
     /// Execute one or more SQL statements, returning the result of the last 

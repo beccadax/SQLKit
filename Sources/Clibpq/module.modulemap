@@ -1,0 +1,5 @@
+module Clibpq [system] {
+    header "libpq.h"
+    link "libpq"
+    export *
+}

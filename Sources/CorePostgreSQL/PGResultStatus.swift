@@ -2,12 +2,12 @@
 //  PGResultStatus.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/28/16.
+//  Created by Becca Royal-Gordon on 11/28/16.
 //
 //
 
 import Foundation
-import libpq
+import Clibpq
 
 extension PGResult {
     /// Represents the status of a statement's execution.
