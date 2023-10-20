@@ -91,7 +91,7 @@ extension PGResult {
             if column == 0 {
                 return nil
             }
-            return column - 1
+            return Int(column) - 1
         }
         
         /// The format of the raw values returned when accessing this field.
