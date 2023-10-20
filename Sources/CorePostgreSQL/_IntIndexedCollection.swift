@@ -2,7 +2,7 @@
 //  _IntIndexedCollection.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/28/16.
+//  Created by Becca Royal-Gordon on 11/28/16.
 //
 //
 
@@ -24,5 +24,5 @@ extension _IntIndexedCollection where Self: RandomAccessCollection {
         return i + 1
     }
     
-    public typealias Indices = DefaultRandomAccessIndices<Self>
+    public typealias Indices = DefaultIndices<Self>
 }

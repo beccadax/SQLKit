@@ -216,6 +216,6 @@ extension PGResult {
             return Tuple(result: result, index: i)
         }
         
-        public typealias Indices = DefaultRandomAccessIndices<TupleView>
+        public typealias Indices = DefaultIndices<TupleView>
     }
 }

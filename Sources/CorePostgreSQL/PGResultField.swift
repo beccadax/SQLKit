@@ -147,6 +147,6 @@ extension PGResult {
             return Int(i)
         }
         
-        public typealias Indices = DefaultRandomAccessIndices<FieldView>
+        public typealias Indices = DefaultIndices<FieldView>
     }
 }
