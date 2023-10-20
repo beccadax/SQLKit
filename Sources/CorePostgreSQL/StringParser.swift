@@ -2,7 +2,7 @@
 //  StringParser.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/3/16.
+//  Created by Becca Royal-Gordon on 12/3/16.
 //
 //
 
@@ -20,12 +20,11 @@ protocol StringParser {
 
 extension StringParser {
     func parse(_ string: String) throws -> ParseResult {
-        let characters = string.characters
-        let indices = characters.indices
-        
+        let indices = string.utf8.indices
+
         let finalState = try indices.reduce(initialParseState) { state, index in
             do {
-                let char = characters[index]
+                let char = string[index]
                 return try continueParsing(char, in: state)
             }
             catch {
