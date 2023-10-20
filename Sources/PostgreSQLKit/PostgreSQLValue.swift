@@ -2,7 +2,7 @@
 //  PostgreSQLValue.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/3/16.
+//  Created by Becca Royal-Gordon on 12/3/16.
 //
 //
 
@@ -41,7 +41,7 @@ extension SQLValue {
         case is PGValue.Type:
             return
             
-        case is PGValueConvertible.Type:
+        case is any PGValueConvertible.Type:
             return
             
         case is SQLStringConvertible.Type:
@@ -57,7 +57,7 @@ extension SQLValue {
         case let selfType as PGValue.Type:
             self = try selfType.init(rawPGValue: rawValue) as! Self
         
-        case let valueConvertibleType as PGValueConvertible.Type:
+        case let valueConvertibleType as any PGValueConvertible.Type:
             self = try valueConvertibleType.init(rawPGValue: rawValue) as! Self
             
         case let stringConvertibleType as SQLStringConvertible.Type:
