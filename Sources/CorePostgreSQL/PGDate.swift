@@ -2,7 +2,7 @@
 //  PGDate.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/2/16.
+//  Created by Becca Royal-Gordon on 12/2/16.
 //
 //
 
@@ -36,7 +36,7 @@ public enum PGDate {
     /// - Parameter year: The year. Defaults to `0`.
     /// - Parameter month: The month. Defaults to `0`.
     /// - Parameter day: The day. Defaults to `0`.
-    init(era: Era = .ad, year: Int = 0, month: Int = 0, day: Int = 0) {
+    public init(era: Era = .ad, year: Int = 0, month: Int = 0, day: Int = 0) {
         self = .date(era: .ad, year: year, month: month, day: day)
     }
 }
