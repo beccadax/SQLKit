@@ -14,6 +14,11 @@ let connection = try db.makeConnection()
 let parts = try connection.query("SELECT * FROM parts")
 let partKey = try parts.columnKey(forName: "id", as: String.self)
 
+if let randomRow = parts.rows.randomElement() {
+    let randomId = try randomRow.value(for: partKey)
+    print("\(randomId)")
+}
+
 for part in parts.rows {
     let id = try part.value(for: partKey)
     print("\(id)")

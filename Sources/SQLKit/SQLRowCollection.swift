@@ -41,6 +41,9 @@ public struct SQLRowCollection<Client: SQLClient>: Collection where Client.RowSt
         return SQLRow(statement: statement, state: rowStates[i])
     }
 
+    public func distance(from start: Client.RowStateSequence.Index, to end: Client.RowStateSequence.Index) -> Int {
+        return rowStates.distance(from: start, to: end)
+    }
 }
 
 extension SQLRowCollection: BidirectionalCollection where Client.RowStateSequence: BidirectionalCollection {
@@ -50,7 +53,7 @@ extension SQLRowCollection: BidirectionalCollection where Client.RowStateSequenc
 }
 
 extension SQLRowCollection: RandomAccessCollection where Client.RowStateSequence: RandomAccessCollection {
-    public func index(_ i: Client.RowStateSequence.Index, offsetBy n: Client.RowStateSequence.IndexDistance) -> Client.RowStateSequence.Index {
+    public func index(_ i: Client.RowStateSequence.Index, offsetBy n: Int) -> Client.RowStateSequence.Index {
         return rowStates.index(i, offsetBy: n)
     }
 }
