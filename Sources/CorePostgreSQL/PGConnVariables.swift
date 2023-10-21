@@ -92,7 +92,7 @@ extension PGConn {
         }
         set {
             let hadError = PQsetClientEncoding(pointer, newValue?.rawValue ?? Encoding.unknownSQLASCIIName)
-            precondition(hadError == 0, "Can't set client encoding to \(newValue)")
+            precondition(hadError == 0, "Can't set client encoding to \(String(describing: newValue))")
         }
     }
     

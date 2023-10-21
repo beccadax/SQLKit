@@ -11,7 +11,7 @@ import Foundation
 func withUnsafePointers<R>(to array: [Data?], do body: ([UnsafePointer<Int8>?]) throws -> R) rethrows -> R {
     var buffer = Data()
     var offsets: [Int?] = []
-    
+
     for element in array {
         guard let data = element else {
             offsets.append(nil)
@@ -20,9 +20,11 @@ func withUnsafePointers<R>(to array: [Data?], do body: ([UnsafePointer<Int8>?]) 
         offsets.append(buffer.endIndex)
         buffer.append(data)
     }
-    
-    return try buffer.withUnsafeBytes { (base: UnsafePointer<Int8>) in
-        let pointers = offsets.map { $0.map { base + $0 } }
-        return try body(pointers)
+
+    return try buffer.withUnsafeBytes { (rawBufferPointer: UnsafeRawBufferPointer) in
+        try rawBufferPointer.withMemoryRebound(to: Int8.self) { bufferPointer in
+            let pointers = offsets.map { $0.flatMap { bufferPointer.baseAddress! + $0 } }
+            return try body(pointers)
+        }
     }
 }
