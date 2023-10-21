@@ -1,5 +1,5 @@
-module Clibpq [system] {
-    header "libpq.h"
+module Clibpq {
+    umbrella header "libpq.h"
     link "libpq"
     export *
 }

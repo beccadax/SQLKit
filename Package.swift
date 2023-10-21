@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.9
 
 import PackageDescription
 
@@ -7,15 +7,15 @@ let package = Package(
     products: [
         .library(
             name: "SQLKit",
-            type: .dynamic,
             targets: ["SQLKit"]),
-    ],
-    dependencies: [
-        .package(
-            url: "https://github.com/PerfectlySoft/Perfect-PostgreSQL.git",
-            from: "4.0.0"),
+        .executable(
+            name: "SQLKitTest",
+            targets: ["SQLKitTest"]),
     ],
     targets: [
+        .target(
+            name: "SQLKitTest",
+            dependencies: ["PostgreSQLKit"]),
         .target(
             name: "SQLKit",
             dependencies: []),
