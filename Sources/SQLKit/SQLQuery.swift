@@ -2,7 +2,7 @@
 //  SQLQuery.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 10/30/16.
+//  Created by Becca Royal-Gordon on 10/30/16.
 //
 //
 
@@ -168,44 +168,6 @@ extension SQLQuery where Client.RowStateSequence: Collection {
     /// 
     /// - SeeAlso: `rowIterator`, `onlyRow()`
     public var rows: SQLRowCollection<Client> {
-        return .init(rowStates: rowStates, statement: statement)
-    }
-}
-
-extension SQLQuery where Client.RowStateSequence: BidirectionalCollection {
-    /// The rows returned by the query.
-    /// 
-    /// `rows` is a `Collection`, so it may be indexed and walked through several 
-    /// times. Depending on the client, it may also be a `BidirectionalCollection` 
-    /// (allowing walking backwards) or a `RandomAccessCollection` (allowing 
-    /// walking to any arbitrary index).
-    /// 
-    /// If a particular client does not support the `rows` property, you can 
-    /// greedily fetch all rows into an array by writing:
-    /// 
-    ///     let array = Array(myQuery.rowIterator)
-    /// 
-    /// - SeeAlso: `rowIterator`, `onlyRow()`
-    public var rows: SQLRowBidirectionalCollection<Client> {
-        return .init(rowStates: rowStates, statement: statement)
-    }
-}
-
-extension SQLQuery where Client.RowStateSequence: RandomAccessCollection {
-    /// The rows returned by the query.
-    /// 
-    /// `rows` is a `Collection`, so it may be indexed and walked through several 
-    /// times. Depending on the client, it may also be a `BidirectionalCollection` 
-    /// (allowing walking backwards) or a `RandomAccessCollection` (allowing 
-    /// walking to any arbitrary index).
-    /// 
-    /// If a particular client does not support the `rows` property, you can 
-    /// greedily fetch all rows into an array by writing:
-    /// 
-    ///     let array = Array(myQuery.rowIterator)
-    /// 
-    /// - SeeAlso: `rowIterator`, `onlyRow()`
-    public var rows: SQLRowRandomAccessCollection<Client> {
         return .init(rowStates: rowStates, statement: statement)
     }
 }

@@ -14,7 +14,12 @@ let connection = try db.makeConnection()
 let parts = try connection.query("SELECT * FROM parts")
 let partKey = try parts.columnKey(forName: "id", as: String.self)
 
-for part in parts.rowIterator {
-  let id = try part.value(for: partKey)
-  print("\(id)")
+for part in parts.rows {
+    let id = try part.value(for: partKey)
+    print("\(id)")
 }
+
+//for part in parts.rowIterator {
+//  let id = try part.value(for: partKey)
+//  print("\(id)")
+//}
