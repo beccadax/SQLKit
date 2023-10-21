@@ -50,11 +50,14 @@ extension AnySQLColumnKey where Self: Equatable {
         return (index, name, ObjectIdentifier(valueType), nullable)
     }
     
-    public var hashValue: Int {
+    public func hash(into hasher: inout Hasher) {
         let id = identity
-        return id.0.hashValue ^ id.1.hashValue ^ id.2.hashValue ^ id.3.hashValue
+        hasher.combine(id.0)
+        hasher.combine(id.1)
+        hasher.combine(id.2)
+        hasher.combine(id.3)
     }
-    
+
     public static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.identity == rhs.identity
     }

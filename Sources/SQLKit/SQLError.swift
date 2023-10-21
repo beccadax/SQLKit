@@ -26,27 +26,7 @@ public enum SQLError: Error {
     public enum ColumnSpecifier: Hashable, CustomStringConvertible {
         case name(String)
         case index(Int)
-        
-        public static func == (lhs: ColumnSpecifier, rhs: ColumnSpecifier) -> Bool {
-            switch (lhs, rhs) {
-            case let (.name(l), .name(r)) where l == r:
-                return true
-            case let (.index(l), .index(r)) where l == r:
-                return true
-            default:
-                return false
-            }
-        }
-        
-        public var hashValue: Int {
-            switch self {
-            case .name(let name):
-                return name.hashValue
-            case .index (let index):
-                return ~index.hashValue
-            }
-        }
-        
+
         public var description: String {
             switch self {
             case .name(let name):

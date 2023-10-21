@@ -266,18 +266,21 @@ extension SQLStatement: Hashable {
         }
         return true
     }
-    
-    public var hashValue: Int {
-        return segments.reduce(0x501501) { hashValue, segment in
+
+    public func hash(into hasher: inout Hasher) {
+        for segment in self.segments {
             switch segment {
             case .raw(let sql):
-                return hashValue ^ sql.hashValue
+                hasher.combine(sql)
+                hasher.combine("raw")
             case .parameter(let value):
-                return hashValue ^ ~((value as? AnyHashable)?.hashValue ?? 0)
+                hasher.combine(value as? AnyHashable)
+                hasher.combine("parameter")
             }
         }
     }
 }
+
 extension SQLStatement: CustomDebugStringConvertible {
     public var debugDescription: String {
         var lines: [String] = []

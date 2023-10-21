@@ -177,8 +177,8 @@ extension ByIdentity: Hashable, _ByIdentityProtocol {
         return ObjectIdentifier(lhs.object) == ObjectIdentifier(rhs.object)
     }
     
-    var hashValue: Int {
-        return ObjectIdentifier(object).hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(object))
     }
 }
 
