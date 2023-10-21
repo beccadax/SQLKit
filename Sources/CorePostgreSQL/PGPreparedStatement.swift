@@ -2,7 +2,7 @@
 //  PGPreparedStatement.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/28/16.
+//  Created by Becca Royal-Gordon on 11/28/16.
 //
 //
 

@@ -2,7 +2,7 @@
 //  SQLConnection.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 10/30/16.
+//  Created by Becca Royal-Gordon on 10/30/16.
 //
 //
 

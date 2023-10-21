@@ -2,7 +2,7 @@
 //  SQLRowIterator.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 11/4/16.
+//  Created by Becca Royal-Gordon on 11/4/16.
 //
 //
 

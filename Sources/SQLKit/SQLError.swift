@@ -2,7 +2,7 @@
 //  SQLError.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 10/27/16.
+//  Created by Becca Royal-Gordon on 10/27/16.
 //
 //
 

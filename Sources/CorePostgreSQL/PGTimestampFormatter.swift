@@ -2,7 +2,7 @@
 //  PGTimestampFormatter.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/1/16.
+//  Created by Becca Royal-Gordon on 12/1/16.
 //
 //
 

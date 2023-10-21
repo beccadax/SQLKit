@@ -2,7 +2,7 @@
 //  PGTime.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 12/4/16.
+//  Created by Becca Royal-Gordon on 12/4/16.
 //
 //
 

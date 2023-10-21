@@ -2,7 +2,7 @@
 //  SQLValue.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 10/29/16.
+//  Created by Becca Royal-Gordon on 10/29/16.
 //
 //
 
