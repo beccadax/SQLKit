@@ -2,7 +2,7 @@
 //  Pool.swift
 //  LittlinkRouterPerfect
 //
-//  Created by Brent Royal-Gordon on 10/27/16.
+//  Created by Becca Royal-Gordon on 10/27/16.
 //
 //
 
@@ -83,7 +83,7 @@ public final class Pool<Resource: AnyObject> {
         }
         
         return try queue.sync {
-            if let index = resourceIsAvailable.index(where: isAvailable) {
+            if let index = resourceIsAvailable.firstIndex(where: isAvailable) {
                 let resource = resourceIsAvailable[index].key.object
                 resourceIsAvailable[resource] = false
                 return resource
