@@ -65,7 +65,7 @@ extension PGInterval {
         self.init()
         
         for (int, cals) in correspondences {
-            self[int] = cals.flatMap({ dateComponents.value(for: $0) }).first ?? 0
+            self[int] = cals.compactMap({ dateComponents.value(for: $0) }).first ?? 0
         }
     }
 }
@@ -73,7 +73,7 @@ extension PGInterval {
 public extension DateComponents {
     /// Creates a `DateComponents` describing the same period of time as the 
     /// given `interval`.
-    public init(_ interval: PGInterval) {
+    init(_ interval: PGInterval) {
         self.init()
         for (int, cals) in correspondences {
             setValue(interval[int], for: cals.first!)
