@@ -13,7 +13,7 @@ let package = Package(
             targets: ["SQLKitTest"]),
     ],
     targets: [
-        .target(
+        .executableTarget(
             name: "SQLKitTest",
             dependencies: ["PostgreSQLKit"]),
         .target(
