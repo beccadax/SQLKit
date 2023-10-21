@@ -79,14 +79,6 @@ public struct SQLStatement {
     
     /// The segments comprising this `SQLStatement`.
     public var segments: [Segment]
-    fileprivate func onlyStringSegment() -> String {
-        assert(segments.count == 1, "Literal fragment somehow has \(segments.count) segments")
-        guard case .parameter(let str as String)? = segments.first else {
-            assertionFailure("Literal fragment somehow has a \(segments) segment")
-            return ""
-        }
-        return str
-    }
     
     /// Creates an empty `SQLStatement`.
     public init() {
@@ -214,27 +206,35 @@ extension SQLStatement: ExpressibleByStringLiteral {
 }
 
 extension SQLStatement: ExpressibleByStringInterpolation {
-    public init(stringInterpolation strings: SQLStatement...) {
-        self.init()
-        for (n, substatement) in strings.enumerated() {
-            if n % 2 == 0 {
-                self.append(raw: substatement.onlyStringSegment())
-            }
-            else {
-                self.append(substatement)
-            }
+    public struct StringInterpolation: StringInterpolationProtocol {
+        public typealias StringLiteralType = String
+
+        var sqlStatement: SQLStatement
+
+        public init(literalCapacity: Int, interpolationCount: Int) {
+            sqlStatement = SQLStatement()
+            sqlStatement.segments.reserveCapacity(2*interpolationCount + 1)
+        }
+
+        public mutating func appendLiteral(_ literal: String) {
+            sqlStatement.append(raw: literal)
+        }
+
+        public mutating func appendInterpolation(_ interpolation: SQLValue?) {
+            sqlStatement.append(parameter: interpolation)
+        }
+
+        public mutating func appendInterpolation(_ interpolation: SQLStatementConvertible) {
+            sqlStatement.append(interpolation)
+        }
+
+        public mutating func appendInterpolation<T>(_ interpolation: T) {
+            sqlStatement.append(parameter: String(describing: interpolation))
         }
     }
-    
-    public init<T>(stringInterpolationSegment expr: T) {
-        switch expr as Any? {
-        case let value as SQLValue?:
-            self.init(parameter: value)
-        case let substatement as SQLStatementConvertible:
-            self.init(substatement)
-        default:
-            self.init(parameter: String(describing: expr))
-        }
+
+    public init(stringInterpolation: StringInterpolation) {
+        self = stringInterpolation.sqlStatement
     }
 }
 
